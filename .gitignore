@@ -1,1 +1,8 @@
 .claude
+.DS_Store
+.env
+bin/
+coverage/
+web/node_modules/
+web/dist/
+*.log
