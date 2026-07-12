@@ -19,10 +19,15 @@ import (
 	departmenthttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/adapter/http"
 	departmentpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/adapter/postgres"
 	departmentapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/app"
+	masterhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/adapter/http"
+	masterpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/adapter/postgres"
+	masterapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/app"
 	platformauth "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/auth"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/config"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db/sqlc"
+	platformemail "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/email"
+	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/events"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/httpserver"
 )
 
@@ -43,12 +48,39 @@ func main() {
 	identityHandler := identityhttp.New(identityService)
 	departmentService := departmentapp.New(departmentpg.New(sqlc.New(pool)))
 	departmentHandler := departmenthttp.New(departmentService)
+	bus := events.NewInProcess()
+	masterService := masterapp.New(masterpg.New(pool), platformemail.New(cfg.SMTPAddr), bus)
+	masterHandler := masterhttp.New(masterService)
 
 	router := chi.NewRouter()
-	router.Use(httpserver.Recover, httpserver.RequestID, httpserver.Logger, middleware.StripSlashes)
+	router.Use(httpserver.Recover, httpserver.RequestID, httpserver.Logger, httpserver.CORS(cfg.CORSOrigin), middleware.StripSlashes)
 	router.Get("/health", func(w http.ResponseWriter, _ *http.Request) {
 		w.Header().Set("Content-Type", "application/json")
 		_ = json.NewEncoder(w).Encode(map[string]string{"status": "ok"})
+	})
+	for _, entityName := range []string{"categories", "emission-factors", "products", "policies", "badges", "rewards", "employees"} {
+		entityName := entityName
+		router.Route("/"+entityName, func(r chi.Router) {
+			r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+			r.Get("/", masterHandler.List(entityName))
+			r.Get("/{id}", masterHandler.Get(entityName))
+			r.Group(func(r chi.Router) {
+				r.Use(platformauth.RequireRole(domain.RoleAdmin))
+				r.Post("/", masterHandler.Create(entityName))
+				r.Put("/{id}", masterHandler.Update(entityName))
+				r.Delete("/{id}", masterHandler.Delete(entityName))
+			})
+		})
+	}
+	router.Route("/settings", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/esg-config", masterHandler.GetConfig)
+		r.Get("/notification-preferences", masterHandler.GetPreferences)
+		r.Group(func(r chi.Router) {
+			r.Use(platformauth.RequireRole(domain.RoleAdmin))
+			r.Put("/esg-config", masterHandler.SaveConfig)
+			r.Put("/notification-preferences", masterHandler.SavePreferences)
+		})
 	})
 	router.Post("/auth/login", identityHandler.Login)
 	router.Post("/auth/refresh", identityHandler.Refresh)
