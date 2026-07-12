@@ -31,12 +31,20 @@ services:
     environment:
       DATABASE_URL: postgres://ecosphere:ecosphere@postgres:5432/ecosphere?sslmode=disable
       JWT_SECRET: ${JWT_SECRET:-development-only-secret-change-me}
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: ecosphere
+      MINIO_SECRET_KEY: ecosphere-secret
+      MINIO_BUCKET: environmental-evidence
+      AI_FIXTURE_MODE: ${AI_FIXTURE_MODE:-true}
+      OPENROUTER_API_KEY: ${OPENROUTER_API_KEY:-}
     ports: ["8080:8080"]
     depends_on:
       postgres:
         condition: service_healthy
       migrate:
         condition: service_completed_successfully
+      minio:
+        condition: service_started
     restart: unless-stopped
 
   web:

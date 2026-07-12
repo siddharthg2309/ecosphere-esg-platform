@@ -7,13 +7,18 @@ import (
 )
 
 type Config struct {
-	Addr        string
-	DatabaseURL string
-	JWTSecret   string
-	AccessTTL   time.Duration
-	RefreshTTL  time.Duration
-	CORSOrigin  string
-	SMTPAddr    string
+	Addr                                                       string
+	DatabaseURL                                                string
+	JWTSecret                                                  string
+	AccessTTL                                                  time.Duration
+	RefreshTTL                                                 time.Duration
+	CORSOrigin                                                 string
+	SMTPAddr                                                   string
+	MinIOEndpoint, MinIOAccessKey, MinIOSecretKey, MinIOBucket string
+	MinIOUseSSL                                                bool
+	OpenRouterAPIKey, OpenRouterModel                          string
+	AIFixtureMode                                              bool
+	AIConfidence                                               float64
 }
 
 func Load() (Config, error) {
@@ -29,6 +34,11 @@ func Load() (Config, error) {
 		Addr: value("ADDR", ":8080"), DatabaseURL: os.Getenv("DATABASE_URL"),
 		JWTSecret: os.Getenv("JWT_SECRET"), AccessTTL: accessTTL, RefreshTTL: refreshTTL,
 		CORSOrigin: value("CORS_ORIGIN", "http://localhost:5173"), SMTPAddr: value("SMTP_ADDR", "localhost:1025"),
+		MinIOEndpoint: value("MINIO_ENDPOINT", "minio:9000"), MinIOAccessKey: value("MINIO_ACCESS_KEY", "ecosphere"),
+		MinIOSecretKey: value("MINIO_SECRET_KEY", "ecosphere-secret"), MinIOBucket: value("MINIO_BUCKET", "environmental-evidence"),
+		MinIOUseSSL: value("MINIO_USE_SSL", "false") == "true", OpenRouterAPIKey: os.Getenv("OPENROUTER_API_KEY"),
+		OpenRouterModel: value("OPENROUTER_MODEL", "openai/gpt-4.1-mini"), AIFixtureMode: value("AI_FIXTURE_MODE", "true") == "true",
+		AIConfidence: 0.65,
 	}
 	if cfg.DatabaseURL == "" {
 		return Config{}, fmt.Errorf("DATABASE_URL is required")

@@ -12,6 +12,11 @@ import (
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	environmentalhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/adapter/http"
+	environmentalpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/adapter/postgres"
+	carbonapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/carbon/app"
+	carbonport "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/carbon/port"
+	goalapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/goal/app"
 	identityhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/http"
 	identitypg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/postgres"
 	identityapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/app"
@@ -22,6 +27,7 @@ import (
 	masterhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/adapter/http"
 	masterpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/adapter/postgres"
 	masterapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/app"
+	platformai "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/ai"
 	platformauth "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/auth"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/config"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db"
@@ -30,6 +36,7 @@ import (
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/events"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/httpserver"
 	platformsettings "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/settings"
+	platformstorage "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/storage"
 )
 
 func main() {
@@ -53,7 +60,23 @@ func main() {
 	masterRepo := masterpg.New(pool)
 	masterService := masterapp.New(masterRepo, platformemail.New(cfg.SMTPAddr), bus)
 	masterHandler := masterhttp.New(masterService)
-	_ = platformsettings.New(masterRepo, bus)
+	flags := platformsettings.New(masterRepo, bus)
+	environmentalRepo := environmentalpg.New(pool)
+	goalRepo := environmentalpg.NewGoals(pool)
+	carbonService := carbonapp.New(environmentalRepo, flags, bus)
+	goalService := goalapp.New(goalRepo, bus)
+	objectStorage, err := platformstorage.NewMinIO(ctx, cfg.MinIOEndpoint, cfg.MinIOAccessKey, cfg.MinIOSecretKey, cfg.MinIOBucket, cfg.MinIOUseSSL)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var aiGateway carbonport.AIGateway
+	if cfg.AIFixtureMode {
+		aiGateway = platformai.Fixture{}
+	} else {
+		aiGateway = platformai.NewOpenRouter(cfg.OpenRouterAPIKey, cfg.OpenRouterModel)
+	}
+	ingestService := carbonapp.NewIngest(objectStorage, aiGateway, flags, cfg.AIConfidence)
+	environmentalHandler := environmentalhttp.New(carbonService, goalService, ingestService)
 
 	router := chi.NewRouter()
 	router.Use(httpserver.Recover, httpserver.RequestID, httpserver.Logger, httpserver.CORS(cfg.CORSOrigin), middleware.StripSlashes)
@@ -98,6 +121,20 @@ func main() {
 			r.Put("/{id}", departmentHandler.Update)
 			r.Delete("/{id}", departmentHandler.Deactivate)
 		})
+	})
+	router.Route("/carbon", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Post("/ingest", environmentalHandler.Ingest)
+		r.Post("/transactions", environmentalHandler.CreateTransaction)
+		r.Get("/transactions", environmentalHandler.ListTransactions)
+		r.Get("/summary", environmentalHandler.Summary)
+		r.With(platformauth.RequireRole(domain.RoleDeptHead)).Post("/transactions/{id}/verify", environmentalHandler.Verify)
+	})
+	router.Route("/goals", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/", environmentalHandler.ListGoals)
+		r.With(platformauth.RequireRole(domain.RoleDeptHead, domain.RoleAdmin)).Post("/", environmentalHandler.CreateGoal)
+		r.With(platformauth.RequireRole(domain.RoleDeptHead, domain.RoleAdmin)).Put("/{id}", environmentalHandler.UpdateGoal)
 	})
 
 	server := &http.Server{Addr: cfg.Addr, Handler: router, ReadHeaderTimeout: 5 * time.Second}

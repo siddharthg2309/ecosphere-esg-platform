@@ -95,3 +95,6 @@ func (s *Service) Summary(ctx context.Context, departmentID *id.ID, from, to tim
 func (s *Service) AutoCalcEnabled(ctx context.Context) bool {
 	return s.flags.IsEnabled(ctx, "auto_emission_calc")
 }
+func (s *Service) IsDepartmentHead(ctx context.Context, userID, departmentID id.ID) (bool, error) {
+	return s.repo.IsDepartmentHead(ctx, userID, departmentID)
+}
