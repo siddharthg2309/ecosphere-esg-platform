@@ -106,6 +106,67 @@ paths:
   /settings/notification-preferences:
     get: { operationId: getNotificationPreferences, responses: { '200': { description: Notification preferences, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/NotificationPreference' } } } } } } }
     put: { operationId: updateNotificationPreferences, requestBody: { required: true, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/NotificationPreference' } } } } }, responses: { '200': { description: Updated } } }
+  /carbon/ingest:
+    post:
+      operationId: ingestCarbonEvidence
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema: { type: object, required: [file], properties: { file: { type: string, format: binary } } }
+      responses:
+        '200': { description: Advisory categorization, content: { application/json: { schema: { $ref: '#/components/schemas/CarbonSuggestion' } } } }
+        '400': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /carbon/transactions:
+    get:
+      operationId: listCarbonTransactions
+      parameters:
+        - { $ref: '#/components/parameters/Limit' }
+        - { $ref: '#/components/parameters/Offset' }
+        - { name: dept, in: query, schema: { type: string, format: uuid } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+        - { name: source, in: query, schema: { $ref: '#/components/schemas/CarbonSource' } }
+        - { name: status, in: query, schema: { $ref: '#/components/schemas/CarbonStatus' } }
+      responses: { '200': { description: Carbon transaction page, content: { application/json: { schema: { $ref: '#/components/schemas/CarbonTransactionPage' } } } } }
+    post:
+      operationId: createCarbonTransaction
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CarbonTransactionInput' } } } }
+      responses:
+        '201': { description: Draft created, content: { application/json: { schema: { $ref: '#/components/schemas/CarbonTransaction' } } } }
+        '400': { $ref: '#/components/responses/Error' }
+  /carbon/transactions/{id}/verify:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    post:
+      operationId: verifyCarbonTransaction
+      responses:
+        '200': { description: Verified with authoritative CO2, content: { application/json: { schema: { $ref: '#/components/schemas/CarbonTransaction' } } } }
+        '403': { $ref: '#/components/responses/Error' }
+        '409': { $ref: '#/components/responses/Error' }
+  /carbon/summary:
+    get:
+      operationId: carbonSummary
+      parameters:
+        - { name: dept, in: query, schema: { type: string, format: uuid } }
+        - { name: from, in: query, schema: { type: string, format: date } }
+        - { name: to, in: query, schema: { type: string, format: date } }
+      responses: { '200': { description: Verified emissions only, content: { application/json: { schema: { $ref: '#/components/schemas/CarbonSummary' } } } } }
+  /goals:
+    get:
+      operationId: listEnvironmentalGoals
+      parameters: [{ $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Offset' }, { name: dept, in: query, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: Environmental goal page, content: { application/json: { schema: { $ref: '#/components/schemas/EnvironmentalGoalPage' } } } } }
+    post:
+      operationId: createEnvironmentalGoal
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EnvironmentalGoalInput' } } } }
+      responses: { '201': { description: Goal created, content: { application/json: { schema: { $ref: '#/components/schemas/EnvironmentalGoal' } } } } }
+  /goals/{id}:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    put:
+      operationId: updateEnvironmentalGoal
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/EnvironmentalGoalInput' } } } }
+      responses: { '200': { description: Goal updated, content: { application/json: { schema: { $ref: '#/components/schemas/EnvironmentalGoal' } } } } }
 components:
   securitySchemes: { bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT } }
   parameters:
@@ -131,3 +192,69 @@ components:
     ESGConfig: { type: object, required: [autoEmissionCalc, requireCsrEvidence, autoAwardBadges, notifyComplianceEmail, weightEnv, weightSocial, weightGov], properties: { autoEmissionCalc: { type: boolean }, requireCsrEvidence: { type: boolean }, autoAwardBadges: { type: boolean }, notifyComplianceEmail: { type: boolean }, weightEnv: { type: integer, minimum: 0, maximum: 100 }, weightSocial: { type: integer, minimum: 0, maximum: 100 }, weightGov: { type: integer, minimum: 0, maximum: 100 } } }
     NotificationEvent: { type: string, enum: [compliance_raised, approval_decision, policy_reminder, badge_unlock, compliance_overdue] }
     NotificationPreference: { type: object, required: [eventType, inAppEnabled, emailEnabled], properties: { eventType: { $ref: '#/components/schemas/NotificationEvent' }, inAppEnabled: { type: boolean }, emailEnabled: { type: boolean } } }
+    Decimal: { type: string, pattern: '^-?[0-9]+(\.[0-9]+)?$' }
+    CarbonSource: { type: string, enum: [purchase, manufacturing, expense, fleet] }
+    CarbonStatus: { type: string, enum: [draft, verified] }
+    CarbonSuggestion:
+      type: object
+      required: [source, quantity, unit, confidence, evidenceUrl]
+      properties:
+        source: { type: string }
+        categoryId: { type: [string, 'null'], format: uuid }
+        quantity: { type: number, minimum: 0 }
+        unit: { type: string }
+        confidence: { type: number, minimum: 0, maximum: 1 }
+        evidenceUrl: { type: string }
+    CarbonTransactionInput:
+      type: object
+      required: [departmentId, source, quantity, emissionFactorId, unit, txnDate]
+      properties:
+        departmentId: { type: string, format: uuid }
+        source: { $ref: '#/components/schemas/CarbonSource' }
+        quantity: { $ref: '#/components/schemas/Decimal' }
+        emissionFactorId: { type: string, format: uuid }
+        unit: { type: string }
+        txnDate: { type: string, format: date }
+        evidenceUrl: { type: string }
+    CarbonTransaction:
+      allOf:
+        - { $ref: '#/components/schemas/CarbonTransactionInput' }
+        - type: object
+          required: [id, factorValue, computedCo2, status, createdAt]
+          properties:
+            id: { type: string, format: uuid }
+            factorValue: { $ref: '#/components/schemas/Decimal' }
+            computedCo2: { $ref: '#/components/schemas/Decimal' }
+            status: { $ref: '#/components/schemas/CarbonStatus' }
+            verifiedBy: { type: string, format: uuid }
+            verifiedAt: { type: string, format: date-time }
+            createdAt: { type: string, format: date-time }
+    CarbonTransactionPage: { type: object, required: [items, total], properties: { items: { type: array, items: { $ref: '#/components/schemas/CarbonTransaction' } }, total: { type: integer } } }
+    CarbonSummary:
+      type: object
+      required: [total, bySource]
+      properties:
+        total: { $ref: '#/components/schemas/Decimal' }
+        bySource: { type: object, additionalProperties: { $ref: '#/components/schemas/Decimal' } }
+    GoalStatus: { type: string, enum: [on_track, at_risk, completed] }
+    EnvironmentalGoalInput:
+      type: object
+      required: [name, departmentId, targetCo2, deadline]
+      properties:
+        name: { type: string, minLength: 1 }
+        departmentId: { type: string, format: uuid }
+        targetCo2: { $ref: '#/components/schemas/Decimal' }
+        currentCo2: { $ref: '#/components/schemas/Decimal' }
+        deadline: { type: string, format: date }
+    EnvironmentalGoal:
+      allOf:
+        - { $ref: '#/components/schemas/EnvironmentalGoalInput' }
+        - type: object
+          required: [id, currentCo2, status, createdAt, updatedAt]
+          properties:
+            id: { type: string, format: uuid }
+            currentCo2: { $ref: '#/components/schemas/Decimal' }
+            status: { $ref: '#/components/schemas/GoalStatus' }
+            createdAt: { type: string, format: date-time }
+            updatedAt: { type: string, format: date-time }
+    EnvironmentalGoalPage: { type: object, required: [items, total], properties: { items: { type: array, items: { $ref: '#/components/schemas/EnvironmentalGoal' } }, total: { type: integer } } }
