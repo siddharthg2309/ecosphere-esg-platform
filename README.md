@@ -2,6 +2,8 @@
 
 Ecosphere ESG Platform helps organizations configure sustainability data, record daily business activity, calculate carbon impact, and track employee participation in ESG and CSR initiatives.
 
+The platform is designed to give sustainability teams a single, structured path from setup to reporting. By enforcing a clear order of operations, it keeps master data consistent, ensures every business activity is traceable to a carbon impact, and makes employee engagement measurable and auditable.
+
 ## Required Business Workflow
 
 The platform workflow must follow this order:
