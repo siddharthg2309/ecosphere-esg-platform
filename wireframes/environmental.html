@@ -1,0 +1,103 @@
+<title>EcoSphere — Environmental</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/theme.css">
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">🌐</span> EcoSphere</div>
+    <div class="nav-group"><a class="nav-item" href="dashboard.html"><span class="ico">▦</span> Dashboard</a></div>
+    <div class="nav-group"><div class="nav-title">Environmental</div>
+      <a class="nav-item active" href="environmental.html"><span class="ico">🌿</span> Emissions &amp; Goals</a></div>
+    <div class="nav-group"><div class="nav-title">Social</div>
+      <a class="nav-item" href="social.html"><span class="ico">🤝</span> CSR &amp; Engagement</a></div>
+    <div class="nav-group"><div class="nav-title">Governance</div>
+      <a class="nav-item" href="governance.html"><span class="ico">⚖️</span> Policies &amp; Audits</a></div>
+    <div class="nav-group"><div class="nav-title">Gamification</div>
+      <a class="nav-item" href="gamification.html"><span class="ico">🎮</span> Challenges</a></div>
+    <div class="nav-group"><div class="nav-title">Insights</div>
+      <a class="nav-item" href="reports.html"><span class="ico">📊</span> Reports</a>
+      <a class="nav-item" href="settings.html"><span class="ico">⚙️</span> Settings</a></div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">Environmental <small>/ Emission Tracking &amp; Goals</small></div>
+      <div class="spacer"></div>
+      <div class="search"><span>🔍</span><input placeholder="Search goals…"></div>
+      <div class="iconbtn">🔔<span class="bell-badge">3</span></div>
+      <div class="avatar">AM</div>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div><h1 class="page-title">Emission Tracking &amp; Goals</h1>
+          <div class="sub">Carbon accounting · emission factors · sustainability targets</div></div>
+        <div class="rowflex">
+          <button class="btn secondary sm">Export ▾</button>
+          <button class="btn sm">＋ New Goal</button>
+        </div>
+      </div>
+
+      <div class="grid cols-4">
+        <div class="tile" style="border-top-color:var(--env)"><div class="label">Total Emissions (YTD)</div><div class="metric" style="font-size:28px">1,284 <small>t CO₂</small></div><div class="delta up">▼ 18% vs FY25</div></div>
+        <div class="tile" style="border-top-color:var(--env)"><div class="label">Active Goals</div><div class="metric" style="font-size:28px">6</div><div class="delta"><span class="muted">2 completed · 1 at risk</span></div></div>
+        <div class="tile" style="border-top-color:var(--env)"><div class="label">Emission Factors</div><div class="metric" style="font-size:28px">37</div><div class="delta"><span class="muted">across 5 categories</span></div></div>
+        <div class="tile" style="border-top-color:var(--env)"><div class="label">Auto-Calc</div><div class="metric" style="font-size:28px">On</div><div class="delta up">Fleet · Mfg · Expense · Purchase</div></div>
+      </div>
+
+      <div class="tabs" style="margin-top:24px">
+        <div class="tab">Emission Factors</div>
+        <div class="tab">Product ESG Profiles</div>
+        <div class="tab">Carbon Transactions</div>
+        <div class="tab active">Environmental Goals</div>
+      </div>
+
+      <div class="note" style="margin-bottom:16px">↻ Carbon Transactions are <b>auto-generated</b> from Purchase / Manufacturing / Expense / Fleet records. <b>Computed CO₂ = quantity × emission factor</b> (deterministic). AI only categorizes the uploaded document.</div>
+
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Goal</th><th>Department</th><th class="num">Target</th><th class="num">Current</th><th>Progress</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr>
+              <td><b>Reduce Fleet Emissions 20%</b><div class="muted">Switch to EV trucks</div></td>
+              <td>Logistics</td><td class="num">500 t</td><td class="num">390 t</td>
+              <td><div class="rowflex"><div class="progress"><span style="width:78%"></span></div><span class="muted">78%</span></div></td>
+              <td>31 Dec 2026</td><td><span class="pill success">● Active</span></td>
+              <td><div class="row-actions"><span class="a">👁</span><span class="a">✎</span></div></td>
+            </tr>
+            <tr>
+              <td><b>Cut Packaging Waste</b><div class="muted">Recycled materials</div></td>
+              <td>Manufacturing</td><td class="num">120 t</td><td class="num">98 t</td>
+              <td><div class="rowflex"><div class="progress"><span style="width:82%"></span></div><span class="muted">82%</span></div></td>
+              <td>30 Sep 2026</td><td><span class="pill warning">● On Track</span></td>
+              <td><div class="row-actions"><span class="a">👁</span><span class="a">✎</span></div></td>
+            </tr>
+            <tr>
+              <td><b>Office Energy → Solar</b><div class="muted">Rooftop install</div></td>
+              <td>Facilities</td><td class="num">80 t</td><td class="num">80 t</td>
+              <td><div class="rowflex"><div class="progress"><span style="width:100%"></span></div><span class="muted">100%</span></div></td>
+              <td>30 Jun 2026</td><td><span class="pill success">● Completed</span></td>
+              <td><div class="row-actions"><span class="a">👁</span><span class="a">✎</span></div></td>
+            </tr>
+            <tr>
+              <td><b>Data-Center PUE &lt; 1.4</b><div class="muted">Cooling upgrade</div></td>
+              <td>IT</td><td class="num">60 t</td><td class="num">52 t</td>
+              <td><div class="rowflex"><div class="progress"><span style="width:45%;background:var(--warning)"></span></div><span class="muted">45%</span></div></td>
+              <td>31 Mar 2026</td><td><span class="pill danger">● At Risk</span></td>
+              <td><div class="row-actions"><span class="a">👁</span><span class="a">✎</span></div></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section">Emissions by source <span class="muted" style="font-size:13px;font-weight:400">· this quarter</span></h2>
+      <div class="grid cols-4">
+        <div class="card"><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600">Fleet</div><div style="font-size:24px;font-weight:700;color:var(--env)">512 t</div><div class="progress" style="margin-top:8px"><span style="width:80%"></span></div></div>
+        <div class="card"><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600">Manufacturing</div><div style="font-size:24px;font-weight:700;color:var(--env)">388 t</div><div class="progress" style="margin-top:8px"><span style="width:60%"></span></div></div>
+        <div class="card"><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600">Purchased Energy</div><div style="font-size:24px;font-weight:700;color:var(--env)">248 t</div><div class="progress" style="margin-top:8px"><span style="width:39%"></span></div></div>
+        <div class="card"><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600">Expenses / Travel</div><div style="font-size:24px;font-weight:700;color:var(--env)">136 t</div><div class="progress" style="margin-top:8px"><span style="width:21%"></span></div></div>
+      </div>
+    </div>
+  </div>
+</div>

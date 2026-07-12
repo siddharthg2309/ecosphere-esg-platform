@@ -1,0 +1,104 @@
+<title>EcoSphere — Settings</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/theme.css">
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">🌐</span> EcoSphere</div>
+    <div class="nav-group"><a class="nav-item" href="dashboard.html"><span class="ico">▦</span> Dashboard</a></div>
+    <div class="nav-group"><div class="nav-title">Environmental</div>
+      <a class="nav-item" href="environmental.html"><span class="ico">🌿</span> Emissions &amp; Goals</a></div>
+    <div class="nav-group"><div class="nav-title">Social</div>
+      <a class="nav-item" href="social.html"><span class="ico">🤝</span> CSR &amp; Engagement</a></div>
+    <div class="nav-group"><div class="nav-title">Governance</div>
+      <a class="nav-item" href="governance.html"><span class="ico">⚖️</span> Policies &amp; Audits</a></div>
+    <div class="nav-group"><div class="nav-title">Gamification</div>
+      <a class="nav-item" href="gamification.html"><span class="ico">🎮</span> Challenges</a></div>
+    <div class="nav-group"><div class="nav-title">Insights</div>
+      <a class="nav-item" href="reports.html"><span class="ico">📊</span> Reports</a>
+      <a class="nav-item active" href="settings.html"><span class="ico">⚙️</span> Settings</a></div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">Settings <small>/ Configuration &amp; Administration</small></div>
+      <div class="spacer"></div>
+      <div class="search"><span>🔍</span><input placeholder="Search settings…"></div>
+      <div class="iconbtn">🔔<span class="bell-badge">3</span></div>
+      <div class="avatar">AM</div>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div><h1 class="page-title">Configuration &amp; Administration</h1>
+          <div class="sub">Master data · ESG rules · notifications</div></div>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">Departments</div>
+        <div class="tab">Categories</div>
+        <div class="tab">ESG Configuration</div>
+        <div class="tab">Notification Settings</div>
+      </div>
+
+      <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
+        <h2 class="section" style="margin:0">Departments</h2>
+        <button class="btn sm">＋ New Department</button>
+      </div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Name</th><th>Code</th><th>Head</th><th>Parent Dept</th><th class="num">Employees</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>Manufacturing</b></td><td>MFG</td><td><span class="avatar-sm">SN</span> S. Nair</td><td>—</td><td class="num">134</td><td><span class="pill success">● Active</span></td><td><div class="row-actions"><span class="a">✎</span><span class="a">🗑</span></div></td></tr>
+            <tr><td><b>Logistics</b></td><td>LOG</td><td><span class="avatar-sm">RI</span> R. Iyer</td><td>Manufacturing</td><td class="num">58</td><td><span class="pill success">● Active</span></td><td><div class="row-actions"><span class="a">✎</span><span class="a">🗑</span></div></td></tr>
+            <tr><td><b>Corporate</b></td><td>COR</td><td><span class="avatar-sm">AM</span> A. Mehta</td><td>—</td><td class="num">41</td><td><span class="pill success">● Active</span></td><td><div class="row-actions"><span class="a">✎</span><span class="a">🗑</span></div></td></tr>
+            <tr><td><b>Facilities</b></td><td>FAC</td><td><span class="avatar-sm">PS</span> P. Shah</td><td>Corporate</td><td class="num">22</td><td><span class="pill neutral">● Inactive</span></td><td><div class="row-actions"><span class="a">✎</span><span class="a">🗑</span></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid cols-2" style="margin-top:24px">
+        <div class="card">
+          <div class="card-head"><h3>⚙️ ESG Configuration</h3><span class="muted">in scope · not optional</span></div>
+          <div class="stack" style="gap:2px">
+            <div class="rowflex" style="justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)">
+              <div><b>Enable auto emission calculation</b><div class="muted" style="font-size:12.5px">Carbon Transactions auto-generated from Purchase / Mfg / Expense / Fleet.</div></div>
+              <label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+            <div class="rowflex" style="justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)">
+              <div><b>Require evidence for all CSR activities</b><div class="muted" style="font-size:12.5px">Participation cannot be approved without a proof file.</div></div>
+              <label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+            <div class="rowflex" style="justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)">
+              <div><b>Auto-award badges</b><div class="muted" style="font-size:12.5px">Assigned the moment XP / completed-challenge count meets the unlock rule.</div></div>
+              <label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
+            <div class="rowflex" style="justify-content:space-between;padding:12px 0">
+              <div><b>Email alerts for new compliance issues</b><div class="muted" style="font-size:12.5px">Notify owner + admin; overdue issues re-flagged.</div></div>
+              <label class="switch"><input type="checkbox"><span class="track"></span></label></div>
+          </div>
+        </div>
+
+        <div class="stack">
+          <div class="card">
+            <div class="card-head"><h3>⚖️ ESG Score Weighting</h3><span class="muted">must total 100%</span></div>
+            <div class="stack" style="gap:12px">
+              <div><div class="rowflex" style="justify-content:space-between"><span class="meta">🌿 Environmental</span><b>40%</b></div><div class="progress"><span style="width:40%;background:var(--env)"></span></div></div>
+              <div><div class="rowflex" style="justify-content:space-between"><span class="meta">🤝 Social</span><b>30%</b></div><div class="progress"><span style="width:30%;background:var(--social)"></span></div></div>
+              <div><div class="rowflex" style="justify-content:space-between"><span class="meta">⚖️ Governance</span><b>30%</b></div><div class="progress"><span style="width:30%;background:var(--gov)"></span></div></div>
+            </div>
+            <div class="card-foot"><span class="muted">Overall ESG = Σ (dept total × weight)</span><button class="btn secondary sm">Edit</button></div>
+          </div>
+
+          <div class="card">
+            <div class="card-head"><h3>🔔 Notification Settings</h3></div>
+            <div class="stack" style="gap:2px">
+              <div class="rowflex" style="justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)"><span>New compliance issue raised</span><span class="rowflex"><span class="pill info">In-app</span><span class="pill neutral">Email</span></span></div>
+              <div class="rowflex" style="justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)"><span>CSR / Challenge approval decision</span><span class="rowflex"><span class="pill info">In-app</span><span class="pill neutral">Email</span></span></div>
+              <div class="rowflex" style="justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--line)"><span>Policy acknowledgement reminder</span><span class="rowflex"><span class="pill info">In-app</span><span class="pill info">Email</span></span></div>
+              <div class="rowflex" style="justify-content:space-between;padding:9px 0"><span>Badge unlock</span><span class="rowflex"><span class="pill info">In-app</span><span class="pill neutral">Email</span></span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

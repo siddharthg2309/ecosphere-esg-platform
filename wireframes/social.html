@@ -1,0 +1,98 @@
+<title>EcoSphere — Social</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/theme.css">
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><span class="logo">🌐</span> EcoSphere</div>
+    <div class="nav-group"><a class="nav-item" href="dashboard.html"><span class="ico">▦</span> Dashboard</a></div>
+    <div class="nav-group"><div class="nav-title">Environmental</div>
+      <a class="nav-item" href="environmental.html"><span class="ico">🌿</span> Emissions &amp; Goals</a></div>
+    <div class="nav-group"><div class="nav-title">Social</div>
+      <a class="nav-item active" href="social.html"><span class="ico">🤝</span> CSR &amp; Engagement</a></div>
+    <div class="nav-group"><div class="nav-title">Governance</div>
+      <a class="nav-item" href="governance.html"><span class="ico">⚖️</span> Policies &amp; Audits</a></div>
+    <div class="nav-group"><div class="nav-title">Gamification</div>
+      <a class="nav-item" href="gamification.html"><span class="ico">🎮</span> Challenges</a></div>
+    <div class="nav-group"><div class="nav-title">Insights</div>
+      <a class="nav-item" href="reports.html"><span class="ico">📊</span> Reports</a>
+      <a class="nav-item" href="settings.html"><span class="ico">⚙️</span> Settings</a></div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">Social <small>/ CSR &amp; Employee Engagement</small></div>
+      <div class="spacer"></div>
+      <div class="search"><span>🔍</span><input placeholder="Search activities…"></div>
+      <div class="iconbtn">🔔<span class="bell-badge">3</span></div>
+      <div class="avatar">AM</div>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div><h1 class="page-title">CSR &amp; Employee Engagement</h1>
+          <div class="sub">Community initiatives · participation · diversity &amp; training</div></div>
+        <button class="btn sm">＋ New Activity</button>
+      </div>
+
+      <div class="tabs">
+        <div class="tab active">CSR Activities</div>
+        <div class="tab">Employee Participation</div>
+        <div class="tab">Diversity Dashboard</div>
+        <div class="tab">Training Completion</div>
+      </div>
+
+      <div class="grid autofit">
+        <div class="card accent-top" style="border-top-color:var(--social)">
+          <div class="card-head"><h3>🌳 Tree Plantation</h3><span class="pill social">Community</span></div>
+          <div class="muted">Plant 500 saplings at the Riverside reserve.</div>
+          <div class="rowflex" style="margin-top:12px"><span class="pill warning">Evidence Required</span><span class="meta">👥 34 joined</span></div>
+          <div class="card-foot"><span class="meta">🏅 50 pts</span><button class="btn sm">Join</button></div>
+        </div>
+        <div class="card accent-top" style="border-top-color:var(--social)">
+          <div class="card-head"><h3>🩸 Blood Donation</h3><span class="pill social">Health</span></div>
+          <div class="muted">Quarterly donation camp with Red Cross.</div>
+          <div class="rowflex" style="margin-top:12px"><span class="pill warning">Evidence Required</span><span class="meta">👥 28 joined</span></div>
+          <div class="card-foot"><span class="meta">🏅 40 pts</span><button class="btn sm">Join</button></div>
+        </div>
+        <div class="card accent-top" style="border-top-color:var(--social)">
+          <div class="card-head"><h3>🏖️ Beach Cleanup</h3><span class="pill social">Environment</span></div>
+          <div class="muted">Coastal cleanup drive, Sunday morning.</div>
+          <div class="rowflex" style="margin-top:12px"><span class="pill neutral">Open</span><span class="meta">👥 31 joined</span></div>
+          <div class="card-foot"><span class="meta">🏅 60 pts</span><button class="btn sm">Join</button></div>
+        </div>
+        <div class="card accent-top" style="border-top-color:var(--social)">
+          <div class="card-head"><h3>🎓 ESG Workshop</h3><span class="pill social">Education</span></div>
+          <div class="muted">Lunch-and-learn on sustainability basics.</div>
+          <div class="rowflex" style="margin-top:12px"><span class="pill neutral">Open</span><span class="meta">👥 52 joined</span></div>
+          <div class="card-foot"><span class="meta">🏅 30 pts</span><button class="btn sm">Join</button></div>
+        </div>
+      </div>
+
+      <h2 class="section">Participation approval queue</h2>
+      <div class="note" style="margin-bottom:16px">🔒 With <b>“Require evidence for all CSR activities”</b> on, participation cannot be approved without an attached proof file.</div>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Employee</th><th>Activity</th><th>Proof</th><th class="num">Points</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><span class="avatar-sm">AR</span> Aditi Rao</td><td>Tree Plantation</td><td><a href="#">📎 photo.jpg</a></td><td class="num">50</td><td><span class="pill warning">● Pending</span></td>
+              <td><div class="rowflex"><button class="btn sm">Approve</button><button class="btn secondary sm">Reject</button></div></td></tr>
+            <tr><td><span class="avatar-sm">KS</span> Karan Shah</td><td>ESG Workshop</td><td><a href="#">📎 cert.pdf</a></td><td class="num">30</td><td><span class="pill success">● Approved</span></td>
+              <td><span class="muted">by Head · 2h ago</span></td></tr>
+            <tr><td><span class="avatar-sm">MJ</span> Meera Jain</td><td>Beach Cleanup</td><td><span class="pill danger" style="font-size:11px">No proof</span></td><td class="num">—</td><td><span class="pill danger">● Blocked</span></td>
+              <td><button class="btn secondary sm" disabled style="opacity:.5">Approve</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section">Diversity &amp; training snapshot</h2>
+      <div class="grid cols-4">
+        <div class="tile" style="border-top-color:var(--social)"><div class="label">Gender Diversity</div><div class="metric" style="font-size:28px">43%</div><div class="delta up">▲ 3% women in workforce</div></div>
+        <div class="tile" style="border-top-color:var(--social)"><div class="label">Leadership Diversity</div><div class="metric" style="font-size:28px">38%</div><div class="delta"><span class="muted">under-rep. in leadership</span></div></div>
+        <div class="tile" style="border-top-color:var(--social)"><div class="label">Training Completion</div><div class="metric" style="font-size:28px">91%</div><div class="delta up">▲ mandatory ESG training</div></div>
+        <div class="tile" style="border-top-color:var(--social)"><div class="label">CSR Participation</div><div class="metric" style="font-size:28px">67%</div><div class="delta"><span class="muted">of employees YTD</span></div></div>
+      </div>
+    </div>
+  </div>
+</div>
