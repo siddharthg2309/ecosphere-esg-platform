@@ -6,41 +6,142 @@ the full **reporting** suite (Environmental / Social / Governance / ESG Summary 
 **Duration:** ~5 days · **Prerequisites:** Phases 0–4 · **Parent:** [`plan.md`](../../plan.md)
 
 ## Contract freeze (agree first)
-- **Scoring formulas**: Environmental (emissions vs goals), Social (participation/diversity/training), Governance
-  (ack rate/audits/compliance); `dept_total = env+social+gov`; `overall = Σ(dept_total × weight)/Σweight`.
-- **Recompute triggers**: `EmissionRecorded, ParticipationDecided, ComplianceIssueRaised/Resolved, PolicyAck` (or nightly).
-- **Report matrix**: which figures per report type × the 6 filters (Department, Date Range, Module, Employee, Challenge,
-  ESG Category); **export formats** PDF/Excel/CSV.
+- **Scoring formulas** (below) + recompute triggers; `dept_total` = pillar-weighted **0–100** using `esg_config` weights;
+  `overall` = headcount-weighted mean of dept totals (**0–100**). Everything is on the same 0–100 scale.
+- **Report matrix**: figures per report type × the 6 filters; **export formats** PDF/Excel/CSV.
 
-## Workstreams (parallel)
+---
 
-### P1 — Backend Core (scoring + report composition)
-- **Scoring engine**: pure functions for env/social/gov, dept total, and the **weighted Overall ESG** (weights from
-  `esg_config`); recompute on events → write `department_scores` (period-stamped).
-- **Report composition** domain: assemble a report model from filters (type → sections → figures).
-- **Deliverables:** scoring + report-composition use-cases, unit-tested against fixed fixtures.
+## P1 — Backend Core (scoring + report composition)
 
-### P2 — Backend Adapters (read models + export)
-- `department_scores` read model + queries; dashboard aggregation endpoints (`/scores/departments`, `/scores/overall`).
-- `POST /reports/generate` (type + filters → preview) and `GET /reports/{id}/export?fmt=pdf|xlsx|csv` using
-  **encoding/csv**, **excelize**, **gopdf**.
-- Query performance pass: indexes, pagination, EXPLAIN on heavy reads.
-- **Deliverables:** dashboard + report endpoints + working exports in all 3 formats.
+### Scoring engine — pure functions (`modules/scoring/domain`)
+```go
+// each pillar returns 0..100; formulas are deterministic and unit-tested against fixtures
+func Environmental(in EnvInputs) int {
+    goalAttainment := clamp(avg(in.GoalProgressPct), 0, 100)          // % of goal targets met
+    trend          := clamp(50 + in.YoYReductionPct, 0, 100)          // reduction improves score
+    return round(0.6*goalAttainment + 0.4*trend)
+}
+func Social(in SocialInputs) int {   // participation %, diversity index, training completion %
+    return round(0.4*in.CSRParticipationPct + 0.3*in.DiversityIndex + 0.3*in.TrainingCompletionPct)
+}
+func Governance(in GovInputs) int {  // ack rate, audit pass rate, penalty for open/overdue issues
+    base := 0.5*in.PolicyAckPct + 0.5*in.AuditPassPct
+    penalty := 3*in.OpenIssues + 5*in.OverdueIssues
+    return clamp(round(base) - penalty, 0, 100)
+}
+type DepartmentScore struct { DeptID id.ID; Env, Social, Gov, Total int; Period string } // every field 0..100
 
-### P3 — Frontend (dashboard + reports + responsive polish)
-- Wire the **executive dashboard** [`wireframes/dashboard.html`](../../wireframes/dashboard.html) to real scores, trend,
-  ranking, activity, quick actions.
-- **Reports** [`wireframes/reports.html`](../../wireframes/reports.html): report cards, **Custom Builder** (6 filters),
-  preview, PDF/Excel/CSV export buttons.
-- **Mobile-responsive pass** across every screen (sidebar drawer, stacked KPIs, scrollable tables); a11y sweep.
-- **Deliverables:** live dashboard + reports + responsive, accessible UI.
+// department total = PILLAR-WEIGHTED score, 0..100; weights from esg_config (default 40/30/30, must sum to 100)
+func DeptTotal(env, social, gov, wEnv, wSocial, wGov int) int {
+    return round(float64(env*wEnv + social*wSocial + gov*wGov) / float64(wEnv+wSocial+wGov))
+}
 
-### P4 — AI narrative · Hardening · Launch
-- **Report Narrative** AI agent (OpenRouter): prose ESG-summary section (clearly labeled AI-generated).
-- **Hardening**: caching for read models, load-test critical paths, error budgets.
-- **Security review**: RBAC/authz audit, upload safety, secrets, dependency scan (`/security-review`).
-- **Launch**: CI/CD, prod compose/manifests, migrations runbook, observability dashboards, seed prod demo, smoke tests.
-- **Deliverables:** production deploy + runbook + green smoke tests.
+// organization score = HEADCOUNT-WEIGHTED mean of department totals, 0..100 (simple mean if headcount unknown)
+func OverallESG(scores []DepartmentScore, headcount map[id.ID]int) int {
+    var num, den int
+    for _, s := range scores {
+        h := headcount[s.DeptID]; if h == 0 { h = 1 }
+        num += s.Total * h; den += h
+    }
+    if den == 0 { return 0 }
+    return round(float64(num) / float64(den))
+}
+```
+
+### Recompute & report composition (`modules/scoring/app`, `modules/reporting/domain`)
+```go
+// recompute subscribes to events (or nightly) → writes department_scores read model
+bus.Subscribe(EmissionRecorded{}.Name(), recomputeEnvFor(deptID))
+bus.Subscribe(ParticipationDecided{}.Name(), recomputeSocialFor(...))
+bus.Subscribe(ComplianceIssueRaised{}.Name(), recomputeGovFor(...))   // + Resolved, PolicyAck
+
+// report composition — filters → sections → figures
+type ReportType string // environmental|social|governance|esg_summary|custom
+type Filters struct { DeptID *id.ID; From,To *time.Time; Module,Employee,Challenge,Category *string }
+type Report struct { ID id.ID; Type ReportType; Filters Filters; Sections []Section; GeneratedAt time.Time }
+type ComposeReport interface { Execute(ctx, ReportType, Filters) (Report, error) } // app layer persists it to `reports`
+```
+
+**Deliverables + tests:** each pillar function tested against fixed fixtures (known inputs → known score);
+`OverallESG` matches a hand-computed 40/30/30 example; recompute fires on the right events.
+
+---
+
+## P2 — Backend Adapters (read models + export)
+
+### Migration (`0025`) + queries
+```sql
+CREATE TABLE department_scores (id UUID PRIMARY KEY, department_id UUID REFERENCES departments(id),
+  period TEXT NOT NULL, environmental INT, social INT, governance INT, total INT,   -- all 0..100
+  computed_at TIMESTAMPTZ NOT NULL DEFAULT now(), UNIQUE(department_id, period));
+-- generated reports are persisted so /export can re-read them by id
+CREATE TABLE reports (id UUID PRIMARY KEY, type TEXT NOT NULL, filters JSONB NOT NULL,
+  result JSONB NOT NULL, generated_by UUID REFERENCES users(id), generated_at TIMESTAMPTZ NOT NULL DEFAULT now());
+```
+`GET /scores/departments?period=` and `GET /scores/overall?period=` read this table (fast dashboard).
+
+### Export adapters (`modules/reporting/adapter/export`)
+```go
+type Exporter interface { Export(ctx, Report) ([]byte, string /*mime*/, error) }
+// CSV  — encoding/csv (one section = one table block)
+// XLSX — xuri/excelize (a sheet per section, header styling)
+// PDF  — jung-kurt/gofpdf or maroto (cover + sections + charts as images)
+```
+| Method | Path | Returns |
+| --- | --- | --- |
+| POST | `/reports/generate` `{type, filters}` | composes + **persists** to `reports`; returns `Report` (incl. `id`) |
+| GET | `/reports/{id}/export?fmt=pdf\|xlsx\|csv` | re-reads report by `id` → `Exporter` → file stream, `Content-Disposition` |
+| GET | `/scores/departments` · `/scores/overall` | read model |
+
+**Perf pass:** indexes verified with `EXPLAIN`; dashboard/report reads paginated; heavy aggregations use the read model,
+never live-scan transactional tables.
+
+**Deliverables + tests:** all 3 exporters produce openable files; overall score endpoint = engine output; report reflects
+each of the 6 filters.
+
+---
+
+## P3 — Frontend (dashboard + reports + responsive polish)
+
+- Wire [`dashboard.html`](../../wireframes/dashboard.html): single stat card ← `/scores/*`, trend + ranking ←
+  `/carbon/summary` + `/scores/departments`, activity feed ← recent events.
+- [`reports.html`](../../wireframes/reports.html): report cards → `POST /reports/generate` → preview; Custom Builder
+  binds the 6 filters; export buttons hit `/export?fmt=`.
+```ts
+export function useReportBuilderVM(){
+  const [f,setF] = useState<Filters>({});
+  const gen = useMutation({ mutationFn: () => api.reports.generate({type:f.type, filters:f}) });
+  const exportAs = (fmt:'pdf'|'xlsx'|'csv') => download(api.reports.exportUrl(gen.data!.id, fmt));
+  return { filters:f, setF, preview:gen.data, generate:gen.mutateAsync, exportAs };
+}
+```
+- **Mobile-responsive pass** across every screen (sidebar → drawer, stat card stacks, tables scroll); a11y sweep
+  (focus rings, labels, contrast).
+
+**Deliverables + tests:** dashboard renders live scores; builder VM composes filters into the request; export triggers a
+download; responsive breakpoints verified.
+
+---
+
+## P4 — AI narrative · Hardening · Launch
+
+### Report Narrative agent (advisory, labeled)
+```go
+type Narrator interface { Summarize(ctx, figures ReportFigures) (prose string, err error) }
+```
+Adds an "Executive summary (AI-generated)" section to the ESG Summary report; deterministic figures unchanged.
+
+### Hardening & launch
+- **Caching** for `department_scores`/overall (invalidate on recompute); load-test dashboard + export paths.
+- **Security review** (`/security-review`): RBAC on every route, upload safety, JWT/secret handling, dependency scan.
+- **CI/CD**: build + migrate + deploy; prod compose/manifests; **migrations runbook**; observability (logs, metrics,
+  request IDs); seed prod demo; **smoke tests** (login → dashboard → generate + export a report).
+
+**Deliverables + tests:** narrative section renders (+ offline fallback); security review passes; smoke tests green in
+staging.
+
+---
 
 ## Integration & sync
 Freeze scoring formula + report matrix day 1 (P1 owns the numbers, P2 the delivery). P3 builds dashboard/reports against

@@ -193,9 +193,10 @@ note: employee participation (csr) and challenge participation are TWO separate 
 
 # scoring
 
-- department total score = environmental + social + governance (per department)
-- overall esg score = weighted average of department total scores
-    default weighting: environmental 40% / social 30% / governance 30%   (configurable per organization)
+- pillar scores: environmental, social, governance -- each 0-100
+- department total score = pillar-weighted score = (env*wEnv + social*wSocial + gov*wGov) / (wEnv+wSocial+wGov)  -- 0-100
+    default weights: environmental 40% / social 30% / governance 30%  (configurable per org, must sum to 100)
+- overall esg score = headcount-weighted average of department total scores  -- 0-100
 
 
 # settings / esg configuration (admin)

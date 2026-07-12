@@ -111,19 +111,74 @@ CarbonTransaction created with computed_co2 = qty × factor → EmissionRecorded
 
 **B. CSR / Challenge participation:**
 `Employee joins → uploads proof → (Evidence Requirement gate) → Head/Admin approves → points/XP awarded →
-ParticipationApproved event → BadgeAutoAward check + Social/Gamification score recompute + notification.`
+ParticipationDecided (+ ChallengeCompleted for challenges) events → BadgeAutoAward check + Social/Gamification score
+recompute + notification.`
 
 **C. Governance / compliance:**
 `Auditor selects dept → reviews records → conducts Audit → raises ComplianceIssue (owner + due date) →
 ComplianceIssueRaised event → notification; Scheduler flags overdue-open issues daily → notification.`
 
 **D. Scoring roll-up:**
-`Dept scores (env/social/gov) → Dept Total → Overall ESG = Σ(dept total × weight) → Dashboard & Reports.`
+`Pillar scores (env/social/gov, 0–100) → Dept Total = pillar-weighted (default 40/30/30, 0–100) → Overall ESG =
+headcount-weighted mean of Dept Totals (0–100) → Dashboard & Reports.`
 
 ### 4.4 Deployment
 - **Dev:** `docker compose up` → api + postgres + mailhog (email capture) + minio (object storage).
 - **Prod:** API container (stateless, horizontally scalable) + managed Postgres + managed object store + email provider.
   Scheduler runs as a leader-elected goroutine (or separate cron container).
+
+### 4.5 Module map & dependency rules
+
+Bounded contexts inside the one deployable. **Dependencies point only downward, and only via published ports or domain
+events** — a module never imports another module's `domain/` or `app/`. Shared cross-cutting lives in `/platform`.
+
+| Module | Owns (data + rules) | May use (ports/events of) |
+| --- | --- | --- |
+| **identity** | users, roles, auth, RBAC | `platform` only |
+| **settings** | departments, categories, `esg_config`, feature flags | identity |
+| **environmental** | emission factors, products, carbon txns, goals | settings (flags/factors), identity |
+| **social** | CSR activities, participation, diversity, training | settings, identity |
+| **gamification** | challenges, participation, badges, XP, rewards, leaderboard | settings, identity |
+| **governance** | policies, acknowledgements, audits, compliance issues | settings, identity |
+| **scoring** | department & overall scores (read model) | *consumes events only* (env/social/gov/settings) |
+| **notification** | in-app store + email dispatch, prefs | *consumes events only*; `EmailSender` port |
+| **reporting** | report composition + PDF/Excel/CSV export | reads `scoring` + module read models |
+
+`scoring`, `notification` and `reporting` are **downstream/reactive** — they subscribe to events and read models, never
+called inline by the write path. This keeps use-cases small and prevents cyclic deps.
+
+### 4.6 Domain event catalog (canonical)
+
+The event bus contract every phase codes against. Producers publish **after commit**; subscribers are idempotent.
+
+| Event | Producer | Consumers | Payload (key fields) |
+| --- | --- | --- | --- |
+| `EmissionRecorded` | environmental · verify txn | scoring (env) | dept, source, co2, at |
+| `ParticipationDecided` | social/gamification · approve/reject | notification | kind, employee, approved, pts/xp |
+| `ChallengeCompleted` | gamification · approve challenge | gamification (badge auto-award), scoring (social) | employee, challenge, xp |
+| `BadgeUnlocked` | gamification · auto-award | notification | employee, badge |
+| `RewardRedeemed` | gamification · redeem | audit/analytics | employee, reward, points |
+| `PolicyPublished` | governance · publish | notification (reminder scheduling) | policy, version |
+| `ComplianceIssueRaised` | governance · raise | notification, scoring (gov) | issue, owner, dept, severity |
+| `ComplianceOverdue` | scheduler (daily) | notification | issue, owner |
+| `ESGConfigChanged` | settings · update config | settings (flag-cache invalidate), scoring (weights) | orgId |
+
+### 4.7 Request lifecycle
+
+**Write path** (every mutating endpoint follows this pipeline):
+```text
+HTTP request
+  → middleware:  recover → requestID → logger → auth(JWT) → RBAC(role)
+  → handler:     decode DTO → validate (struct tags)
+  → inbound port (use-case):  domain invariant checks
+       → outbound ports (repository) inside ONE DB transaction
+       → COMMIT
+       → publish domain events (post-commit)
+  → event bus (sync): idempotent subscribers  (notification · badge auto-award · score recompute)
+  → handler:     map result / typed-error → HTTP status + JSON envelope
+```
+**Read path** (dashboards, leaderboards, reports): `handler → query read model (department_scores / SQL views) → DTO` —
+never live-scans transactional tables. This is the CQRS-lite split from §4.2.
 
 ---
 
@@ -198,7 +253,8 @@ type RecordEmission interface {
 
 ```text
 departments(id, name, code UNIQUE, head_id→users, parent_id→departments, employee_count, status, ...)
-users(id, name, email UNIQUE, password_hash, role[employee|dept_head|auditor|admin], department_id, xp, points)
+users(id, name, email UNIQUE, password_hash, role[employee|dept_head|auditor|admin], department_id, xp, points, completed_challenges)
+refresh_tokens(id, user_id, token_hash, expires_at, revoked_at)          -- rotated on /auth/refresh
 categories(id, name, type[csr_activity|challenge], status)
 emission_factors(id, name, category_id, unit, kgco2_per_unit NUMERIC, status)
 product_esg_profiles(id, product_name, attributes JSONB, emission_factor_id)
@@ -207,7 +263,7 @@ carbon_transactions(id, source[purchase|manufacturing|expense|fleet], quantity, 
                     computed_co2, txn_date, department_id, evidence_url, verified_by, verified_at)
 esg_policies(id, title, body, version, effective_date)
 policy_acknowledgements(id, employee_id, policy_id, acknowledged_at)   -- UNIQUE(employee_id, policy_id, version)
-csr_activities(id, title, category_id, evidence_required BOOL, status)
+csr_activities(id, title, category_id, points, evidence_required BOOL, status)
 employee_participations(id, employee_id, activity_id, proof_url, approval_status, points_earned, completion_date)
 challenges(id, title, category_id, description, xp, difficulty, evidence_required, deadline, status)
 challenge_participations(id, challenge_id, employee_id, progress, proof_url, approval, xp_awarded)
@@ -218,7 +274,8 @@ reward_redemptions(id, employee_id, reward_id, points_spent, created_at)
 audits(id, title, department_id, auditor_id, audit_date, findings, status)
 compliance_issues(id, audit_id, department_id, severity, description, owner_id, due_date, status)
 trainings(id, name, ...) / training_completions(id, employee_id, training_id, completed_at)
-department_scores(id, department_id, period, environmental, social, governance, total)  -- read model
+department_scores(id, department_id, period, environmental, social, governance, total)  -- read model (all 0..100)
+reports(id, type, filters JSONB, result JSONB, generated_by, generated_at)              -- persisted; exported by id
 esg_config(id, org_id, auto_emission_calc, require_csr_evidence, auto_award_badges,
            notify_compliance_email, weight_env, weight_social, weight_gov)               -- weights sum=100
 notifications(id, user_id, type, payload JSONB, read_at, created_at)
@@ -283,11 +340,15 @@ Email rendered via Go `html/template` into responsive, inlined-CSS HTML (matchin
 
 ### 5.7 Scoring engine (deterministic)
 
-`scoring` module recomputes on relevant events (or nightly):
-- **Environmental** = f(emissions vs goal targets, trend). **Social** = f(CSR participation %, diversity metrics,
-  training completion). **Governance** = f(policy-ack rate, audit outcomes, open/overdue compliance).
-- **Dept Total** = env + social + gov. **Overall ESG** = `Σ(dept_total × weight) / Σweight` using `esg_config` weights.
-Results stored in `department_scores` (period-stamped) as the read model for dashboard/reports.
+`scoring` module recomputes on relevant events (or nightly). **All scores are 0–100:**
+- **Pillars:** **Environmental** = f(emissions vs goal targets, trend); **Social** = f(CSR participation %, diversity,
+  training completion); **Governance** = f(policy-ack rate, audit outcomes, open/overdue compliance).
+- **Dept Total** = **pillar-weighted** `= (env·wEnv + social·wSocial + gov·wGov) / (wEnv+wSocial+wGov)` — weights from
+  `esg_config` (default 40/30/30, must sum to 100). *Not* a raw sum.
+- **Overall ESG** = **headcount-weighted mean of Dept Totals** `= Σ(deptTotal·employees) / Σ(employees)` (simple mean if
+  headcount unknown).
+Results stored in `department_scores` (period-stamped) as the read model. Full formulas + tests in
+[phase-5](docs/phases/phase-5-reports-scoring-launch.md).
 
 ### 5.8 Frontend — React + TypeScript, MVVM
 
@@ -373,7 +434,7 @@ Suggested cadence: Phase 0 ≈ 3 days, Phases 1–5 ≈ 4–5 days each.
 | --- | --- |
 | AI over-reach (numbers/approvals) | Hard rule: AI advisory only; deterministic calc + human approval enforced in domain |
 | Module coupling creep | Modules talk via ports + events only; lint import boundaries |
-| Scoring ambiguity | Freeze scoring formula in Phase 1 contract; store period-stamped read model |
+| Scoring ambiguity | Formula frozen day 1 of Phase 5 (pillar-weighted dept total, headcount-weighted overall, all 0–100); period-stamped read model |
 | Parallel contention | Contract-first per phase (OpenAPI + migrations + events frozen before build) |
 | Report export scope | Ship ESG Summary + CSV first, then PDF/Excel; Custom Builder last |
 | File upload security | Type/size validation, virus-scan hook, signed URLs, no direct exec |
