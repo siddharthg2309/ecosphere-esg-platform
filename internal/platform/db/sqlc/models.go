@@ -8,6 +8,18 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Department struct {
+	ID            pgtype.UUID        `json:"id"`
+	Name          string             `json:"name"`
+	Code          string             `json:"code"`
+	HeadID        pgtype.UUID        `json:"head_id"`
+	ParentID      pgtype.UUID        `json:"parent_id"`
+	EmployeeCount int32              `json:"employee_count"`
+	Status        string             `json:"status"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+}
+
 type RefreshToken struct {
 	ID        pgtype.UUID        `json:"id"`
 	UserID    pgtype.UUID        `json:"user_id"`

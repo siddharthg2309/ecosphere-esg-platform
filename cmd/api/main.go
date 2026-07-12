@@ -15,6 +15,10 @@ import (
 	identityhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/http"
 	identitypg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/postgres"
 	identityapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/app"
+	"github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/domain"
+	departmenthttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/adapter/http"
+	departmentpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/adapter/postgres"
+	departmentapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/app"
 	platformauth "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/auth"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/config"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db"
@@ -37,6 +41,8 @@ func main() {
 	identityRepo := identitypg.New(sqlc.New(pool))
 	identityService := identityapp.New(identityRepo, []byte(cfg.JWTSecret), cfg.AccessTTL, cfg.RefreshTTL)
 	identityHandler := identityhttp.New(identityService)
+	departmentService := departmentapp.New(departmentpg.New(sqlc.New(pool)))
+	departmentHandler := departmenthttp.New(departmentService)
 
 	router := chi.NewRouter()
 	router.Use(httpserver.Recover, httpserver.RequestID, httpserver.Logger, middleware.StripSlashes)
@@ -47,6 +53,17 @@ func main() {
 	router.Post("/auth/login", identityHandler.Login)
 	router.Post("/auth/refresh", identityHandler.Refresh)
 	router.With(platformauth.Authenticate([]byte(cfg.JWTSecret))).Get("/me", identityHandler.Me)
+	router.Route("/departments", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/", departmentHandler.List)
+		r.Get("/{id}", departmentHandler.Get)
+		r.Group(func(r chi.Router) {
+			r.Use(platformauth.RequireRole(domain.RoleAdmin))
+			r.Post("/", departmentHandler.Create)
+			r.Put("/{id}", departmentHandler.Update)
+			r.Delete("/{id}", departmentHandler.Deactivate)
+		})
+	})
 
 	server := &http.Server{Addr: cfg.Addr, Handler: router, ReadHeaderTimeout: 5 * time.Second}
 	go func() {
