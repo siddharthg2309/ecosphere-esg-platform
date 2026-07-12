@@ -5,7 +5,9 @@ services:
       POSTGRES_USER: ecosphere
       POSTGRES_PASSWORD: ecosphere
       POSTGRES_DB: ecosphere
-    ports: ["5432:5432"]
+    # Host 5433 avoids clashing with other local Postgres instances on 5432.
+    # Containers still reach Postgres at postgres:5432 on the compose network.
+    ports: ["5433:5432"]
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ecosphere"]
       interval: 3s
