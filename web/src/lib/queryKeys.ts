@@ -14,4 +14,12 @@ export const queryKeys = {
   carbon: ['carbon'] as const,
   goals: ['goals'] as const,
   carbonSummary: ['carbon-summary'] as const,
+  governanceStats: ['governance', 'stats'] as const,
+  governancePolicies: ['governance', 'policies'] as const,
+  audits: ['audits'] as const,
+  complianceIssues: ['compliance-issues'] as const,
+  acknowledgements: ['acknowledgements'] as const,
+  unacknowledged: ['policies', 'unacknowledged'] as const,
+  notifications: ['notifications'] as const,
+  employees: ['master', 'employees'] as const,
 }

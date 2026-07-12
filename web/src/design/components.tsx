@@ -56,15 +56,18 @@ export function Modal({
   children,
   onClose,
   footer,
-}: PropsWithChildren<{ title: string; onClose(): void; footer?: ReactNode }>) {
+  blocking = false,
+}: PropsWithChildren<{ title: string; onClose(): void; footer?: ReactNode; blocking?: boolean }>) {
   return (
-    <div className="modal-backdrop" role="presentation" onMouseDown={onClose}>
+    <div className="modal-backdrop" role="presentation" onMouseDown={blocking ? undefined : onClose}>
       <section className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onMouseDown={(e) => e.stopPropagation()}>
         <header className="modal-head">
           <h2 id="modal-title">{title}</h2>
-          <button className="close-button" onClick={onClose} aria-label="Close" type="button">
-            ×
-          </button>
+          {!blocking && (
+            <button className="close-button" onClick={onClose} aria-label="Close" type="button">
+              ×
+            </button>
+          )}
         </header>
         {children}
         {footer && <div className="modal-foot">{footer}</div>}

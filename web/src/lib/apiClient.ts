@@ -1,8 +1,9 @@
 import type {
-  ApiError, AuthResponse, CSRActivity, CSRParticipation, Challenge, ChallengeParticipation,
-  ChallengeStatus, CarbonSuggestion, CarbonSummary, CarbonTransaction, CarbonTransactionInput,
-  Department, DepartmentInput, DiversityMetrics, EnvironmentalGoal, EnvironmentalGoalInput,
-  ESGConfig, GameBadge, LeaderboardEntry, NotificationPreference, PageResult, Reward, Training, User,
+  ApiError, AppNotification, Audit, AuthResponse, CSRActivity, CSRParticipation, Challenge,
+  ChallengeParticipation, ChallengeStatus, CarbonSuggestion, CarbonSummary, CarbonTransaction,
+  CarbonTransactionInput, ComplianceIssue, Department, DepartmentInput, DiversityMetrics,
+  EnvironmentalGoal, EnvironmentalGoalInput, ESGConfig, GameBadge, GovernancePolicy, IssueStatus,
+  LeaderboardEntry, NotificationPreference, PageResult, Policy, PolicyAck, Reward, Training, User,
 } from './types'
 import { sanitizeErrorMessage } from './userFacingError'
 
@@ -102,5 +103,23 @@ export const api = {
     redeem:(id:string)=>request<{reward:Reward;pointsSpent:number}>(`/game-rewards/${id}/redeem`,{method:'POST'}),
     badges:()=>request<PageResult<GameBadge>>('/game-badges'),
     balance:()=>request<{id:string;xp:number;points:number;completedChallenges:number;name:string}>('/me/balance'),
+  },
+  governance:{
+    stats:()=>request<{openIssues:number;overdueIssues:number;auditsFY:number;governanceScore:number}>('/governance/stats'),
+    policies:()=>request<PageResult<GovernancePolicy>>('/governance/policies'),
+    acknowledgements:()=>request<PageResult<PolicyAck>>('/governance/acknowledgements?limit=100&offset=0'),
+    unacknowledged:()=>request<PageResult<Policy>>('/governance/unacknowledged'),
+    acknowledge:(id:string)=>request<PolicyAck>(`/governance/policies/${id}/acknowledge`,{method:'POST'}),
+    audits:()=>request<PageResult<Audit>>('/audits?limit=100&offset=0'),
+    createAudit:(input:Partial<Audit>)=>request<Audit>('/audits',{method:'POST',body:JSON.stringify(input)}),
+    issues:(params='')=>request<PageResult<ComplianceIssue>>(`/compliance-issues?limit=100&offset=0${params}`),
+    raiseIssue:(input:{departmentId:string;ownerId:string;severity:string;description:string;dueDate:string;auditId?:string})=>
+      request<ComplianceIssue>('/compliance-issues',{method:'POST',body:JSON.stringify(input)}),
+    updateIssue:(id:string,status:IssueStatus)=>request<ComplianceIssue>(`/compliance-issues/${id}`,{method:'PUT',body:JSON.stringify({status})}),
+    bundle:(departmentId:string)=>request<Record<string,unknown[]>>(`/audits/department/${departmentId}/bundle`),
+  },
+  notifications:{
+    list:()=>request<{items:AppNotification[];total:number;unread:number}>('/notifications?limit=30&offset=0'),
+    markRead:(id:string)=>request<{status:string}>(`/notifications/${id}/read`,{method:'POST'}),
   },
 }

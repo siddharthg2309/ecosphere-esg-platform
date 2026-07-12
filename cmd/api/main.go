@@ -20,7 +20,13 @@ import (
 	gamehttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/gamification/adapter/http"
 	gamepg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/gamification/adapter/postgres"
 	gameapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/gamification/app"
+	govhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/governance/adapter/http"
+	govpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/governance/adapter/postgres"
+	govapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/governance/app"
 	identityhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/http"
+	notifhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/notification/adapter/http"
+	notifpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/notification/adapter/postgres"
+	notifapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/notification/app"
 	identitypg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/postgres"
 	identityapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/app"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/domain"
@@ -41,6 +47,7 @@ import (
 	platformemail "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/email"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/events"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/httpserver"
+	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/scheduler"
 	platformsettings "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/settings"
 	platformstorage "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/storage"
 )
@@ -112,6 +119,32 @@ func main() {
 		bus,
 	)
 	gameHandler := gamehttp.New(gameService)
+
+	// Phase 4 — Governance
+	govRepo := govpg.New(pool)
+	govService := govapp.New(
+		govpg.AuditRepo{Repository: govRepo},
+		govpg.IssueRepo{Repository: govRepo},
+		govpg.AckRepo{Repository: govRepo},
+		govpg.PolicyRepo{Repository: govRepo},
+		govpg.BundleRepo{Repository: govRepo},
+		bus,
+	)
+	govHandler := govhttp.New(govService)
+
+	// Phase 4 — Notifications
+	emailSender := platformemail.New(cfg.SMTPAddr)
+	notifService := notifapp.New(
+		notifpg.NewStore(pool),
+		notifpg.NewPrefs(pool),
+		notifpg.NewUserEmail(pool),
+		platformemail.MailAdapter{Sender: emailSender},
+		platformemail.TemplateAdapter{Templates: platformemail.NewTemplates()},
+	)
+	notifService.Wire(bus)
+	notifHandler := notifhttp.New(notifService)
+	sched := scheduler.New(pool, govService, notifService, bus)
+	sched.Start(ctx)
 
 	router := chi.NewRouter()
 	router.Use(httpserver.Recover, httpserver.RequestID, httpserver.Logger, httpserver.CORS(cfg.CORSOrigin), middleware.StripSlashes)
@@ -215,6 +248,35 @@ func main() {
 		r.Post("/{id}/redeem", gameHandler.Redeem)
 	})
 	router.With(platformauth.Authenticate([]byte(cfg.JWTSecret))).Get("/game-badges", gameHandler.ListBadges)
+
+	// Phase 4 — Governance routes (avoid clashing with master CRUD /policies/{id})
+	router.Route("/governance", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/stats", govHandler.Stats)
+		r.Get("/policies", govHandler.ListGovernancePolicies)
+		r.Get("/acknowledgements", govHandler.ListAcknowledgements)
+		r.Get("/unacknowledged", govHandler.Unacknowledged)
+		r.Post("/policies/{id}/acknowledge", govHandler.Acknowledge)
+	})
+	router.Route("/audits", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/", govHandler.ListAudits)
+		r.With(platformauth.RequireRole(domain.RoleAuditor, domain.RoleAdmin)).Post("/", govHandler.CreateAudit)
+		r.With(platformauth.RequireRole(domain.RoleAuditor, domain.RoleAdmin)).Get("/department/{id}/bundle", govHandler.DepartmentBundle)
+		r.Get("/{id}", govHandler.GetAudit)
+	})
+	router.Route("/compliance-issues", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/", govHandler.ListIssues)
+		r.Get("/{id}", govHandler.GetIssue)
+		r.With(platformauth.RequireRole(domain.RoleAuditor, domain.RoleDeptHead, domain.RoleAdmin)).Post("/", govHandler.RaiseIssue)
+		r.With(platformauth.RequireRole(domain.RoleAuditor, domain.RoleDeptHead, domain.RoleAdmin)).Put("/{id}", govHandler.UpdateIssue)
+	})
+	router.Route("/notifications", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/", notifHandler.List)
+		r.Post("/{id}/read", notifHandler.MarkRead)
+	})
 
 	server := &http.Server{Addr: cfg.Addr, Handler: router, ReadHeaderTimeout: 5 * time.Second}
 	go func() {

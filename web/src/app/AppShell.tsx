@@ -1,5 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { useAuthStore } from './authStore'
+import { NotificationBell } from './NotificationBell'
+import { PolicyAckModal } from './PolicyAckModal'
 
 const navigation = [
   ['Dashboard', '/'],
@@ -29,9 +31,7 @@ export function AppShell() {
         <header className="topbar">
           <span className="crumb">EcoSphere ESG</span>
           <span className="spacer" />
-          <button className="icon-button" aria-label="Notifications" type="button">
-            ●
-          </button>
+          <NotificationBell />
           <span className="avatar" title={user?.name}>
             {user?.name
               .split(' ')
@@ -45,6 +45,7 @@ export function AppShell() {
           </button>
         </header>
         <Outlet />
+        <PolicyAckModal />
       </div>
     </div>
   )

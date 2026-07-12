@@ -19,6 +19,64 @@ export interface ESGConfig{autoEmissionCalc:boolean;requireCsrEvidence:boolean;a
 export type NotificationEvent='compliance_raised'|'approval_decision'|'policy_reminder'|'badge_unlock'|'compliance_overdue'
 export interface NotificationPreference{eventType:NotificationEvent;inAppEnabled:boolean;emailEnabled:boolean}
 
+export type IssueSeverity = 'low' | 'medium' | 'high'
+export type IssueStatus = 'open' | 'in_progress' | 'resolved'
+export type AuditStatus = 'draft' | 'under_review' | 'completed'
+
+export interface GovernancePolicy extends Policy {
+  acked?: number
+  total?: number
+  ackRate?: number
+}
+
+export interface Audit {
+  id: string
+  title: string
+  departmentId: string
+  auditorId: string
+  auditDate: string
+  findings: string
+  status: AuditStatus
+  departmentName?: string
+  auditorName?: string
+}
+
+export interface ComplianceIssue {
+  id: string
+  auditId?: string
+  departmentId: string
+  severity: IssueSeverity
+  description: string
+  ownerId: string
+  dueDate: string
+  status: IssueStatus
+  overdue?: boolean
+  ownerName?: string
+  departmentName?: string
+  auditTitle?: string
+}
+
+export interface PolicyAck {
+  id: string
+  employeeId: string
+  policyId: string
+  version: number
+  acknowledgedAt: string
+  employeeName?: string
+  departmentName?: string
+  policyTitle?: string
+}
+
+export interface AppNotification {
+  id: string
+  userId: string
+  type: NotificationEvent
+  title: string
+  payload: Record<string, unknown>
+  readAt?: string
+  createdAt: string
+}
+
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'in_progress'
 export type ChallengeStatus = 'draft' | 'active' | 'under_review' | 'completed' | 'archived'
 

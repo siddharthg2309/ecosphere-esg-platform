@@ -147,10 +147,30 @@ func main() {
 	// Give demo employees some points for redeem testing
 	_, _ = tx.Exec(ctx, `UPDATE users SET points=1200, xp=50 WHERE role='employee'`)
 
+	// Phase 4 — sample audit + compliance issue (owner + due date)
+	auditID := "b0000000-0000-7000-8000-000000000001"
+	auditorID := "20000000-0000-7000-8000-000000000005" // Kiran Menon auditor
+	_, err = tx.Exec(ctx, `INSERT INTO audits(id,title,department_id,auditor_id,audit_date,findings,status)
+		VALUES($1,'Q2 Waste Audit',$2,$3,'2026-06-12','3 minor compliance issues identified', 'completed')
+		ON CONFLICT(id) DO UPDATE SET findings=EXCLUDED.findings,status=EXCLUDED.status`,
+		auditID, departments[0].id, auditorID)
+	if err != nil {
+		log.Printf("seed audit skipped (migrate 0022?): %v", err)
+	} else {
+		ownerID := "20000000-0000-7000-8000-000000000002" // Sneha Nair dept head
+		_, err = tx.Exec(ctx, `INSERT INTO compliance_issues(id,audit_id,department_id,severity,description,owner_id,due_date,status)
+			VALUES('b0000000-0000-7000-8000-000000000002',$1,$2,'high','Missing MSDS sheets for chemical compounds',$3,'2026-07-02','open')
+			ON CONFLICT(id) DO UPDATE SET description=EXCLUDED.description`,
+			auditID, departments[0].id, ownerID)
+		if err != nil {
+			log.Printf("seed issue skipped: %v", err)
+		}
+	}
+
 	if err = tx.Commit(ctx); err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("seed complete: %d departments, %d users, %d factors, phase-3 CSR/challenges", len(departments), len(users), len(factors))
+	log.Printf("seed complete: %d departments, %d users, %d factors, phase-3+4 demo data", len(departments), len(users), len(factors))
 }
 func env(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {
