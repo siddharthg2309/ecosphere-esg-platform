@@ -1,9 +1,10 @@
 import type {
   ApiError, AppNotification, Audit, AuthResponse, CSRActivity, CSRParticipation, Challenge,
   ChallengeParticipation, ChallengeStatus, CarbonSuggestion, CarbonSummary, CarbonTransaction,
-  CarbonTransactionInput, ComplianceIssue, Department, DepartmentInput, DiversityMetrics,
-  EnvironmentalGoal, EnvironmentalGoalInput, ESGConfig, GameBadge, GovernancePolicy, IssueStatus,
-  LeaderboardEntry, NotificationPreference, PageResult, Policy, PolicyAck, Reward, Training, User,
+  CarbonTransactionInput, ComplianceIssue, Department, DepartmentInput, DepartmentScore,
+  DiversityMetrics, EnvironmentalGoal, EnvironmentalGoalInput, ESGConfig, EvidenceReview,
+  GameBadge, GovernancePolicy, IssueStatus, LeaderboardEntry, NotificationPreference,
+  OverallScore, PageResult, Policy, PolicyAck, Report, ReportType, Reward, Training, User,
 } from './types'
 import { sanitizeErrorMessage } from './userFacingError'
 
@@ -122,4 +123,34 @@ export const api = {
     list:()=>request<{items:AppNotification[];total:number;unread:number}>('/notifications?limit=30&offset=0'),
     markRead:(id:string)=>request<{status:string}>(`/notifications/${id}/read`,{method:'POST'}),
   },
+  scores:{
+    overall:(period='')=>request<OverallScore>(`/scores/overall${period?`?period=${period}`:''}`),
+    departments:(period='')=>request<PageResult<DepartmentScore>>(`/scores/departments${period?`?period=${period}`:''}`),
+    recompute:()=>request<PageResult<DepartmentScore>>('/scores/recompute',{method:'POST'}),
+  },
+  reports:{
+    generate:(input:{type:ReportType;filters?:Record<string,unknown>;departmentId?:string;from?:string;to?:string})=>
+      request<Report>('/reports/generate',{method:'POST',body:JSON.stringify(input)}),
+    get:(id:string)=>request<Report>(`/reports/${id}`),
+    exportUrl:(id:string,fmt:'pdf'|'xlsx'|'csv')=>`${API_URL}/reports/${id}/export?fmt=${fmt}`,
+  },
+  ai:{
+    evidenceReview:(proofUrl:string)=>request<EvidenceReview>('/ai/evidence-review',{method:'POST',body:JSON.stringify({proofUrl,imageUrl:proofUrl})}),
+  },
+}
+
+/** Download a report export with auth header. */
+export async function downloadReport(id: string, fmt: 'pdf' | 'xlsx' | 'csv') {
+  const token = localStorage.getItem('ecosphere.accessToken')
+  const res = await fetch(api.reports.exportUrl(id, fmt), {
+    headers: token ? { Authorization: `Bearer ${token}` } : {},
+  })
+  if (!res.ok) throw new RequestError(res.status, { code: 'export_failed', message: 'Unable to export report' })
+  const blob = await res.blob()
+  const url = URL.createObjectURL(blob)
+  const a = document.createElement('a')
+  a.href = url
+  a.download = `ecosphere-report.${fmt}`
+  a.click()
+  URL.revokeObjectURL(url)
 }

@@ -77,6 +77,49 @@ export interface AppNotification {
   createdAt: string
 }
 
+export interface DepartmentScore {
+  departmentId: string
+  name?: string
+  environmental: number
+  social: number
+  governance: number
+  total: number
+  period: string
+}
+
+export interface OverallScore {
+  overall: number
+  environmental: number
+  social: number
+  governance: number
+  weights: { weightEnv: number; weightSocial: number; weightGov: number }
+  departments: DepartmentScore[]
+}
+
+export type ReportType = 'environmental' | 'social' | 'governance' | 'esg_summary' | 'custom'
+
+export interface ReportSection {
+  title: string
+  summary?: string
+  rows?: Record<string, string>[]
+  metrics?: Record<string, unknown>
+  ai?: boolean
+}
+
+export interface Report {
+  id: string
+  type: ReportType
+  filters: Record<string, unknown>
+  sections: ReportSection[]
+  generatedAt: string
+}
+
+export interface EvidenceReview {
+  looksValid: boolean
+  confidence: number
+  notes: string
+}
+
 export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'in_progress'
 export type ChallengeStatus = 'draft' | 'active' | 'under_review' | 'completed' | 'archived'
 

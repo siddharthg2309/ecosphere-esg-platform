@@ -22,4 +22,7 @@ export const queryKeys = {
   unacknowledged: ['policies', 'unacknowledged'] as const,
   notifications: ['notifications'] as const,
   employees: ['master', 'employees'] as const,
+  scoresOverall: ['scores', 'overall'] as const,
+  scoresDepartments: ['scores', 'departments'] as const,
+  reports: ['reports'] as const,
 }
