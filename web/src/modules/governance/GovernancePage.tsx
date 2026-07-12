@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useMemo, useState, type FormEvent } from 'react'
+import { useEffect, useMemo, useState, type FormEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { RoleGuard } from '../../app/RoleGuard'
 import { Button, EmptyState, Modal, Note, Pill, Progress, StatBar, initials } from '../../design/components'
 import { api } from '../../lib/apiClient'
@@ -17,10 +18,37 @@ const tabs: [Tab, string][] = [
   ['issues', 'Compliance Issues'],
 ]
 
+function isTab(v: string | null): v is Tab {
+  return v === 'policies' || v === 'acknowledgements' || v === 'audits' || v === 'issues'
+}
+
 export function GovernancePage() {
-  const [tab, setTab] = useState<Tab>('audits')
+  const [params, setParams] = useSearchParams()
+  const paramTab = params.get('tab')
+  const [tab, setTab] = useState<Tab>(() => (isTab(paramTab) ? paramTab : 'audits'))
+  const action = params.get('action')
   const stats = useQuery({ queryKey: queryKeys.governanceStats, queryFn: api.governance.stats })
   const s = stats.data
+
+  useEffect(() => {
+    if (isTab(params.get('tab'))) setTab(params.get('tab') as Tab)
+  }, [params])
+
+  function selectTab(next: Tab) {
+    setTab(next)
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('tab', next)
+    nextParams.delete('action')
+    setParams(nextParams, { replace: true })
+  }
+
+  function clearAction() {
+    if (!params.get('action')) return
+    const nextParams = new URLSearchParams(params)
+    nextParams.delete('action')
+    setParams(nextParams, { replace: true })
+  }
+
   return (
     <main className="page">
       <div className="content">
@@ -28,7 +56,6 @@ export function GovernancePage() {
           <div>
             <p className="eyebrow">Governance</p>
             <h1>Policies, Audits &amp; Compliance</h1>
-            <p className="muted">Governance policies · acknowledgements · audit trail · issue tracking</p>
           </div>
         </header>
         <StatBar
@@ -41,15 +68,26 @@ export function GovernancePage() {
         />
         <div className="tabs" role="tablist" aria-label="Governance sections">
           {tabs.map(([id, label]) => (
-            <button key={id} role="tab" aria-selected={tab === id} className={`tab ${tab === id ? 'active' : ''}`} onClick={() => setTab(id)}>
+            <button
+              key={id}
+              role="tab"
+              aria-selected={tab === id}
+              className={`tab ${tab === id ? 'active' : ''}`}
+              onClick={() => selectTab(id)}
+              type="button"
+            >
               {label}
             </button>
           ))}
         </div>
         {tab === 'policies' && <PoliciesPanel />}
         {tab === 'acknowledgements' && <AcksPanel />}
-        {tab === 'audits' && <AuditsPanel />}
-        {tab === 'issues' && <IssuesPanel />}
+        {tab === 'audits' && (
+          <AuditsPanel autoOpen={action === 'new-audit'} onAutoOpenHandled={clearAction} />
+        )}
+        {tab === 'issues' && (
+          <IssuesPanel autoOpen={action === 'raise-issue'} onAutoOpenHandled={clearAction} />
+        )}
       </div>
     </main>
   )
@@ -59,9 +97,6 @@ function PoliciesPanel() {
   const list = useQuery({ queryKey: queryKeys.governancePolicies, queryFn: api.governance.policies })
   return (
     <>
-      <p className="muted" style={{ fontSize: 13, marginBottom: 14 }}>
-        Active policies · version-controlled · ack rates from employee acknowledgements
-      </p>
       <div className="table-wrap">
         <table>
           <thead>
@@ -150,7 +185,13 @@ function AcksPanel() {
   )
 }
 
-function AuditsPanel() {
+function AuditsPanel({
+  autoOpen = false,
+  onAutoOpenHandled,
+}: {
+  autoOpen?: boolean
+  onAutoOpenHandled?: () => void
+}) {
   const qc = useQueryClient()
   const depts = useDepartmentsVM()
   const employees = useQuery({ queryKey: queryKeys.employees, queryFn: () => api.master.list<Employee>('employees') })
@@ -166,6 +207,12 @@ function AuditsPanel() {
     },
   })
   const auditors = (employees.data?.items ?? []).filter((e) => e.role === 'auditor' || e.role === 'admin')
+
+  useEffect(() => {
+    if (!autoOpen) return
+    setOpen(true)
+    onAutoOpenHandled?.()
+  }, [autoOpen, onAutoOpenHandled])
 
   async function submit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault()
@@ -190,7 +237,7 @@ function AuditsPanel() {
       <div className="section-head">
         <h2 style={{ margin: 0 }}>Audit trail</h2>
         <RoleGuard roles={['auditor', 'admin']}>
-          <Button className="primary sm" onClick={() => setOpen(true)}>
+          <Button className="primary sm" type="button" onClick={() => setOpen(true)}>
             + New Audit
           </Button>
         </RoleGuard>
@@ -300,7 +347,13 @@ function AuditsPanel() {
   )
 }
 
-function IssuesPanel() {
+function IssuesPanel({
+  autoOpen = false,
+  onAutoOpenHandled,
+}: {
+  autoOpen?: boolean
+  onAutoOpenHandled?: () => void
+}) {
   const qc = useQueryClient()
   const depts = useDepartmentsVM()
   const employees = useQuery({ queryKey: queryKeys.employees, queryFn: () => api.master.list<Employee>('employees') })
@@ -331,6 +384,12 @@ function IssuesPanel() {
     onSuccess: () => void qc.invalidateQueries({ queryKey: queryKeys.complianceIssues }),
   })
 
+  useEffect(() => {
+    if (!autoOpen) return
+    setOpen(true)
+    onAutoOpenHandled?.()
+  }, [autoOpen, onAutoOpenHandled])
+
   const valid = useMemo(() => canSubmitIssue(form), [form])
   const owners = employees.data?.items ?? []
 
@@ -338,10 +397,10 @@ function IssuesPanel() {
     <>
       <div className="section-head">
         <h2 style={{ margin: 0 }}>
-          Compliance issues <span className="muted" style={{ fontSize: 13, fontWeight: 400 }}>· owner + due date required · overdue auto-flagged</span>
+          Compliance issues
         </h2>
         <RoleGuard roles={['auditor', 'dept_head', 'admin']}>
-          <Button className="primary sm" onClick={() => setOpen(true)}>
+          <Button className="primary sm" type="button" onClick={() => setOpen(true)}>
             + Raise Issue
           </Button>
         </RoleGuard>
@@ -489,7 +548,6 @@ function IssuesPanel() {
                 ))}
               </select>
             </label>
-            {!valid && <p className="muted compact">Submit stays disabled until description, department, owner, and due date are set.</p>}
             {error && (
               <div className="form-error" role="alert">
                 {error}
