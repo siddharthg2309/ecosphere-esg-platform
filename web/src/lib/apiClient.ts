@@ -1,7 +1,8 @@
 import type {
   ApiError, AuthResponse, CSRActivity, CSRParticipation, Challenge, ChallengeParticipation,
-  ChallengeStatus, Department, DepartmentInput, DiversityMetrics, ESGConfig, GameBadge,
-  LeaderboardEntry, NotificationPreference, PageResult, Reward, Training, User,
+  ChallengeStatus, CarbonSuggestion, CarbonSummary, CarbonTransaction, CarbonTransactionInput,
+  Department, DepartmentInput, DiversityMetrics, EnvironmentalGoal, EnvironmentalGoalInput,
+  ESGConfig, GameBadge, LeaderboardEntry, NotificationPreference, PageResult, Reward, Training, User,
 } from './types'
 import { sanitizeErrorMessage } from './userFacingError'
 
@@ -22,13 +23,12 @@ export async function request<T>(path: string, init: RequestInit = {}) {
   const token = localStorage.getItem('ecosphere.accessToken')
   let response: Response
   try {
+    const headers = new Headers(init.headers)
+    if (!(init.body instanceof FormData)) headers.set('Content-Type', 'application/json')
+    if (token) headers.set('Authorization', `Bearer ${token}`)
     response = await fetch(`${API_URL}${path}`, {
       ...init,
-      headers: {
-        'Content-Type': 'application/json',
-        ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        ...init.headers,
-      },
+      headers,
     })
   } catch {
     throw new RequestError(0, { code: 'network_error', message: 'Unable to reach the server. Please try again.' })
@@ -63,6 +63,18 @@ export const api = {
     saveConfig:(input:ESGConfig)=>request<ESGConfig>('/settings/esg-config',{method:'PUT',body:JSON.stringify(input)}),
     preferences:()=>request<NotificationPreference[]>('/settings/notification-preferences'),
     savePreferences:(input:NotificationPreference[])=>request<NotificationPreference[]>('/settings/notification-preferences',{method:'PUT',body:JSON.stringify(input)}),
+  },
+  carbon:{
+    ingest:(file:File)=>{const body=new FormData();body.append('file',file);return request<CarbonSuggestion>('/carbon/ingest',{method:'POST',body})},
+    create:(input:CarbonTransactionInput)=>request<CarbonTransaction>('/carbon/transactions',{method:'POST',body:JSON.stringify(input)}),
+    list:(params='')=>request<PageResult<CarbonTransaction>>(`/carbon/transactions?limit=100&offset=0${params}`),
+    verify:(id:string)=>request<CarbonTransaction>(`/carbon/transactions/${id}/verify`,{method:'POST'}),
+    summary:(params='')=>request<CarbonSummary>(`/carbon/summary?${params}`),
+  },
+  goals:{
+    list:(params='')=>request<PageResult<EnvironmentalGoal>>(`/goals?limit=100&offset=0${params}`),
+    create:(input:EnvironmentalGoalInput)=>request<EnvironmentalGoal>('/goals',{method:'POST',body:JSON.stringify(input)}),
+    update:(id:string,input:EnvironmentalGoalInput)=>request<EnvironmentalGoal>(`/goals/${id}`,{method:'PUT',body:JSON.stringify(input)}),
   },
   social:{
     activities:()=>request<PageResult<CSRActivity>>('/csr/activities?limit=100&offset=0'),

@@ -11,4 +11,7 @@ export const queryKeys = {
   gameRewards: ['game-rewards'] as const,
   gameBadges: ['game-badges'] as const,
   categories: ['master', 'categories'] as const,
+  carbon: ['carbon'] as const,
+  goals: ['goals'] as const,
+  carbonSummary: ['carbon-summary'] as const,
 }

@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { GamificationPage } from '../modules/gamification/GamificationPage'
+import { EnvironmentalPage } from '../modules/environmental/EnvironmentalPage'
 import { DepartmentsPage } from '../modules/settings/DepartmentsPage'
 import { SocialPage } from '../modules/social/SocialPage'
 import { AppShell } from './AppShell'
@@ -21,6 +22,7 @@ function ProtectedApp() {
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<Navigate to="/social" replace />} />
+        <Route path="environmental" element={<EnvironmentalPage />} />
         <Route path="social" element={<SocialPage />} />
         <Route path="gamification" element={<GamificationPage />} />
         <Route path="settings" element={<DepartmentsPage />} />

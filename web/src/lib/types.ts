@@ -108,3 +108,13 @@ export interface LeaderboardEntry {
 export interface GameBadge extends Badge {
   earnedCount?: number
 }
+
+export type CarbonSource='purchase'|'manufacturing'|'expense'|'fleet'
+export type CarbonStatus='draft'|'verified'
+export interface CarbonSuggestion{source:string;categoryId?:string;quantity:number;unit:string;confidence:number;evidenceUrl:string}
+export interface CarbonTransaction{id:string;departmentId:string;source:CarbonSource;quantity:string;emissionFactorId:string;factorValue:string;computedCo2:string;txnDate:string;evidenceUrl?:string;status:CarbonStatus;verifiedBy?:string;verifiedAt?:string;createdAt:string}
+export interface CarbonTransactionInput{departmentId:string;source:CarbonSource;quantity:string;emissionFactorId:string;unit:string;txnDate:string;evidenceUrl?:string}
+export interface CarbonSummary{total:string;bySource:Partial<Record<CarbonSource,string>>}
+export type GoalStatus='on_track'|'at_risk'|'completed'
+export interface EnvironmentalGoal{id:string;name:string;departmentId:string;targetCo2:string;currentCo2:string;deadline:string;status:GoalStatus;createdAt:string;updatedAt:string}
+export interface EnvironmentalGoalInput{name:string;departmentId:string;targetCo2:string;currentCo2?:string;deadline:string}
