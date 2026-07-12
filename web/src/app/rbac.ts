@@ -148,6 +148,7 @@ export function canAccessPath(role: Role | undefined, pathname: string): boolean
 
 /** Post-login home for every role (never force Settings). */
 export function homePathForRole(_role: Role): string {
+  void _role
   return '/'
 }
 

@@ -496,3 +496,99 @@ nav.sidebar-nav{
   padding:10px 12px 12px !important;
 }
 
+
+/* ===== GLOBAL SCROLL FIX (all portals) =====
+   Nested 100vh + overflow:hidden was clipping content so users
+   could not scroll. Use fixed sidebar + document scroll instead. */
+html, body, #root {
+  height: auto !important;
+  min-height: 100% !important;
+  max-height: none !important;
+  margin: 0 !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+}
+.app-shell {
+  display: block !important;
+  width: 100% !important;
+  max-width: 100vw !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  background: var(--canvas, #f6f7f8) !important;
+}
+.sidebar {
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  width: 236px !important;
+  height: 100vh !important;
+  max-height: 100vh !important;
+  z-index: 30 !important;
+  display: flex !important;
+  flex-direction: column !important;
+  overflow: hidden !important;
+}
+.sidebar-nav {
+  flex: 1 1 auto !important;
+  min-height: 0 !important;
+  overflow-y: auto !important;
+  overflow-x: hidden !important;
+  -webkit-overflow-scrolling: touch;
+}
+.sidebar-foot {
+  flex: 0 0 auto !important;
+  margin-top: auto !important;
+}
+.main {
+  margin-left: 236px !important;
+  width: auto !important;
+  min-width: 0 !important;
+  min-height: 100vh !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  display: flex !important;
+  flex-direction: column !important;
+  background: var(--canvas, #f6f7f8) !important;
+}
+.topbar {
+  position: sticky !important;
+  top: 0 !important;
+  z-index: 20 !important;
+  flex-shrink: 0 !important;
+}
+.main-scroll {
+  flex: 1 0 auto !important;
+  min-height: 0 !important;
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+  -webkit-overflow-scrolling: touch;
+}
+.page,
+.main-scroll > .page {
+  overflow: visible !important;
+  min-height: auto !important;
+  height: auto !important;
+  padding-bottom: 32px !important;
+}
+.content,
+.page-shell,
+.content-card {
+  overflow: visible !important;
+  /* keep bottom margin so last cards are not flush against viewport edge */
+  margin-bottom: 32px !important;
+}
+/* Mobile: full-width main when sidebar hidden */
+@media (max-width: 1100px) {
+  .sidebar { display: none !important; }
+  .main {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  .app-shell {
+    display: block !important;
+  }
+}

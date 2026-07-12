@@ -126,7 +126,6 @@ function DeptBarChart({
 function AdminHub() {
   const qc = useQueryClient()
   const scores = useQuery({ queryKey: queryKeys.scoresOverall, queryFn: () => api.scores.overall() })
-  const carbon = useQuery({ queryKey: queryKeys.carbonSummary, queryFn: () => api.carbon.summary() })
   const notifs = useQuery({ queryKey: queryKeys.notifications, queryFn: api.notifications.list })
   const recompute = useMutation({
     mutationFn: api.scores.recompute,

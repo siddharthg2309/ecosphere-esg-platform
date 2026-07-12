@@ -10,11 +10,10 @@ import type { Category, CSRActivity, CSRParticipation } from '../../lib/types'
 import { EvidenceAssist, ProofUploadField } from '../ai/EvidenceAssist'
 import { canApproveParticipation } from '../gamification/challengeTransitions'
 
-type Tab = 'activities' | 'participation' | 'diversity' | 'training'
+type Tab = 'activities' | 'participation' | 'training'
 const tabs: [Tab, string][] = [
   ['activities', 'CSR Activities'],
   ['participation', 'Employee Participation'],
-  ['diversity', 'Diversity Dashboard'],
   ['training', 'Training Completion'],
 ]
 
@@ -70,7 +69,6 @@ export function SocialPage() {
         </div>
         {tab === 'activities' && <ActivitiesPanel />}
         {tab === 'participation' && <ParticipationPanel />}
-        {tab === 'diversity' && <DiversityPanel />}
         {tab === 'training' && <TrainingPanel />}
       </div>
     </main>
@@ -436,52 +434,6 @@ function ParticipationRow({
         )}
       </td>
     </tr>
-  )
-}
-
-function DiversityPanel() {
-  const q = useQuery({ queryKey: queryKeys.diversity, queryFn: api.social.diversity })
-  const d = q.data
-  if (!d) return <div className="center-state">Loading diversity metrics…</div>
-  return (
-    <>
-      <div className="grid cols-2">
-        <Card>
-          <div className="card-head">
-            <h3>Gender Distribution</h3>
-          </div>
-          <MetricRow label="Women" pct={d.genderWomenPct} />
-          <MetricRow label="Men" pct={d.genderMenPct} />
-          <MetricRow label="Non-binary" pct={d.genderNonBinaryPct} />
-        </Card>
-        <Card>
-          <div className="card-head">
-            <h3>Leadership Representation</h3>
-          </div>
-          <MetricRow label="Women in mgmt" pct={d.leadershipWomenPct} tone="warning" />
-          <MetricRow label="Diverse leaders" pct={d.diverseLeadersPct} />
-          <MetricRow label="Target (2026)" pct={d.leadershipTargetPct} tone="danger" />
-        </Card>
-      </div>
-      {d.leadershipWomenPct < d.leadershipTargetPct && (
-        <div style={{ marginTop: 20 }}>
-          <Note>
-            Leadership diversity target ({d.leadershipTargetPct}% by end of FY2026) is <b style={{ color: 'var(--danger)' }}>under-track</b> at{' '}
-            {Math.round(d.leadershipWomenPct)}%. Recommended: targeted mentoring + hiring pipeline review.
-          </Note>
-        </div>
-      )}
-    </>
-  )
-}
-
-function MetricRow({ label, pct, tone }: { label: string; pct: number; tone?: 'warning' | 'danger' }) {
-  return (
-    <div className="list-row">
-      <div style={{ width: 140 }}>{label}</div>
-      <Progress value={pct} tone={tone} />
-      <b>{Math.round(pct)}%</b>
-    </div>
   )
 }
 
