@@ -27,7 +27,24 @@
       <div class="crumb">Dashboard <small>/ Executive Overview</small></div>
       <div class="spacer"></div>
       <div class="search" style="border-radius:999px"><span class="ico ico-search sm"></span><input placeholder="Search features"></div>
-      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+      <div class="notif-wrap">
+        <div class="iconbtn" onclick="toggleNotif()" id="bell-btn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-hd"><span>Notifications</span><a href="#">Mark all read</a></div>
+          <div class="notif-item">
+            <div class="notif-ico dng"><span class="ico ico-alert sm"></span></div>
+            <div><div class="notif-title">Compliance issue: Missing MSDS sheets</div><div class="notif-meta">Logistics · Overdue · 5h ago</div></div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-ico"><span class="ico ico-award sm"></span></div>
+            <div><div class="notif-title">Badge unlocked: Green Beginner</div><div class="notif-meta">Priya S. · 2h ago</div></div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-ico wrn"><span class="ico ico-scale sm"></span></div>
+            <div><div class="notif-title">Policy acknowledgement due</div><div class="notif-meta">Anti-Corruption Policy · Reminder · Today</div></div>
+          </div>
+        </div>
+      </div>
       <div class="avatar">AM</div>
     </header>
 
@@ -38,12 +55,12 @@
           <div class="sub">Organization-wide ESG performance · FY2026 · updated 12 Jul 2026</div>
         </div>
         <div class="rowflex">
-          <button class="btn secondary sm"><span class="ico ico-upload"></span> Log Carbon Data</button>
-          <button class="btn sm"><span class="ico ico-plus"></span> New Report</button>
+          <button class="btn secondary sm" onclick="openModal('modal-carbon')"><span class="ico ico-upload"></span> Log Carbon Data</button>
+          <button class="btn sm" onclick="openModal('modal-report')"><span class="ico ico-plus"></span> New Report</button>
         </div>
       </div>
 
-      <!-- Single black & white stat card -->
+      <!-- Single B&W stat card -->
       <div class="card statcard">
         <div class="statbar">
           <div class="stat">
@@ -119,10 +136,10 @@
         <div class="card">
           <div class="card-head"><h3>Quick Actions</h3></div>
           <div class="grid cols-2" style="gap:12px">
-            <button class="btn secondary" style="justify-content:flex-start"><span class="ico ico-upload"></span> Log Carbon Data</button>
-            <button class="btn secondary" style="justify-content:flex-start"><span class="ico ico-target"></span> Create Challenge</button>
-            <button class="btn secondary" style="justify-content:flex-start"><span class="ico ico-file"></span> Publish Policy</button>
-            <button class="btn secondary" style="justify-content:flex-start"><span class="ico ico-chart"></span> Generate Report</button>
+            <button class="btn secondary" style="justify-content:flex-start" onclick="openModal('modal-carbon')"><span class="ico ico-upload"></span> Log Carbon Data</button>
+            <button class="btn secondary" style="justify-content:flex-start" onclick="openModal('modal-challenge')"><span class="ico ico-target"></span> Create Challenge</button>
+            <button class="btn secondary" style="justify-content:flex-start" onclick="openModal('modal-policy')"><span class="ico ico-file"></span> Publish Policy</button>
+            <button class="btn secondary" style="justify-content:flex-start" onclick="openModal('modal-report')"><span class="ico ico-chart"></span> Generate Report</button>
           </div>
           <div class="note" style="margin-top:16px"><span class="ico ico-alert"></span><div><b>3 goals</b> due this quarter · <b>2 compliance issues</b> approaching due date.</div></div>
           <div class="card-foot" style="margin-top:16px">
@@ -134,3 +151,239 @@
     </div>
   </div>
 </div>
+
+<!-- ══ MODAL: Log Carbon Data ══ -->
+<div class="overlay" id="modal-carbon" onclick="overlayClick(event,'modal-carbon')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-upload"></span> Log Carbon Data</h2>
+      <button class="close" onclick="closeModal('modal-carbon')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note"><span class="ico ico-alert"></span><div>AI categorizes the uploaded document only. <b>CO₂ = quantity × emission factor</b> — deterministic, human-verified.</div></div>
+      <div class="field-row">
+        <div class="field">
+          <div class="lbl">Source</div>
+          <select><option>Fleet / Transport</option><option>Manufacturing</option><option>Purchased Energy</option><option>Expense / Travel</option></select>
+        </div>
+        <div class="field">
+          <div class="lbl">Department</div>
+          <select><option>Logistics</option><option>Manufacturing</option><option>Facilities</option><option>Corporate</option><option>IT</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="lbl">Transaction Date</div>
+          <input type="date" value="2026-07-12">
+        </div>
+        <div class="field">
+          <div class="lbl">Emission Factor</div>
+          <select><option>Diesel Truck — 2.68 kg CO₂/L</option><option>Grid Electricity — 0.82 kg CO₂/kWh</option><option>Natural Gas — 1.93 kg CO₂/m³</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="lbl">Quantity</div>
+          <input type="number" placeholder="e.g. 500" min="0">
+        </div>
+        <div class="field">
+          <div class="lbl">Unit</div>
+          <select><option>Litres</option><option>kWh</option><option>m³</option><option>kg</option><option>km</option></select>
+        </div>
+      </div>
+      <div class="field">
+        <div class="lbl">Upload Supporting Document <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(optional — AI-categorized)</span></div>
+        <div class="upload-area"><span class="ico ico-upload"></span><div>Drag & drop or <b style="color:var(--brand)">browse</b></div><div style="margin-top:4px;font-size:12px">PDF, JPG, PNG · max 10 MB</div></div>
+      </div>
+      <div class="note" style="background:var(--brand-100);border-color:var(--brand-100);color:var(--brand)">
+        <span class="ico ico-refresh"></span><div>Computed CO₂ will appear after dept head verification. Auto-calculation applies if toggle is on.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-carbon')">Cancel</button>
+      <button class="btn" onclick="submitCarbon()"><span class="ico ico-check"></span> Submit for Verification</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: New Report ══ -->
+<div class="overlay" id="modal-report" onclick="overlayClick(event,'modal-report')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-chart"></span> Generate Report</h2>
+      <button class="close" onclick="closeModal('modal-report')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <div class="lbl">Report Type</div>
+        <div class="radio-group" id="report-type-group">
+          <label><input type="radio" name="rtype" value="esg" checked><span>ESG Summary</span></label>
+          <label><input type="radio" name="rtype" value="env"><span>Environmental</span></label>
+          <label><input type="radio" name="rtype" value="social"><span>Social</span></label>
+          <label><input type="radio" name="rtype" value="gov"><span>Governance</span></label>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="lbl">Date Range</div>
+          <select><option>FY 2026</option><option>Q2 2026</option><option>Last 12 months</option><option>Custom…</option></select>
+        </div>
+        <div class="field">
+          <div class="lbl">Department</div>
+          <select><option>All departments</option><option>Manufacturing</option><option>Logistics</option><option>Corporate</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="lbl">Export Format</div>
+          <select><option>PDF</option><option>Excel</option><option>CSV</option></select>
+        </div>
+        <div class="field">
+          <div class="lbl">Include AI Narrative</div>
+          <select><option>Yes (ESG Summary only)</option><option>No</option></select>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-report')">Cancel</button>
+      <button class="btn" onclick="genReport()"><span class="ico ico-play"></span> Generate &amp; Download</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Create Challenge ══ -->
+<div class="overlay" id="modal-challenge" onclick="overlayClick(event,'modal-challenge')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-target"></span> New Challenge</h2>
+      <button class="close" onclick="closeModal('modal-challenge')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <div class="lbl">Challenge Title</div>
+        <input type="text" placeholder="e.g. Zero Waste Week">
+      </div>
+      <div class="field">
+        <div class="lbl">Category</div>
+        <select><option>Waste Reduction</option><option>Energy Saving</option><option>Sustainable Transport</option><option>Community Service</option></select>
+      </div>
+      <div class="field">
+        <div class="lbl">Description</div>
+        <textarea placeholder="Describe what participants should do to complete this challenge…"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="lbl">XP Reward</div>
+          <input type="number" placeholder="e.g. 200" min="0">
+        </div>
+        <div class="field">
+          <div class="lbl">Difficulty</div>
+          <select><option>Easy</option><option>Medium</option><option>Hard</option></select>
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="lbl">Deadline</div>
+          <input type="date">
+        </div>
+        <div class="field">
+          <div class="lbl">Scope</div>
+          <select><option>All departments (global)</option><option>Specific department…</option></select>
+        </div>
+      </div>
+      <div class="rowflex" style="justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)">
+        <div><b style="font-size:13.5px">Require evidence for participation</b><div class="muted" style="font-size:12px">Participants must upload proof before approval</div></div>
+        <label class="switch"><input type="checkbox" checked><span class="track"></span></label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <span class="left"><span class="pill neutral">Saved as Draft</span></span>
+      <button class="btn secondary" onclick="closeModal('modal-challenge')">Cancel</button>
+      <button class="btn" onclick="saveChallenge()"><span class="ico ico-check"></span> Create Challenge</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Publish Policy ══ -->
+<div class="overlay" id="modal-policy" onclick="overlayClick(event,'modal-policy')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-file"></span> Publish Policy</h2>
+      <button class="close" onclick="closeModal('modal-policy')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note"><span class="ico ico-alert"></span><div>Publishing increments the version and triggers a <b>Policy Acknowledgement</b> notification to all employees.</div></div>
+      <div class="field">
+        <div class="lbl">Policy Title</div>
+        <input type="text" placeholder="e.g. Anti-Corruption Policy v3">
+      </div>
+      <div class="field">
+        <div class="lbl">Policy Body</div>
+        <textarea style="min-height:130px" placeholder="Enter the full policy text…"></textarea>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="lbl">Effective Date</div>
+          <input type="date">
+        </div>
+        <div class="field">
+          <div class="lbl">Acknowledgement Deadline</div>
+          <input type="date">
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-policy')">Cancel</button>
+      <button class="btn" onclick="publishPolicy()"><span class="ico ico-check"></span> Publish &amp; Notify</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast stack -->
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function overlayClick(e,id){ if(e.target===document.getElementById(id)) closeModal(id); }
+
+function toggleNotif(){
+  var p=document.getElementById('notif-panel');
+  p.classList.toggle('open');
+  document.addEventListener('click',function h(e){
+    if(!document.getElementById('bell-btn').contains(e.target)&&!p.contains(e.target)){
+      p.classList.remove('open'); document.removeEventListener('click',h);
+    }
+  });
+}
+
+function showToast(msg,type){
+  var s=document.getElementById('toast-stack');
+  var t=document.createElement('div'); t.className='toast'+(type?' '+type:'');
+  t.innerHTML='<span class="ico ico-check"></span><span class="toast-text">'+msg+'</span><span class="toast-close" onclick="this.parentElement.remove()">×</span>';
+  if(type==='danger') t.querySelector('.ico').className='ico ico-alert';
+  s.appendChild(t); setTimeout(()=>t.remove(),4000);
+}
+
+function submitCarbon(){
+  closeModal('modal-carbon');
+  showToast('Carbon transaction submitted for verification.');
+}
+function genReport(){
+  closeModal('modal-report');
+  showToast('Report queued — download will start shortly.');
+  setTimeout(()=>{ window.location.href='reports.html'; }, 1200);
+}
+function saveChallenge(){
+  closeModal('modal-challenge');
+  showToast('Challenge created and saved as Draft.');
+}
+function publishPolicy(){
+  closeModal('modal-policy');
+  showToast('Policy published · employees notified.');
+}
+
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){
+  document.querySelectorAll('.overlay.open').forEach(o=>{ o.classList.remove('open'); document.body.style.overflow=''; });
+}});
+</script>

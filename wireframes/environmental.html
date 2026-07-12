@@ -25,7 +25,15 @@
       <div class="crumb">Environmental <small>/ Emission Tracking &amp; Goals</small></div>
       <div class="spacer"></div>
       <div class="search"><span class="ico ico-search sm"></span><input placeholder="Search goals…"></div>
-      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+      <div class="notif-wrap">
+        <div class="iconbtn" onclick="toggleNotif()" id="bell-btn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-hd"><span>Notifications</span><a href="#">Mark all read</a></div>
+          <div class="notif-item"><div class="notif-ico dng"><span class="ico ico-alert sm"></span></div><div><div class="notif-title">Compliance issue overdue</div><div class="notif-meta">Logistics · 5h ago</div></div></div>
+          <div class="notif-item"><div class="notif-ico wrn"><span class="ico ico-target sm"></span></div><div><div class="notif-title">Goal "Data-Center PUE" at risk</div><div class="notif-meta">IT · deadline passed</div></div></div>
+          <div class="notif-item"><div class="notif-ico"><span class="ico ico-check sm"></span></div><div><div class="notif-title">Fleet emission target 78% reached</div><div class="notif-meta">Logistics · Today</div></div></div>
+        </div>
+      </div>
       <div class="avatar">AM</div>
     </header>
 
@@ -34,8 +42,15 @@
         <div><h1 class="page-title">Emission Tracking &amp; Goals</h1>
           <div class="sub">Carbon accounting · emission factors · sustainability targets</div></div>
         <div class="rowflex">
-          <button class="btn secondary sm"><span class="ico ico-download"></span> Export</button>
-          <button class="btn sm"><span class="ico ico-plus"></span> New Goal</button>
+          <div class="dropdown-wrap">
+            <button class="btn secondary sm" onclick="toggleDropdown('export-dd')"><span class="ico ico-download"></span> Export</button>
+            <div class="dropdown-menu" id="export-dd">
+              <div class="dropdown-item" onclick="doExport('pdf')"><span class="ico ico-file"></span> Export as PDF</div>
+              <div class="dropdown-item" onclick="doExport('xlsx')"><span class="ico ico-download"></span> Export as Excel</div>
+              <div class="dropdown-item" onclick="doExport('csv')"><span class="ico ico-download"></span> Export as CSV</div>
+            </div>
+          </div>
+          <button class="btn sm" onclick="openModal('modal-goal')"><span class="ico ico-plus"></span> New Goal</button>
         </div>
       </div>
 
@@ -48,60 +63,370 @@
         </div>
       </div>
 
+      <!-- Tabs -->
       <div class="tabs" style="margin-top:24px">
-        <div class="tab">Emission Factors</div>
-        <div class="tab">Product ESG Profiles</div>
-        <div class="tab">Carbon Transactions</div>
-        <div class="tab active">Environmental Goals</div>
+        <div class="tab" onclick="switchTab(0)" id="tab-0">Emission Factors</div>
+        <div class="tab" onclick="switchTab(1)" id="tab-1">Product ESG Profiles</div>
+        <div class="tab" onclick="switchTab(2)" id="tab-2">Carbon Transactions</div>
+        <div class="tab active" onclick="switchTab(3)" id="tab-3">Environmental Goals</div>
       </div>
 
-      <div class="note" style="margin-bottom:16px"><span class="ico ico-refresh"></span><div>Carbon Transactions are <b>auto-generated</b> from Purchase / Manufacturing / Expense / Fleet records. <b>Computed CO₂ = quantity × emission factor</b> (deterministic). AI only categorizes the uploaded document.</div></div>
-
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead><tr><th>Goal</th><th>Department</th><th class="num">Target</th><th class="num">Current</th><th>Progress</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
-          <tbody>
-            <tr>
-              <td><b>Reduce Fleet Emissions 20%</b><div class="muted">Switch to EV trucks</div></td>
-              <td>Logistics</td><td class="num">500 t</td><td class="num">390 t</td>
-              <td><div class="rowflex"><div class="progress"><span style="width:78%"></span></div><span class="muted">78%</span></div></td>
-              <td>31 Dec 2026</td><td><span class="pill plum"><span class="dot plum"></span> Active</span></td>
-              <td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span><span class="a"><span class="ico ico-edit sm"></span></span></div></td>
-            </tr>
-            <tr>
-              <td><b>Cut Packaging Waste</b><div class="muted">Recycled materials</div></td>
-              <td>Manufacturing</td><td class="num">120 t</td><td class="num">98 t</td>
-              <td><div class="rowflex"><div class="progress"><span style="width:82%"></span></div><span class="muted">82%</span></div></td>
-              <td>30 Sep 2026</td><td><span class="pill warning"><span class="dot warning"></span> On Track</span></td>
-              <td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span><span class="a"><span class="ico ico-edit sm"></span></span></div></td>
-            </tr>
-            <tr>
-              <td><b>Office Energy → Solar</b><div class="muted">Rooftop install</div></td>
-              <td>Facilities</td><td class="num">80 t</td><td class="num">80 t</td>
-              <td><div class="rowflex"><div class="progress"><span style="width:100%"></span></div><span class="muted">100%</span></div></td>
-              <td>30 Jun 2026</td><td><span class="pill plum"><span class="dot plum"></span> Completed</span></td>
-              <td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span><span class="a"><span class="ico ico-edit sm"></span></span></div></td>
-            </tr>
-            <tr>
-              <td><b>Data-Center PUE &lt; 1.4</b><div class="muted">Cooling upgrade</div></td>
-              <td>IT</td><td class="num">60 t</td><td class="num">52 t</td>
-              <td><div class="rowflex"><div class="progress"><span class="danger" style="width:45%"></span></div><span class="muted">45%</span></div></td>
-              <td>31 Mar 2026</td><td><span class="pill danger"><span class="dot danger"></span> At Risk</span></td>
-              <td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span><span class="a"><span class="ico ico-edit sm"></span></span></div></td>
-            </tr>
-          </tbody>
-        </table>
+      <!-- Tab 0: Emission Factors -->
+      <div class="tab-pane" id="pane-0">
+        <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
+          <span class="muted" style="font-size:13px">37 factors across 5 source categories</span>
+          <button class="btn sm" onclick="openModal('modal-factor')"><span class="ico ico-plus"></span> New Factor</button>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Factor Name</th><th>Category</th><th>Unit</th><th class="num">kg CO₂ / unit</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>Diesel Truck</b></td><td>Fleet</td><td>Litre</td><td class="num">2.680</td><td><span class="pill plum">Active</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-factor')"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
+              <tr><td><b>Grid Electricity (IN)</b></td><td>Purchased Energy</td><td>kWh</td><td class="num">0.820</td><td><span class="pill plum">Active</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-factor')"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
+              <tr><td><b>Natural Gas</b></td><td>Manufacturing</td><td>m³</td><td class="num">1.930</td><td><span class="pill plum">Active</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-factor')"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
+              <tr><td><b>Air Travel (short)</b></td><td>Expense / Travel</td><td>km</td><td class="num">0.255</td><td><span class="pill neutral">Inactive</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-factor')"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="card" style="margin-top:24px">
-        <div class="card-head"><h3>Emissions by source <span class="muted" style="font-weight:400">· this quarter</span></h3><span class="muted">1,284 t CO₂ total</span></div>
-        <div class="stack" style="gap:0">
-          <div class="list-row"><div style="width:150px">Fleet</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:80%"></span></div><b style="width:60px;text-align:right">512 t</b></div>
-          <div class="list-row"><div style="width:150px">Manufacturing</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:60%"></span></div><b style="width:60px;text-align:right">388 t</b></div>
-          <div class="list-row"><div style="width:150px">Purchased Energy</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:39%"></span></div><b style="width:60px;text-align:right">248 t</b></div>
-          <div class="list-row"><div style="width:150px">Expenses / Travel</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:21%"></span></div><b style="width:60px;text-align:right">136 t</b></div>
+      <!-- Tab 1: Product ESG Profiles -->
+      <div class="tab-pane" id="pane-1">
+        <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
+          <span class="muted" style="font-size:13px">ESG attributes linked to products or materials</span>
+          <button class="btn sm" onclick="openModal('modal-product')"><span class="ico ico-plus"></span> New Profile</button>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Product</th><th>Linked Factor</th><th>ESG Attributes</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>EV Truck — Model X</b></td><td>Grid Electricity</td><td><span class="pill plum">Low Carbon</span> <span class="pill neutral">Renewable</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-product')"><span class="ico ico-edit sm"></span></span></div></td></tr>
+              <tr><td><b>Solar Panel 400W</b></td><td>—</td><td><span class="pill plum">Zero Emission</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-product')"><span class="ico ico-edit sm"></span></span></div></td></tr>
+              <tr><td><b>Recycled Packaging</b></td><td>Manufacturing</td><td><span class="pill neutral">Recyclable</span> <span class="pill plum">Reduced Waste</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-product')"><span class="ico ico-edit sm"></span></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 2: Carbon Transactions -->
+      <div class="tab-pane" id="pane-2">
+        <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
+          <span class="muted" style="font-size:13px">Auto-generated from operational records · verified by dept head</span>
+          <button class="btn sm" onclick="openModal('modal-carbon')"><span class="ico ico-plus"></span> Log Manual Entry</button>
+        </div>
+        <div class="note" style="margin-bottom:14px"><span class="ico ico-refresh"></span><div>Carbon Transactions are <b>auto-generated</b> from Purchase / Manufacturing / Expense / Fleet records. <b>Computed CO₂ = quantity × emission factor</b> (deterministic). AI only categorizes the uploaded document.</div></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Date</th><th>Source</th><th>Department</th><th class="num">Quantity</th><th class="num">CO₂ (kg)</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td>11 Jul 2026</td><td>Fleet</td><td>Logistics</td><td class="num">800 L</td><td class="num"><b>2,144</b></td><td><span class="pill plum">Verified</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-view-txn')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+              <tr><td>10 Jul 2026</td><td>Manufacturing</td><td>Manufacturing</td><td class="num">420 m³</td><td class="num"><b>810.6</b></td><td><span class="pill warning">Pending</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-view-txn')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+              <tr><td>09 Jul 2026</td><td>Purchased Energy</td><td>Facilities</td><td class="num">1,200 kWh</td><td class="num"><b>984</b></td><td><span class="pill plum">Verified</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-view-txn')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 3: Environmental Goals (default) -->
+      <div class="tab-pane active" id="pane-3">
+        <div class="note" style="margin-bottom:16px"><span class="ico ico-refresh"></span><div>Carbon Transactions are <b>auto-generated</b> from Purchase / Manufacturing / Expense / Fleet records. <b>Computed CO₂ = quantity × emission factor</b> (deterministic). AI only categorizes the uploaded document.</div></div>
+
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Goal</th><th>Department</th><th class="num">Target</th><th class="num">Current</th><th>Progress</th><th>Deadline</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr>
+                <td><b>Reduce Fleet Emissions 20%</b><div class="muted">Switch to EV trucks</div></td>
+                <td>Logistics</td><td class="num">500 t</td><td class="num">390 t</td>
+                <td><div class="rowflex"><div class="progress"><span style="width:78%"></span></div><span class="muted">78%</span></div></td>
+                <td>31 Dec 2026</td><td><span class="pill plum"><span class="dot plum"></span> Active</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-goal')"><span class="ico ico-eye sm"></span></span><span class="a" onclick="openModal('modal-edit-goal')"><span class="ico ico-edit sm"></span></span></div></td>
+              </tr>
+              <tr>
+                <td><b>Cut Packaging Waste</b><div class="muted">Recycled materials</div></td>
+                <td>Manufacturing</td><td class="num">120 t</td><td class="num">98 t</td>
+                <td><div class="rowflex"><div class="progress"><span style="width:82%"></span></div><span class="muted">82%</span></div></td>
+                <td>30 Sep 2026</td><td><span class="pill warning"><span class="dot warning"></span> On Track</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-goal')"><span class="ico ico-eye sm"></span></span><span class="a" onclick="openModal('modal-edit-goal')"><span class="ico ico-edit sm"></span></span></div></td>
+              </tr>
+              <tr>
+                <td><b>Office Energy → Solar</b><div class="muted">Rooftop install</div></td>
+                <td>Facilities</td><td class="num">80 t</td><td class="num">80 t</td>
+                <td><div class="rowflex"><div class="progress"><span style="width:100%"></span></div><span class="muted">100%</span></div></td>
+                <td>30 Jun 2026</td><td><span class="pill plum"><span class="dot plum"></span> Completed</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-goal')"><span class="ico ico-eye sm"></span></span></div></td>
+              </tr>
+              <tr>
+                <td><b>Data-Center PUE &lt; 1.4</b><div class="muted">Cooling upgrade</div></td>
+                <td>IT</td><td class="num">60 t</td><td class="num">52 t</td>
+                <td><div class="rowflex"><div class="progress"><span class="danger" style="width:45%"></span></div><span class="muted">45%</span></div></td>
+                <td>31 Mar 2026</td><td><span class="pill danger"><span class="dot danger"></span> At Risk</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-goal')"><span class="ico ico-eye sm"></span></span><span class="a" onclick="openModal('modal-edit-goal')"><span class="ico ico-edit sm"></span></span></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card" style="margin-top:24px">
+          <div class="card-head"><h3>Emissions by source <span class="muted" style="font-weight:400">· this quarter</span></h3><span class="muted">1,284 t CO₂ total</span></div>
+          <div class="stack" style="gap:0">
+            <div class="list-row"><div style="width:150px">Fleet</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:80%"></span></div><b style="width:60px;text-align:right">512 t</b></div>
+            <div class="list-row"><div style="width:150px">Manufacturing</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:60%"></span></div><b style="width:60px;text-align:right">388 t</b></div>
+            <div class="list-row"><div style="width:150px">Purchased Energy</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:39%"></span></div><b style="width:60px;text-align:right">248 t</b></div>
+            <div class="list-row"><div style="width:150px">Expenses / Travel</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:21%"></span></div><b style="width:60px;text-align:right">136 t</b></div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ══ MODAL: New Environmental Goal ══ -->
+<div class="overlay" id="modal-goal" onclick="overlayClick(event,'modal-goal')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-target"></span> New Environmental Goal</h2>
+      <button class="close" onclick="closeModal('modal-goal')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field">
+        <div class="lbl">Goal Name</div>
+        <input type="text" placeholder="e.g. Reduce Fleet Emissions 20%">
+      </div>
+      <div class="field">
+        <div class="lbl">Description / Approach</div>
+        <textarea placeholder="e.g. Replace diesel trucks with EVs by Q4"></textarea>
+      </div>
+      <div class="field">
+        <div class="lbl">Department</div>
+        <select><option>All departments</option><option>Logistics</option><option>Manufacturing</option><option>Facilities</option><option>IT</option></select>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <div class="lbl">Target CO₂ Reduction (t)</div>
+          <input type="number" placeholder="e.g. 500" min="0">
+        </div>
+        <div class="field">
+          <div class="lbl">Baseline / Current (t)</div>
+          <input type="number" placeholder="e.g. 640" min="0">
+        </div>
+      </div>
+      <div class="field">
+        <div class="lbl">Deadline</div>
+        <input type="date">
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-goal')">Cancel</button>
+      <button class="btn" onclick="saveGoal()"><span class="ico ico-check"></span> Create Goal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: View Goal ══ -->
+<div class="overlay" id="modal-view-goal" onclick="overlayClick(event,'modal-view-goal')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-eye"></span> Goal Details</h2>
+      <button class="close" onclick="closeModal('modal-view-goal')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Goal</span><b>Reduce Fleet Emissions 20%</b></div>
+      <div class="divider"></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Department</span><span>Logistics</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Target</span><span>500 t CO₂</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Current</span><span>390 t CO₂</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Deadline</span><span>31 Dec 2026</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Status</span><span class="pill plum">Active</span></div>
+      <div>
+        <div class="muted" style="font-size:12px;margin-bottom:6px">Progress to target</div>
+        <div class="rowflex"><div class="progress" style="flex:1"><span style="width:78%"></span></div><b style="margin-left:10px">78%</b></div>
+      </div>
+      <div class="note"><span class="ico ico-refresh"></span><div>ESG budget allocated: <b>₹18L</b> · spent: <b>₹11.2L</b> on EV truck procurement (proof uploaded).</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-view-goal')">Close</button>
+      <button class="btn" onclick="closeModal('modal-view-goal');openModal('modal-edit-goal')"><span class="ico ico-edit"></span> Edit Goal</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Edit Goal ══ -->
+<div class="overlay" id="modal-edit-goal" onclick="overlayClick(event,'modal-edit-goal')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-edit"></span> Edit Goal</h2>
+      <button class="close" onclick="closeModal('modal-edit-goal')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="lbl">Goal Name</div><input type="text" value="Reduce Fleet Emissions 20%"></div>
+      <div class="field"><div class="lbl">Department</div><select><option selected>Logistics</option><option>Manufacturing</option><option>Facilities</option></select></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Target CO₂ (t)</div><input type="number" value="500"></div>
+        <div class="field"><div class="lbl">Current CO₂ (t)</div><input type="number" value="390"></div>
+      </div>
+      <div class="field"><div class="lbl">Deadline</div><input type="date" value="2026-12-31"></div>
+      <div class="field"><div class="lbl">Status</div><select><option>Active</option><option>Completed</option><option>At Risk</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-edit-goal')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-edit-goal');showToast('Goal updated.')"><span class="ico ico-check"></span> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: New Emission Factor ══ -->
+<div class="overlay" id="modal-factor" onclick="overlayClick(event,'modal-factor')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-leaf"></span> Emission Factor</h2>
+      <button class="close" onclick="closeModal('modal-factor')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="lbl">Factor Name</div><input type="text" placeholder="e.g. Diesel Truck"></div>
+      <div class="field"><div class="lbl">Category</div><select><option>Fleet</option><option>Purchased Energy</option><option>Manufacturing</option><option>Expense / Travel</option></select></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Unit</div><select><option>Litre</option><option>kWh</option><option>m³</option><option>km</option><option>kg</option></select></div>
+        <div class="field"><div class="lbl">kg CO₂ per unit</div><input type="number" step="0.001" placeholder="e.g. 2.680" min="0.001"></div>
+      </div>
+      <div class="field"><div class="lbl">Status</div><select><option>Active</option><option>Inactive</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-factor')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-factor');showToast('Emission factor saved.')"><span class="ico ico-check"></span> Save Factor</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Product ESG Profile ══ -->
+<div class="overlay" id="modal-product" onclick="overlayClick(event,'modal-product')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-file"></span> Product ESG Profile</h2>
+      <button class="close" onclick="closeModal('modal-product')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="lbl">Product Name</div><input type="text" placeholder="e.g. EV Truck — Model X"></div>
+      <div class="field"><div class="lbl">Linked Emission Factor</div><select><option>None</option><option>Diesel Truck — 2.68 kg CO₂/L</option><option>Grid Electricity — 0.82 kg CO₂/kWh</option><option>Natural Gas — 1.93 kg CO₂/m³</option></select></div>
+      <div class="field"><div class="lbl">ESG Attributes (JSONB)</div><textarea placeholder='{"renewable":true,"carbon_intensity":"low"}'></textarea><div class="hint">Key-value attributes for this product's sustainability profile</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-product')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-product');showToast('Product ESG profile saved.')"><span class="ico ico-check"></span> Save Profile</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Log Carbon Data ══ -->
+<div class="overlay" id="modal-carbon" onclick="overlayClick(event,'modal-carbon')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-upload"></span> Log Carbon Data</h2>
+      <button class="close" onclick="closeModal('modal-carbon')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note"><span class="ico ico-alert"></span><div>AI categorizes the uploaded document only. <b>CO₂ = quantity × emission factor</b> — deterministic, human-verified.</div></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Source</div><select><option>Fleet / Transport</option><option>Manufacturing</option><option>Purchased Energy</option><option>Expense / Travel</option></select></div>
+        <div class="field"><div class="lbl">Department</div><select><option>Logistics</option><option>Manufacturing</option><option>Facilities</option><option>IT</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Transaction Date</div><input type="date" value="2026-07-12"></div>
+        <div class="field"><div class="lbl">Emission Factor</div><select><option>Diesel Truck — 2.68 kg/L</option><option>Grid Electricity — 0.82 kg/kWh</option><option>Natural Gas — 1.93 kg/m³</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Quantity</div><input type="number" placeholder="e.g. 500" min="0"></div>
+        <div class="field"><div class="lbl">Unit</div><select><option>Litres</option><option>kWh</option><option>m³</option><option>km</option></select></div>
+      </div>
+      <div class="field"><div class="lbl">Upload Document <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0">(AI-categorized · optional)</span></div>
+        <div class="upload-area"><span class="ico ico-upload"></span><div>Drag &amp; drop or <b style="color:var(--brand)">browse</b></div><div style="margin-top:4px;font-size:12px">PDF, JPG, PNG · max 10 MB</div></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-carbon')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-carbon');showToast('Transaction submitted for dept head verification.')"><span class="ico ico-check"></span> Submit for Verification</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: View Carbon Transaction ══ -->
+<div class="overlay" id="modal-view-txn" onclick="overlayClick(event,'modal-view-txn')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-eye"></span> Carbon Transaction</h2>
+      <button class="close" onclick="closeModal('modal-view-txn')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Source</span><b>Fleet / Transport</b></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Department</span><span>Logistics</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Date</span><span>11 Jul 2026</span></div>
+      <div class="divider"></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Quantity</span><span>800 L</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Emission Factor</span><span>Diesel Truck — 2.68 kg CO₂/L</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Computed CO₂</span><b style="color:var(--brand)">2,144 kg</b></div>
+      <div class="note" style="background:var(--brand-100);border-color:var(--brand-100);color:var(--brand)">
+        <span class="ico ico-check"></span><div>Verified by <b>R. Iyer</b> · 11 Jul 2026 14:32. Formula: 800 × 2.68 = 2,144 kg CO₂.</div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-view-txn')">Close</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function overlayClick(e,id){ if(e.target===document.getElementById(id)) closeModal(id); }
+
+function toggleNotif(){
+  var p=document.getElementById('notif-panel');
+  p.classList.toggle('open');
+  setTimeout(function(){
+    document.addEventListener('click',function h(e){
+      if(!document.getElementById('bell-btn').contains(e.target)&&!p.contains(e.target)){
+        p.classList.remove('open'); document.removeEventListener('click',h);
+      }
+    });
+  },0);
+}
+
+function toggleDropdown(id){
+  var d=document.getElementById(id);
+  d.classList.toggle('open');
+  setTimeout(function(){
+    document.addEventListener('click',function h(e){
+      if(!d.parentElement.contains(e.target)){
+        d.classList.remove('open'); document.removeEventListener('click',h);
+      }
+    });
+  },0);
+}
+
+function doExport(fmt){
+  document.querySelectorAll('.dropdown-menu').forEach(m=>m.classList.remove('open'));
+  showToast('Exporting as '+fmt.toUpperCase()+'…');
+}
+
+function switchTab(n){
+  for(var i=0;i<4;i++){
+    document.getElementById('tab-'+i).classList.toggle('active',i===n);
+    document.getElementById('pane-'+i).classList.toggle('active',i===n);
+  }
+}
+
+function saveGoal(){ closeModal('modal-goal'); showToast('Environmental goal created.'); }
+
+function showToast(msg,type){
+  var s=document.getElementById('toast-stack');
+  var t=document.createElement('div'); t.className='toast'+(type?' '+type:'');
+  t.innerHTML='<span class="ico ico-check"></span><span class="toast-text">'+msg+'</span><span class="toast-close" onclick="this.parentElement.remove()">×</span>';
+  s.appendChild(t); setTimeout(()=>t.remove(),4000);
+}
+
+document.addEventListener('keydown',function(e){ if(e.key==='Escape'){
+  document.querySelectorAll('.overlay.open').forEach(o=>{ o.classList.remove('open'); document.body.style.overflow=''; });
+}});
+</script>

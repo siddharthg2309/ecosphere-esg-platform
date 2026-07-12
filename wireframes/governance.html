@@ -25,7 +25,15 @@
       <div class="crumb">Governance <small>/ Policies, Audits &amp; Compliance</small></div>
       <div class="spacer"></div>
       <div class="search"><span class="ico ico-search sm"></span><input placeholder="Search issues…"></div>
-      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+      <div class="notif-wrap">
+        <div class="iconbtn" onclick="toggleNotif()" id="bell-btn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-hd"><span>Notifications</span><a href="#">Mark all read</a></div>
+          <div class="notif-item"><div class="notif-ico dng"><span class="ico ico-alert sm"></span></div><div><div class="notif-title">Missing MSDS sheets — overdue</div><div class="notif-meta">Manufacturing · P. Shah · 02 Jul</div></div></div>
+          <div class="notif-item"><div class="notif-ico wrn"><span class="ico ico-scale sm"></span></div><div><div class="notif-title">Policy acknowledgement pending</div><div class="notif-meta">Anti-Corruption Policy · 12 employees</div></div></div>
+          <div class="notif-item"><div class="notif-ico"><span class="ico ico-check sm"></span></div><div><div class="notif-title">Audit completed: Q2 Waste Audit</div><div class="notif-meta">Manufacturing · K. Menon</div></div></div>
+        </div>
+      </div>
       <div class="avatar">AM</div>
     </header>
 
@@ -33,7 +41,10 @@
       <div class="page-head">
         <div><h1 class="page-title">Policies, Audits &amp; Compliance</h1>
           <div class="sub">Governance policies · acknowledgements · audit trail · issue tracking</div></div>
-        <div class="rowflex"><button class="btn secondary sm"><span class="ico ico-plus"></span> New Audit</button><button class="btn sm"><span class="ico ico-plus"></span> Raise Issue</button></div>
+        <div class="rowflex">
+          <button class="btn secondary sm" onclick="openModal('modal-audit')"><span class="ico ico-plus"></span> New Audit</button>
+          <button class="btn sm" onclick="openModal('modal-issue')"><span class="ico ico-plus"></span> Raise Issue</button>
+        </div>
       </div>
 
       <div class="card statcard">
@@ -46,36 +57,266 @@
       </div>
 
       <div class="tabs" style="margin-top:24px">
-        <div class="tab">Policies</div>
-        <div class="tab">Policy Acknowledgements</div>
-        <div class="tab active">Audits</div>
-        <div class="tab">Compliance Issues</div>
+        <div class="tab" id="tab-0" onclick="switchTab(0)">Policies</div>
+        <div class="tab" id="tab-1" onclick="switchTab(1)">Policy Acknowledgements</div>
+        <div class="tab active" id="tab-2" onclick="switchTab(2)">Audits</div>
+        <div class="tab" id="tab-3" onclick="switchTab(3)">Compliance Issues</div>
       </div>
 
-      <h2 class="section" style="margin-top:0">Audit trail</h2>
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead><tr><th>Audit</th><th>Department</th><th>Auditor</th><th>Date</th><th>Findings</th><th>Status</th></tr></thead>
-          <tbody>
-            <tr><td><b>Q2 Waste Audit</b></td><td>Manufacturing</td><td><span class="avatar-sm">KM</span> K. Menon</td><td>12 Jun 2026</td><td>3 minor issues</td><td><span class="pill plum"><span class="dot plum"></span> Completed</span></td></tr>
-            <tr><td><b>Vendor Compliance Check</b></td><td>Procurement</td><td><span class="avatar-sm">KM</span> K. Menon</td><td>01 Jul 2026</td><td>1 open issue</td><td><span class="pill warning"><span class="dot warning"></span> Under Review</span></td></tr>
-            <tr><td><b>Energy Governance Review</b></td><td>Facilities</td><td><span class="avatar-sm">KM</span> K. Menon</td><td>08 Jul 2026</td><td>—</td><td><span class="pill neutral"><span class="dot neutral"></span> Draft</span></td></tr>
-          </tbody>
-        </table>
+      <!-- Tab 0: Policies -->
+      <div class="tab-pane" id="pane-0">
+        <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
+          <span class="muted" style="font-size:13px">3 active policies · version-controlled</span>
+          <button class="btn sm" onclick="openModal('modal-policy')"><span class="ico ico-plus"></span> New Policy</button>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Policy</th><th>Version</th><th>Effective Date</th><th>Ack. Rate</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>Anti-Corruption Policy</b></td><td>v3</td><td>01 Jan 2026</td><td><div class="rowflex"><div class="progress"><span style="width:94%"></span></div><span class="muted">94%</span></div></td><td><span class="pill plum">Published</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-policy')"><span class="ico ico-eye sm"></span></span><span class="a" onclick="openModal('modal-policy')"><span class="ico ico-edit sm"></span></span></div></td></tr>
+              <tr><td><b>Environmental Management Policy</b></td><td>v2</td><td>15 Mar 2026</td><td><div class="rowflex"><div class="progress"><span style="width:88%"></span></div><span class="muted">88%</span></div></td><td><span class="pill plum">Published</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-policy')"><span class="ico ico-eye sm"></span></span><span class="a" onclick="openModal('modal-policy')"><span class="ico ico-edit sm"></span></span></div></td></tr>
+              <tr><td><b>Data Privacy &amp; Retention</b></td><td>v1</td><td>—</td><td>—</td><td><span class="pill neutral">Draft</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-policy')"><span class="ico ico-eye sm"></span></span><span class="a" onclick="openModal('modal-policy')"><span class="ico ico-edit sm"></span></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <h2 class="section">Compliance issues <span class="muted" style="font-size:13px;font-weight:400">· severity-tagged · owner + due date required · overdue auto-flagged</span></h2>
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead><tr><th>Issue</th><th>Department</th><th>Severity</th><th>Owner</th><th>Due Date</th><th>Status</th><th></th></tr></thead>
+      <!-- Tab 1: Policy Acknowledgements -->
+      <div class="tab-pane" id="pane-1">
+        <div class="note" style="margin-bottom:14px"><span class="ico ico-alert"></span><div><b>12 employees</b> have not acknowledged the Anti-Corruption Policy v3. A reminder notification has been queued.</div></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Employee</th><th>Department</th><th>Policy</th><th>Status</th><th>Acknowledged At</th></tr></thead>
           <tbody>
-            <tr><td><b>Missing MSDS sheets</b><div class="muted">from Q2 Waste Audit</div></td><td>Manufacturing</td><td><span class="pill danger">High</span></td><td><span class="avatar-sm">PS</span> P. Shah</td><td><span style="color:var(--danger-ink);font-weight:600">02 Jul · overdue</span></td><td><span class="pill danger"><span class="dot danger"></span> Open</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
-            <tr><td><b>Late vendor disclosure</b></td><td>Procurement</td><td><span class="pill warning">Medium</span></td><td><span class="avatar-sm">AR</span> A. Rao</td><td>20 Jul 2026</td><td><span class="pill plum"><span class="dot plum"></span> Resolved</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
-            <tr><td><b>Data retention gap</b></td><td>IT</td><td><span class="pill warning">Medium</span></td><td><span class="avatar-sm">KS</span> K. Shah</td><td>28 Jul 2026</td><td><span class="pill warning"><span class="dot warning"></span> In Progress</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
-            <tr><td><b>Unsigned NDA (contractor)</b></td><td>Legal</td><td><span class="pill neutral">Low</span></td><td><span class="avatar-sm">MJ</span> M. Jain</td><td>05 Aug 2026</td><td><span class="pill danger"><span class="dot danger"></span> Open</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
+            <tr><td><span class="avatar-sm">AR</span> Aditi Rao</td><td>Manufacturing</td><td>Anti-Corruption v3</td><td><span class="pill plum">Acknowledged</span></td><td>10 Jul 2026</td></tr>
+            <tr><td><span class="avatar-sm">KS</span> Karan Shah</td><td>IT</td><td>Anti-Corruption v3</td><td><span class="pill plum">Acknowledged</span></td><td>09 Jul 2026</td></tr>
+            <tr><td><span class="avatar-sm">MJ</span> Meera Jain</td><td>Logistics</td><td>Anti-Corruption v3</td><td><span class="pill danger">Pending</span></td><td>—</td></tr>
+            <tr><td><span class="avatar-sm">PS</span> Priya S.</td><td>Manufacturing</td><td>Anti-Corruption v3</td><td><span class="pill danger">Pending</span></td><td>—</td></tr>
           </tbody>
-        </table>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 2: Audits (default) -->
+      <div class="tab-pane active" id="pane-2">
+        <h2 class="section" style="margin-top:0">Audit trail</h2>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Audit</th><th>Department</th><th>Auditor</th><th>Date</th><th>Findings</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>Q2 Waste Audit</b></td><td>Manufacturing</td><td><span class="avatar-sm">KM</span> K. Menon</td><td>12 Jun 2026</td><td>3 minor issues</td><td><span class="pill plum"><span class="dot plum"></span> Completed</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-audit')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+              <tr><td><b>Vendor Compliance Check</b></td><td>Procurement</td><td><span class="avatar-sm">KM</span> K. Menon</td><td>01 Jul 2026</td><td>1 open issue</td><td><span class="pill warning"><span class="dot warning"></span> Under Review</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-audit')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+              <tr><td><b>Energy Governance Review</b></td><td>Facilities</td><td><span class="avatar-sm">KM</span> K. Menon</td><td>08 Jul 2026</td><td>—</td><td><span class="pill neutral"><span class="dot neutral"></span> Draft</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-audit')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 3: Compliance Issues -->
+      <div class="tab-pane" id="pane-3">
+        <h2 class="section" style="margin-top:0">Compliance issues <span class="muted" style="font-size:13px;font-weight:400">· severity-tagged · owner + due date required · overdue auto-flagged</span></h2>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Issue</th><th>Department</th><th>Severity</th><th>Owner</th><th>Due Date</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>Missing MSDS sheets</b><div class="muted">from Q2 Waste Audit</div></td><td>Manufacturing</td><td><span class="pill danger">High</span></td><td><span class="avatar-sm">PS</span> P. Shah</td><td><span style="color:var(--danger-ink);font-weight:600">02 Jul · overdue</span></td><td><span class="pill danger"><span class="dot danger"></span> Open</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-issue')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+              <tr><td><b>Late vendor disclosure</b></td><td>Procurement</td><td><span class="pill warning">Medium</span></td><td><span class="avatar-sm">AR</span> A. Rao</td><td>20 Jul 2026</td><td><span class="pill plum"><span class="dot plum"></span> Resolved</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-issue')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+              <tr><td><b>Data retention gap</b></td><td>IT</td><td><span class="pill warning">Medium</span></td><td><span class="avatar-sm">KS</span> K. Shah</td><td>28 Jul 2026</td><td><span class="pill warning"><span class="dot warning"></span> In Progress</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-issue')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+              <tr><td><b>Unsigned NDA (contractor)</b></td><td>Legal</td><td><span class="pill neutral">Low</span></td><td><span class="avatar-sm">MJ</span> M. Jain</td><td>05 Aug 2026</td><td><span class="pill danger"><span class="dot danger"></span> Open</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openModal('modal-view-issue')"><span class="ico ico-eye sm"></span></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ══ MODAL: New Audit ══ -->
+<div class="overlay" id="modal-audit" onclick="overlayClick(event,'modal-audit')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-scale"></span> New Audit</h2>
+      <button class="close" onclick="closeModal('modal-audit')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="lbl">Audit Title</div><input type="text" placeholder="e.g. Q3 Waste Management Audit"></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Department</div>
+          <select><option>Manufacturing</option><option>Logistics</option><option>Procurement</option><option>Facilities</option><option>IT</option><option>Legal</option></select></div>
+        <div class="field"><div class="lbl">Auditor</div>
+          <select><option>K. Menon</option><option>R. Iyer</option><option>A. Mehta</option></select></div>
+      </div>
+      <div class="field"><div class="lbl">Audit Date</div><input type="date"></div>
+      <div class="field"><div class="lbl">Scope / Findings (initial)</div><textarea placeholder="Describe the audit scope or initial observations…"></textarea></div>
+      <div class="field"><div class="lbl">Status</div><select><option>Draft</option><option>Under Review</option><option>Completed</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-audit')">Cancel</button>
+      <button class="btn" onclick="saveAudit()"><span class="ico ico-check"></span> Create Audit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: View Audit ══ -->
+<div class="overlay" id="modal-view-audit" onclick="overlayClick(event,'modal-view-audit')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-eye"></span> Audit Details</h2>
+      <button class="close" onclick="closeModal('modal-view-audit')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Title</span><b>Q2 Waste Audit</b></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Department</span><span>Manufacturing</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Auditor</span><span>K. Menon</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Date</span><span>12 Jun 2026</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Status</span><span class="pill plum">Completed</span></div>
+      <div class="divider"></div>
+      <div><div class="muted" style="font-size:12px;margin-bottom:6px">Findings</div><div style="font-size:13.5px">3 minor compliance issues identified: (1) missing MSDS documentation, (2) improper chemical storage labelling, (3) expired fire extinguisher inspection.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-view-audit')">Close</button>
+      <button class="btn" onclick="closeModal('modal-view-audit');openModal('modal-issue')"><span class="ico ico-plus"></span> Raise Issue from Audit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Raise Compliance Issue ══ -->
+<div class="overlay" id="modal-issue" onclick="overlayClick(event,'modal-issue')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-alert"></span> Raise Compliance Issue</h2>
+      <button class="close" onclick="closeModal('modal-issue')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note"><span class="ico ico-alert"></span><div>Every issue <b>must have an owner and a due date</b>. Overdue-open issues are automatically flagged and trigger notifications.</div></div>
+      <div class="field"><div class="lbl">Issue Description</div><textarea placeholder="Describe the compliance issue clearly…"></textarea></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Department</div>
+          <select><option>Manufacturing</option><option>Logistics</option><option>Procurement</option><option>IT</option><option>Legal</option><option>Facilities</option></select></div>
+        <div class="field"><div class="lbl">Severity</div>
+          <select><option>High</option><option>Medium</option><option>Low</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Owner (required)</div>
+          <select><option>P. Shah</option><option>A. Rao</option><option>K. Shah</option><option>M. Jain</option><option>R. Iyer</option></select></div>
+        <div class="field"><div class="lbl">Due Date (required)</div><input type="date"></div>
+      </div>
+      <div class="field"><div class="lbl">Linked Audit (optional)</div>
+        <select><option>None</option><option>Q2 Waste Audit</option><option>Vendor Compliance Check</option><option>Energy Governance Review</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-issue')">Cancel</button>
+      <button class="btn" onclick="saveIssue()"><span class="ico ico-check"></span> Raise Issue &amp; Notify Owner</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: View Compliance Issue ══ -->
+<div class="overlay" id="modal-view-issue" onclick="overlayClick(event,'modal-view-issue')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-eye"></span> Compliance Issue</h2>
+      <button class="close" onclick="closeModal('modal-view-issue')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Issue</span><b>Missing MSDS sheets</b></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Department</span><span>Manufacturing</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Severity</span><span class="pill danger">High</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Owner</span><span>P. Shah</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Due Date</span><span style="color:var(--danger-ink);font-weight:600">02 Jul 2026 · overdue</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Status</span><span class="pill danger">Open</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Linked Audit</span><span>Q2 Waste Audit</span></div>
+      <div class="divider"></div>
+      <div><div class="muted" style="font-size:12px;margin-bottom:6px">Description</div><div style="font-size:13.5px">Material Safety Data Sheets for 4 chemical compounds used in the manufacturing floor are missing from the safety records. Required for OSHA compliance.</div></div>
+    </div>
+    <div class="modal-foot">
+      <div class="left">
+        <button class="btn secondary sm" onclick="closeModal('modal-view-issue');showToast('Issue marked as resolved.')">Mark Resolved</button>
+      </div>
+      <button class="btn secondary" onclick="closeModal('modal-view-issue')">Close</button>
+      <button class="btn" onclick="closeModal('modal-view-issue');openModal('modal-issue')"><span class="ico ico-edit"></span> Edit Issue</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: New / Edit Policy ══ -->
+<div class="overlay" id="modal-policy" onclick="overlayClick(event,'modal-policy')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-file"></span> Publish Policy</h2>
+      <button class="close" onclick="closeModal('modal-policy')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note"><span class="ico ico-alert"></span><div>Publishing increments the version and triggers a <b>Policy Acknowledgement</b> notification to all employees.</div></div>
+      <div class="field"><div class="lbl">Policy Title</div><input type="text" placeholder="e.g. Anti-Corruption Policy v3"></div>
+      <div class="field"><div class="lbl">Policy Body</div><textarea style="min-height:130px" placeholder="Enter the full policy text…"></textarea></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Effective Date</div><input type="date"></div>
+        <div class="field"><div class="lbl">Acknowledgement Deadline</div><input type="date"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-policy')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-policy');showToast('Policy published · employees notified.')"><span class="ico ico-check"></span> Publish &amp; Notify</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: View Policy ══ -->
+<div class="overlay" id="modal-view-policy" onclick="overlayClick(event,'modal-view-policy')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-file"></span> Policy Details</h2>
+      <button class="close" onclick="closeModal('modal-view-policy')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Title</span><b>Anti-Corruption Policy</b></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Version</span><span>v3</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Effective Date</span><span>01 Jan 2026</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Ack. Rate</span><span>94% (241/255)</span></div>
+      <div class="divider"></div>
+      <div style="font-size:13.5px;line-height:1.7;color:var(--ink-2)">This policy establishes guidelines for ethical conduct, prohibition of bribery and corruption in all business dealings. All employees are required to acknowledge and comply…</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-view-policy')">Close</button>
+      <button class="btn" onclick="closeModal('modal-view-policy');openModal('modal-policy')"><span class="ico ico-edit"></span> Edit &amp; Re-publish</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function overlayClick(e,id){ if(e.target===document.getElementById(id)) closeModal(id); }
+function switchTab(n){
+  for(var i=0;i<4;i++){
+    document.getElementById('tab-'+i).classList.toggle('active',i===n);
+    document.getElementById('pane-'+i).classList.toggle('active',i===n);
+  }
+}
+function toggleNotif(){
+  var p=document.getElementById('notif-panel'); p.classList.toggle('open');
+  setTimeout(function(){ document.addEventListener('click',function h(e){ if(!document.getElementById('bell-btn').contains(e.target)&&!p.contains(e.target)){p.classList.remove('open');document.removeEventListener('click',h);} }); },0);
+}
+function saveAudit(){ closeModal('modal-audit'); showToast('Audit created.'); }
+function saveIssue(){ closeModal('modal-issue'); showToast('Compliance issue raised · owner notified.'); }
+function showToast(msg,type){
+  var s=document.getElementById('toast-stack'); var t=document.createElement('div');
+  t.className='toast'+(type?' '+type:'');
+  t.innerHTML='<span class="ico ico-check"></span><span class="toast-text">'+msg+'</span><span class="toast-close" onclick="this.parentElement.remove()">×</span>';
+  s.appendChild(t); setTimeout(()=>t.remove(),4000);
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>{o.classList.remove('open');document.body.style.overflow='';}); });
+</script>

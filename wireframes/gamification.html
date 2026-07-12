@@ -25,7 +25,15 @@
       <div class="crumb">Gamification <small>/ Challenges, Badges &amp; Leaderboard</small></div>
       <div class="spacer"></div>
       <div class="search"><span class="ico ico-search sm"></span><input placeholder="Search challenges…"></div>
-      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+      <div class="notif-wrap">
+        <div class="iconbtn" onclick="toggleNotif()" id="bell-btn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-hd"><span>Notifications</span><a href="#">Mark all read</a></div>
+          <div class="notif-item"><div class="notif-ico"><span class="ico ico-award sm"></span></div><div><div class="notif-title">Badge unlocked: Green Beginner</div><div class="notif-meta">Priya S. · 2h ago</div></div></div>
+          <div class="notif-item"><div class="notif-ico wrn"><span class="ico ico-target sm"></span></div><div><div class="notif-title">3 challenge submissions pending review</div><div class="notif-meta">Recycle Challenge · today</div></div></div>
+          <div class="notif-item"><div class="notif-ico"><span class="ico ico-gift sm"></span></div><div><div class="notif-title">Reward redeemed: ₹500 Gift Card</div><div class="notif-meta">Karan Shah · stock: 11 left</div></div></div>
+        </div>
+      </div>
       <div class="avatar">AM</div>
     </header>
 
@@ -33,84 +41,498 @@
       <div class="page-head">
         <div><h1 class="page-title">Challenges, Badges &amp; Leaderboard</h1>
           <div class="sub">Drive sustainability through participation, XP and rewards</div></div>
-        <button class="btn sm"><span class="ico ico-plus"></span> New Challenge</button>
+        <button class="btn sm" onclick="openModal('modal-challenge')"><span class="ico ico-plus"></span> New Challenge</button>
       </div>
 
       <div class="tabs">
-        <div class="tab active">Challenges</div>
-        <div class="tab">Challenge Participation</div>
-        <div class="tab">Badges</div>
-        <div class="tab">Rewards</div>
-        <div class="tab">Leaderboard</div>
+        <div class="tab active" id="tab-0" onclick="switchTab(0)">Challenges</div>
+        <div class="tab" id="tab-1" onclick="switchTab(1)">Challenge Participation</div>
+        <div class="tab" id="tab-2" onclick="switchTab(2)">Badges</div>
+        <div class="tab" id="tab-3" onclick="switchTab(3)">Rewards</div>
+        <div class="tab" id="tab-4" onclick="switchTab(4)">Leaderboard</div>
       </div>
 
-      <div class="rowflex" style="margin-bottom:16px">
-        <span class="pill neutral">Draft 2</span>
-        <span class="pill plum">Active 5</span>
-        <span class="pill warning">Under Review 3</span>
-        <span class="pill neutral">Completed 14</span>
-        <span class="pill neutral">Archived 8</span>
-        <span class="muted" style="font-size:12px">lifecycle: Draft → Active → Under Review → Completed (Archived anytime)</span>
-      </div>
-
-      <div class="grid autofit">
-        <div class="card">
-          <div class="card-head"><h3>Sustainability Sprint</h3><span class="pill plum">Active</span></div>
-          <div class="muted">Log 5 sustainable actions this week.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill warning">200 XP</span><span class="pill neutral">Hard</span><span class="meta"><span class="ico ico-clip"></span> Evidence</span></div>
-          <div class="card-foot"><span class="meta"><span class="ico ico-clock"></span> Ends 20 Jul</span><button class="btn sm">Join Challenge</button></div>
+      <!-- Tab 0: Challenges -->
+      <div class="tab-pane active" id="pane-0">
+        <div class="rowflex" style="margin-bottom:16px">
+          <span class="pill neutral">Draft 2</span>
+          <span class="pill plum">Active 5</span>
+          <span class="pill warning">Under Review 3</span>
+          <span class="pill neutral">Completed 14</span>
+          <span class="pill neutral">Archived 8</span>
+          <span class="muted" style="font-size:12px">lifecycle: Draft → Active → Under Review → Completed (Archived anytime)</span>
         </div>
-        <div class="card">
-          <div class="card-head"><h3>Commute Green Week</h3><span class="pill plum">Active</span></div>
-          <div class="muted">Cycle or carpool to work for 5 days.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill warning">120 XP</span><span class="pill neutral">Medium</span><span class="meta"><span class="ico ico-clip"></span> Evidence</span></div>
-          <div class="card-foot"><span class="meta"><span class="ico ico-clock"></span> Ends 25 Jul</span><button class="btn sm">Join Challenge</button></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h3>Recycle Challenge</h3><span class="pill warning">Under Review</span></div>
-          <div class="muted">Sort and recycle office waste for a week.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill warning">80 XP</span><span class="pill neutral">Easy</span><span class="meta"><span class="ico ico-clip"></span> Evidence</span></div>
-          <div class="card-foot"><span class="meta">3 submissions pending</span><button class="btn secondary sm">Review</button></div>
-        </div>
-      </div>
-
-      <div class="grid cols-2" style="margin-top:24px">
-        <div class="card">
-          <div class="card-head"><h3><span class="ico ico-award"></span> Badge Gallery</h3><span class="muted">auto-awarded on unlock rule</span></div>
-          <div class="grid cols-2" style="gap:12px">
-            <div class="rowflex" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><span class="tile-ico"><span class="ico ico-award"></span></span><div><b>Green Beginner</b><div class="muted" style="font-size:12px">Unlock: 100 XP</div></div></div>
-            <div class="rowflex" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><span class="tile-ico"><span class="ico ico-award"></span></span><div><b>Carbon Saver</b><div class="muted" style="font-size:12px">Unlock: 5 challenges</div></div></div>
-            <div class="rowflex" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><span class="tile-ico warn"><span class="ico ico-trophy"></span></span><div><b>Sustainability Champ</b><div class="muted" style="font-size:12px">Unlock: 1000 XP</div></div></div>
-            <div class="rowflex" style="border:1px dashed var(--line-strong);border-radius:var(--radius-sm);padding:12px;opacity:.5"><span class="tile-ico" style="background:var(--neutral-bg);color:var(--neutral)"><span class="ico ico-award"></span></span><div><b>Team Player</b><div class="muted" style="font-size:12px">Locked · 10 CSR</div></div></div>
+        <div class="grid autofit">
+          <div class="card">
+            <div class="card-head"><h3>Sustainability Sprint</h3><span class="pill plum">Active</span></div>
+            <div class="muted">Log 5 sustainable actions this week.</div>
+            <div class="rowflex" style="margin-top:12px"><span class="pill warning">200 XP</span><span class="pill neutral">Hard</span><span class="meta"><span class="ico ico-clip"></span> Evidence</span></div>
+            <div class="card-foot">
+              <span class="meta"><span class="ico ico-clock"></span> Ends 20 Jul</span>
+              <div class="rowflex" style="gap:8px">
+                <button class="btn secondary sm" onclick="openModal('modal-transition')"><span class="ico ico-edit"></span></button>
+                <button class="btn sm" onclick="setJoinChallenge('Sustainability Sprint',200);openModal('modal-join-challenge')">Join Challenge</button>
+              </div>
+            </div>
           </div>
-        </div>
-
-        <div class="card">
-          <div class="card-head"><h3><span class="ico ico-trophy"></span> Leaderboard</h3><span class="muted">this quarter</span></div>
-          <div class="table-wrap" style="border:0">
-            <table class="tbl" style="min-width:auto">
-              <thead><tr><th>#</th><th>Employee / Dept</th><th class="num">XP</th><th class="num">Badges</th></tr></thead>
-              <tbody>
-                <tr><td><b>1</b></td><td><span class="avatar-sm">MF</span> Manufacturing Dept</td><td class="num"><b>4,820</b></td><td class="num">3</td></tr>
-                <tr><td><b>2</b></td><td><span class="avatar-sm">AR</span> Aditi Rao</td><td class="num">3,910</td><td class="num">2</td></tr>
-                <tr><td><b>3</b></td><td><span class="avatar-sm">CO</span> Corporate Dept</td><td class="num">3,505</td><td class="num">2</td></tr>
-                <tr><td>4</td><td><span class="avatar-sm">KS</span> Karan Shah</td><td class="num">2,980</td><td class="num">1</td></tr>
-                <tr><td>5</td><td><span class="avatar-sm">PS</span> Priya S.</td><td class="num">2,640</td><td class="num">2</td></tr>
-              </tbody>
-            </table>
+          <div class="card">
+            <div class="card-head"><h3>Commute Green Week</h3><span class="pill plum">Active</span></div>
+            <div class="muted">Cycle or carpool to work for 5 days.</div>
+            <div class="rowflex" style="margin-top:12px"><span class="pill warning">120 XP</span><span class="pill neutral">Medium</span><span class="meta"><span class="ico ico-clip"></span> Evidence</span></div>
+            <div class="card-foot">
+              <span class="meta"><span class="ico ico-clock"></span> Ends 25 Jul</span>
+              <div class="rowflex" style="gap:8px">
+                <button class="btn secondary sm" onclick="openModal('modal-transition')"><span class="ico ico-edit"></span></button>
+                <button class="btn sm" onclick="setJoinChallenge('Commute Green Week',120);openModal('modal-join-challenge')">Join Challenge</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Recycle Challenge</h3><span class="pill warning">Under Review</span></div>
+            <div class="muted">Sort and recycle office waste for a week.</div>
+            <div class="rowflex" style="margin-top:12px"><span class="pill warning">80 XP</span><span class="pill neutral">Easy</span><span class="meta"><span class="ico ico-clip"></span> Evidence</span></div>
+            <div class="card-foot">
+              <span class="meta">3 submissions pending</span>
+              <div class="rowflex" style="gap:8px">
+                <button class="btn secondary sm" onclick="openModal('modal-transition')"><span class="ico ico-edit"></span></button>
+                <button class="btn secondary sm" onclick="openModal('modal-review-submissions')">Review</button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
-      <div class="card" style="margin-top:24px">
-        <div class="card-head"><h3><span class="ico ico-gift"></span> Rewards catalog</h3><span class="muted">redeem XP · stock-limited · deducts points</span></div>
-        <div class="stack" style="gap:0">
-          <div class="list-row"><div><b>₹500 Gift Card</b> <span class="muted">· Stock: 12</span></div><span class="pill plum">800 pts</span></div>
-          <div class="list-row"><div><b>Eco Water Bottle</b> <span class="muted">· Stock: 40</span></div><span class="pill plum">300 pts</span></div>
-          <div class="list-row"><div><b>Extra Leave Day</b> <span class="muted">· Stock: 5</span></div><span class="pill plum">1500 pts</span></div>
-          <div class="list-row" style="opacity:.55"><div><b>Plant a Tree</b> <span class="muted">· Out of stock</span></div><span class="pill neutral">200 pts</span></div>
+      <!-- Tab 1: Challenge Participation -->
+      <div class="tab-pane" id="pane-1">
+        <div class="note" style="margin-bottom:14px"><span class="ico ico-alert"></span><div>Approving a challenge participation awards XP, increments the completed-challenge count, and triggers badge auto-award check.</div></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Employee</th><th>Challenge</th><th>Progress</th><th>Proof</th><th class="num">XP</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><span class="avatar-sm">PS</span> Priya S.</td><td>Recycle Challenge</td><td><div class="rowflex"><div class="progress"><span style="width:100%"></span></div><span class="muted">100%</span></div></td>
+                <td><a href="#" onclick="openModal('modal-view-proof');return false"><span class="ico ico-clip sm"></span> proof.jpg</a></td>
+                <td class="num">80</td><td><span class="pill warning">Pending</span></td>
+                <td><div class="rowflex">
+                  <button class="btn sm" onclick="openModal('modal-approve-challenge')"><span class="ico ico-check"></span> Approve</button>
+                  <button class="btn secondary sm" onclick="openModal('modal-reject-challenge')">Reject</button>
+                </div></td></tr>
+              <tr><td><span class="avatar-sm">AR</span> Aditi Rao</td><td>Recycle Challenge</td><td><div class="rowflex"><div class="progress"><span style="width:100%"></span></div><span class="muted">100%</span></div></td>
+                <td><a href="#" onclick="openModal('modal-view-proof');return false"><span class="ico ico-clip sm"></span> photo.jpg</a></td>
+                <td class="num">80</td><td><span class="pill plum">Approved</span></td>
+                <td><span class="muted">+80 XP awarded</span></td></tr>
+              <tr><td><span class="avatar-sm">KS</span> Karan Shah</td><td>Commute Green Week</td><td><div class="rowflex"><div class="progress"><span class="warning" style="width:60%"></span></div><span class="muted">60%</span></div></td>
+                <td><span class="pill neutral">No proof yet</span></td>
+                <td class="num">—</td><td><span class="pill neutral">In Progress</span></td>
+                <td><span class="muted">Ongoing</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 2: Badges -->
+      <div class="tab-pane" id="pane-2">
+        <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
+          <span class="muted" style="font-size:13px">Auto-awarded when XP or completed-challenge count meets the unlock rule</span>
+          <button class="btn sm" onclick="openModal('modal-badge')"><span class="ico ico-plus"></span> New Badge</button>
+        </div>
+        <div class="grid autofit">
+          <div class="card">
+            <div class="rowflex" style="gap:14px;align-items:flex-start">
+              <span class="tile-ico" style="width:42px;height:42px"><span class="ico ico-award"></span></span>
+              <div style="flex:1">
+                <div style="font-weight:700">Green Beginner</div>
+                <div class="muted" style="font-size:12px;margin-top:3px">Unlock: 100 XP · 24 employees earned</div>
+                <div class="rowflex" style="margin-top:8px;gap:6px">
+                  <span class="pill plum">XP threshold</span>
+                  <button class="btn secondary sm" onclick="openModal('modal-badge')"><span class="ico ico-edit sm"></span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="rowflex" style="gap:14px;align-items:flex-start">
+              <span class="tile-ico" style="width:42px;height:42px"><span class="ico ico-award"></span></span>
+              <div style="flex:1">
+                <div style="font-weight:700">Carbon Saver</div>
+                <div class="muted" style="font-size:12px;margin-top:3px">Unlock: 5 challenges · 8 employees earned</div>
+                <div class="rowflex" style="margin-top:8px;gap:6px">
+                  <span class="pill plum">Challenge count</span>
+                  <button class="btn secondary sm" onclick="openModal('modal-badge')"><span class="ico ico-edit sm"></span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="rowflex" style="gap:14px;align-items:flex-start">
+              <span class="tile-ico warn" style="width:42px;height:42px"><span class="ico ico-trophy"></span></span>
+              <div style="flex:1">
+                <div style="font-weight:700">Sustainability Champ</div>
+                <div class="muted" style="font-size:12px;margin-top:3px">Unlock: 1000 XP · 3 employees earned</div>
+                <div class="rowflex" style="margin-top:8px;gap:6px">
+                  <span class="pill warning">XP threshold</span>
+                  <button class="btn secondary sm" onclick="openModal('modal-badge')"><span class="ico ico-edit sm"></span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card" style="opacity:.6">
+            <div class="rowflex" style="gap:14px;align-items:flex-start">
+              <span class="tile-ico" style="width:42px;height:42px;background:var(--neutral-bg);color:var(--neutral)"><span class="ico ico-award"></span></span>
+              <div style="flex:1">
+                <div style="font-weight:700">Team Player</div>
+                <div class="muted" style="font-size:12px;margin-top:3px">Unlock: 10 CSR activities · 0 earned</div>
+                <div class="rowflex" style="margin-top:8px;gap:6px">
+                  <span class="pill neutral">Locked</span>
+                  <button class="btn secondary sm" onclick="openModal('modal-badge')"><span class="ico ico-edit sm"></span></button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 3: Rewards -->
+      <div class="tab-pane" id="pane-3">
+        <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
+          <span class="muted" style="font-size:13px">Points redeemed from employee balance · stock-limited · atomic deduction</span>
+          <button class="btn sm" onclick="openModal('modal-reward')"><span class="ico ico-plus"></span> New Reward</button>
+        </div>
+        <div class="card">
+          <div class="card-head"><h3><span class="ico ico-gift"></span> Rewards catalog</h3><span class="muted">redeem XP · stock-limited · deducts points</span></div>
+          <div class="stack" style="gap:0">
+            <div class="list-row">
+              <div><b>₹500 Gift Card</b> <span class="muted">· Stock: 12</span></div>
+              <div class="rowflex" style="gap:8px"><span class="pill plum">800 pts</span><button class="btn sm" onclick="setRedeem('₹500 Gift Card',800,12);openModal('modal-redeem')">Redeem</button><button class="btn secondary sm" onclick="openModal('modal-reward')"><span class="ico ico-edit sm"></span></button></div>
+            </div>
+            <div class="list-row">
+              <div><b>Eco Water Bottle</b> <span class="muted">· Stock: 40</span></div>
+              <div class="rowflex" style="gap:8px"><span class="pill plum">300 pts</span><button class="btn sm" onclick="setRedeem('Eco Water Bottle',300,40);openModal('modal-redeem')">Redeem</button><button class="btn secondary sm" onclick="openModal('modal-reward')"><span class="ico ico-edit sm"></span></button></div>
+            </div>
+            <div class="list-row">
+              <div><b>Extra Leave Day</b> <span class="muted">· Stock: 5</span></div>
+              <div class="rowflex" style="gap:8px"><span class="pill plum">1500 pts</span><button class="btn sm" onclick="setRedeem('Extra Leave Day',1500,5);openModal('modal-redeem')">Redeem</button><button class="btn secondary sm" onclick="openModal('modal-reward')"><span class="ico ico-edit sm"></span></button></div>
+            </div>
+            <div class="list-row" style="opacity:.55">
+              <div><b>Plant a Tree</b> <span class="muted">· Out of stock</span></div>
+              <div class="rowflex" style="gap:8px"><span class="pill neutral">200 pts</span><button class="btn secondary sm" disabled>Out of Stock</button></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab 4: Leaderboard -->
+      <div class="tab-pane" id="pane-4">
+        <div class="grid cols-2" style="gap:20px">
+          <div class="card">
+            <div class="card-head"><h3><span class="ico ico-trophy"></span> Employee Leaderboard</h3><span class="muted">this quarter</span></div>
+            <div class="table-wrap" style="border:0">
+              <table class="tbl" style="min-width:auto">
+                <thead><tr><th>#</th><th>Employee</th><th class="num">XP</th><th class="num">Badges</th></tr></thead>
+                <tbody>
+                  <tr><td><b>1</b></td><td><span class="avatar-sm">AR</span> Aditi Rao</td><td class="num"><b>3,910</b></td><td class="num">2</td></tr>
+                  <tr><td><b>2</b></td><td><span class="avatar-sm">PS</span> Priya S.</td><td class="num">2,640</td><td class="num">2</td></tr>
+                  <tr><td><b>3</b></td><td><span class="avatar-sm">KS</span> Karan Shah</td><td class="num">2,980</td><td class="num">1</td></tr>
+                  <tr><td>4</td><td><span class="avatar-sm">MJ</span> Meera Jain</td><td class="num">1,420</td><td class="num">1</td></tr>
+                  <tr><td>5</td><td><span class="avatar-sm">RI</span> R. Iyer</td><td class="num">980</td><td class="num">0</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3><span class="ico ico-trophy"></span> Department Leaderboard</h3><span class="muted">this quarter</span></div>
+            <div class="table-wrap" style="border:0">
+              <table class="tbl" style="min-width:auto">
+                <thead><tr><th>#</th><th>Department</th><th class="num">Total XP</th><th class="num">Badges</th></tr></thead>
+                <tbody>
+                  <tr><td><b>1</b></td><td><span class="avatar-sm">MF</span> Manufacturing</td><td class="num"><b>4,820</b></td><td class="num">3</td></tr>
+                  <tr><td><b>2</b></td><td><span class="avatar-sm">CO</span> Corporate</td><td class="num">3,505</td><td class="num">2</td></tr>
+                  <tr><td><b>3</b></td><td><span class="avatar-sm">IT</span> IT</td><td class="num">2,210</td><td class="num">1</td></tr>
+                  <tr><td>4</td><td><span class="avatar-sm">LO</span> Logistics</td><td class="num">1,890</td><td class="num">1</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ══ MODAL: New Challenge ══ -->
+<div class="overlay" id="modal-challenge" onclick="overlayClick(event,'modal-challenge')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-target"></span> New Challenge</h2>
+      <button class="close" onclick="closeModal('modal-challenge')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="lbl">Challenge Title</div><input type="text" placeholder="e.g. Zero Waste Week"></div>
+      <div class="field"><div class="lbl">Category</div><select><option>Waste Reduction</option><option>Energy Saving</option><option>Sustainable Transport</option><option>Community Service</option></select></div>
+      <div class="field"><div class="lbl">Description</div><textarea placeholder="Describe what participants must do to complete this challenge…"></textarea></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">XP Reward</div><input type="number" placeholder="e.g. 200" min="0"></div>
+        <div class="field"><div class="lbl">Difficulty</div><select><option>Easy</option><option>Medium</option><option>Hard</option></select></div>
+      </div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Deadline</div><input type="date"></div>
+        <div class="field"><div class="lbl">Scope</div><select><option>All departments (global)</option><option>Specific department…</option></select></div>
+      </div>
+      <div class="rowflex" style="justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)">
+        <div><b style="font-size:13.5px">Require evidence for participation</b><div class="muted" style="font-size:12px">Participants must upload proof before approval</div></div>
+        <label class="switch"><input type="checkbox" checked><span class="track"></span></label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <span class="left"><span class="pill neutral">Saved as Draft</span></span>
+      <button class="btn secondary" onclick="closeModal('modal-challenge')">Cancel</button>
+      <button class="btn" onclick="saveChallenge()"><span class="ico ico-check"></span> Create Challenge</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Join Challenge ══ -->
+<div class="overlay" id="modal-join-challenge" onclick="overlayClick(event,'modal-join-challenge')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-target"></span> Join Challenge</h2>
+      <button class="close" onclick="closeModal('modal-join-challenge')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div style="padding:4px 0"><b id="jc-name" style="font-size:15px">Sustainability Sprint</b><div class="muted" style="margin-top:4px">Earn <b id="jc-xp" style="color:var(--brand)">200 XP</b> upon successful completion and approval.</div></div>
+      <div class="note"><span class="ico ico-alert"></span><div>Evidence is required. Upload a proof photo or document before submitting for approval.</div></div>
+      <div class="field">
+        <div class="lbl">Upload Proof</div>
+        <div class="upload-area"><span class="ico ico-upload"></span><div>Drag &amp; drop or <b style="color:var(--brand)">browse</b></div><div style="margin-top:4px;font-size:12px">Photo, PDF · max 10 MB</div></div>
+      </div>
+      <div class="field"><div class="lbl">Progress Notes (optional)</div><textarea placeholder="Describe your progress or what you did to complete the challenge…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-join-challenge')">Cancel</button>
+      <button class="btn" onclick="joinChallenge()"><span class="ico ico-check"></span> Submit for Approval</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Approve Challenge Participation ══ -->
+<div class="overlay" id="modal-approve-challenge" onclick="overlayClick(event,'modal-approve-challenge')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-check"></span> Approve Participation</h2>
+      <button class="close" onclick="closeModal('modal-approve-challenge')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Employee</span><b>Priya S.</b></div>
+      <div class="rowflex" style="justify-content:space-between;margin-top:10px"><span class="muted">Challenge</span><span>Recycle Challenge</span></div>
+      <div class="rowflex" style="justify-content:space-between;margin-top:10px"><span class="muted">XP to Award</span><b style="color:var(--brand)">80 XP</b></div>
+      <div class="field"><div class="lbl">Proof</div><a href="#" onclick="openModal('modal-view-proof');return false"><span class="ico ico-clip sm"></span> proof.jpg — click to view</a></div>
+      <div class="note" style="background:var(--brand-100);border-color:var(--brand-100);color:var(--brand)"><span class="ico ico-award"></span><div>Approving awards <b>80 XP</b>, increments the employee's completed-challenge count, and triggers badge auto-award check.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-approve-challenge')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-approve-challenge');showToast('Participation approved · 80 XP awarded to Priya S. · badge check triggered.')"><span class="ico ico-check"></span> Approve &amp; Award XP</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Reject Challenge ══ -->
+<div class="overlay" id="modal-reject-challenge" onclick="overlayClick(event,'modal-reject-challenge')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-x"></span> Reject Participation</h2>
+      <button class="close" onclick="closeModal('modal-reject-challenge')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Employee</span><b>Priya S.</b></div>
+      <div class="rowflex" style="justify-content:space-between;margin-top:10px"><span class="muted">Challenge</span><span>Recycle Challenge</span></div>
+      <div class="field" style="margin-top:4px"><div class="lbl">Reason for Rejection</div><textarea placeholder="e.g. Proof does not clearly show the required action…"></textarea></div>
+      <div class="note"><span class="ico ico-alert"></span><div>The employee will be notified and may resubmit with corrected proof.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-reject-challenge')">Cancel</button>
+      <button class="btn danger" onclick="closeModal('modal-reject-challenge');showToast('Participation rejected · employee notified.','warning')"><span class="ico ico-x"></span> Reject</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Review Submissions ══ -->
+<div class="overlay" id="modal-review-submissions" onclick="overlayClick(event,'modal-review-submissions')">
+  <div class="modal modal-lg">
+    <div class="modal-head">
+      <h2><span class="ico ico-eye"></span> Review Submissions — Recycle Challenge</h2>
+      <button class="close" onclick="closeModal('modal-review-submissions')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note" style="margin-bottom:4px"><span class="ico ico-alert"></span><div>3 submissions pending approval. Approving awards 80 XP and triggers badge auto-award.</div></div>
+      <div class="stack" style="gap:0">
+        <div class="list-row">
+          <div class="rowflex" style="gap:10px;flex:1"><span class="avatar-sm">PS</span><div><b>Priya S.</b><div class="muted" style="font-size:12px">Submitted 11 Jul · <a href="#" onclick="openModal('modal-view-proof');return false"><span class="ico ico-clip sm"></span> proof.jpg</a></div></div></div>
+          <div class="rowflex" style="gap:6px"><button class="btn sm" onclick="showToast('Approved · 80 XP awarded to Priya S.')">Approve</button><button class="btn secondary sm">Reject</button></div>
+        </div>
+        <div class="list-row">
+          <div class="rowflex" style="gap:10px;flex:1"><span class="avatar-sm">MJ</span><div><b>Meera Jain</b><div class="muted" style="font-size:12px">Submitted 10 Jul · <a href="#" onclick="openModal('modal-view-proof');return false"><span class="ico ico-clip sm"></span> photo.jpg</a></div></div></div>
+          <div class="rowflex" style="gap:6px"><button class="btn sm" onclick="showToast('Approved · 80 XP awarded to Meera Jain.')">Approve</button><button class="btn secondary sm">Reject</button></div>
+        </div>
+        <div class="list-row">
+          <div class="rowflex" style="gap:10px;flex:1"><span class="avatar-sm">RI</span><div><b>R. Iyer</b><div class="muted" style="font-size:12px">Submitted 10 Jul · <a href="#" onclick="openModal('modal-view-proof');return false"><span class="ico ico-clip sm"></span> evidence.pdf</a></div></div></div>
+          <div class="rowflex" style="gap:6px"><button class="btn sm" onclick="showToast('Approved · 80 XP awarded to R. Iyer.')">Approve</button><button class="btn secondary sm">Reject</button></div>
+        </div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-review-submissions')">Close</button>
+      <button class="btn" onclick="closeModal('modal-review-submissions');showToast('All 3 submissions approved · XP awarded.')">Approve All</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Challenge Lifecycle Transition ══ -->
+<div class="overlay" id="modal-transition" onclick="overlayClick(event,'modal-transition')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-edit"></span> Change Challenge Status</h2>
+      <button class="close" onclick="closeModal('modal-transition')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note"><span class="ico ico-alert"></span><div>Lifecycle: <b>Draft → Active → Under Review → Completed</b> · Archived at any point.</div></div>
+      <div class="field"><div class="lbl">Current Status</div><input type="text" value="Active" disabled style="background:var(--canvas);color:var(--ink-muted)"></div>
+      <div class="field"><div class="lbl">Transition To</div>
+        <select id="transition-select"><option value="">— select —</option><option>Under Review</option><option>Archived</option></select>
+      </div>
+      <div class="field"><div class="lbl">Notes (optional)</div><textarea placeholder="Reason for status change…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-transition')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-transition');showToast('Challenge status updated.')"><span class="ico ico-check"></span> Apply Transition</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Redeem Reward ══ -->
+<div class="overlay" id="modal-redeem" onclick="overlayClick(event,'modal-redeem')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-gift"></span> Redeem Reward</h2>
+      <button class="close" onclick="closeModal('modal-redeem')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div style="text-align:center;padding:12px 0">
+        <div style="font-size:22px;font-weight:700" id="rd-name">₹500 Gift Card</div>
+        <div class="muted" style="margin-top:6px">Costs <b id="rd-pts" style="color:var(--brand)">800 pts</b> · <span id="rd-stock">12</span> left in stock</div>
+      </div>
+      <div class="divider"></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Your current balance</span><b>1,240 pts</b></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">After redemption</span><b id="rd-after" style="color:var(--brand)">440 pts</b></div>
+      <div class="note" style="background:var(--brand-100);border-color:var(--brand-100);color:var(--brand)"><span class="ico ico-alert"></span><div>Points are deducted and stock decremented atomically. This action cannot be undone.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-redeem')">Cancel</button>
+      <button class="btn" onclick="doRedeem()"><span class="ico ico-gift"></span> Confirm Redemption</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: New Badge ══ -->
+<div class="overlay" id="modal-badge" onclick="overlayClick(event,'modal-badge')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-award"></span> Badge</h2>
+      <button class="close" onclick="closeModal('modal-badge')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="lbl">Badge Name</div><input type="text" placeholder="e.g. Green Beginner"></div>
+      <div class="field"><div class="lbl">Description</div><input type="text" placeholder="e.g. Awarded for first 100 XP earned"></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Unlock Rule Type</div><select><option>XP threshold</option><option>Completed challenges</option></select></div>
+        <div class="field"><div class="lbl">Threshold Value</div><input type="number" placeholder="e.g. 100" min="1"></div>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-badge')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-badge');showToast('Badge saved.')"><span class="ico ico-check"></span> Save Badge</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: New Reward ══ -->
+<div class="overlay" id="modal-reward" onclick="overlayClick(event,'modal-reward')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-gift"></span> Reward</h2>
+      <button class="close" onclick="closeModal('modal-reward')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="lbl">Reward Name</div><input type="text" placeholder="e.g. ₹500 Gift Card"></div>
+      <div class="field"><div class="lbl">Description</div><textarea placeholder="Describe the reward…"></textarea></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Points Required</div><input type="number" placeholder="e.g. 800" min="0"></div>
+        <div class="field"><div class="lbl">Stock Available</div><input type="number" placeholder="e.g. 12" min="0"></div>
+      </div>
+      <div class="field"><div class="lbl">Status</div><select><option>Active</option><option>Inactive</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-reward')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-reward');showToast('Reward saved.')"><span class="ico ico-check"></span> Save Reward</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: View Proof ══ -->
+<div class="overlay" id="modal-view-proof" onclick="overlayClick(event,'modal-view-proof')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-clip"></span> Proof Document</h2>
+      <button class="close" onclick="closeModal('modal-view-proof')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body" style="align-items:center">
+      <div style="width:100%;height:220px;background:var(--canvas);border:1px solid var(--line);border-radius:var(--radius-sm);display:grid;place-items:center;color:var(--ink-muted)">
+        <div style="text-align:center"><span class="ico ico-clip" style="width:32px;height:32px;opacity:.3"></span><div style="margin-top:10px">[ Proof image / document preview ]</div><div style="font-size:12px;margin-top:4px">proof.jpg · 1.8 MB</div></div>
+      </div>
+      <div class="note"><span class="ico ico-check"></span><div>Uploaded by employee · timestamp verified · file hash stored for audit trail.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-view-proof')">Close</button>
+      <button class="btn secondary" onclick="showToast('Downloading…');closeModal('modal-view-proof')"><span class="ico ico-download"></span> Download</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+var _joinChallengeName='', _joinChallengeXP=0;
+function setJoinChallenge(name,xp){ _joinChallengeName=name; _joinChallengeXP=xp;
+  document.getElementById('jc-name').textContent=name;
+  document.getElementById('jc-xp').textContent=xp+' XP';
+}
+var _redeemName='', _redeemPts=0, _redeemStock=0;
+function setRedeem(name,pts,stock){ _redeemName=name; _redeemPts=pts; _redeemStock=stock;
+  document.getElementById('rd-name').textContent=name;
+  document.getElementById('rd-pts').textContent=pts+' pts';
+  document.getElementById('rd-stock').textContent=stock;
+  document.getElementById('rd-after').textContent=(1240-pts)+' pts';
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function overlayClick(e,id){ if(e.target===document.getElementById(id)) closeModal(id); }
+function switchTab(n){
+  for(var i=0;i<5;i++){
+    document.getElementById('tab-'+i).classList.toggle('active',i===n);
+    document.getElementById('pane-'+i).classList.toggle('active',i===n);
+  }
+}
+function toggleNotif(){
+  var p=document.getElementById('notif-panel'); p.classList.toggle('open');
+  setTimeout(function(){ document.addEventListener('click',function h(e){ if(!document.getElementById('bell-btn').contains(e.target)&&!p.contains(e.target)){p.classList.remove('open');document.removeEventListener('click',h);} }); },0);
+}
+function saveChallenge(){ closeModal('modal-challenge'); showToast('Challenge created and saved as Draft.'); }
+function joinChallenge(){ closeModal('modal-join-challenge'); showToast('Submission sent · awaiting dept head approval.'); }
+function doRedeem(){ closeModal('modal-redeem'); showToast(_redeemName+' redeemed · '+_redeemPts+' pts deducted.'); }
+function showToast(msg,type){
+  var s=document.getElementById('toast-stack'); var t=document.createElement('div');
+  t.className='toast'+(type?' '+type:'');
+  t.innerHTML='<span class="ico ico-check"></span><span class="toast-text">'+msg+'</span><span class="toast-close" onclick="this.parentElement.remove()">×</span>';
+  if(type==='warning') t.querySelector('.ico').className='ico ico-alert';
+  s.appendChild(t); setTimeout(()=>t.remove(),4000);
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>{o.classList.remove('open');document.body.style.overflow='';}); });
+</script>

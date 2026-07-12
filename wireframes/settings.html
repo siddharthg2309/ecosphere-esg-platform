@@ -25,7 +25,15 @@
       <div class="crumb">Settings <small>/ Configuration &amp; Administration</small></div>
       <div class="spacer"></div>
       <div class="search"><span class="ico ico-search sm"></span><input placeholder="Search settings…"></div>
-      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+      <div class="notif-wrap">
+        <div class="iconbtn" onclick="toggleNotif()" id="bell-btn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-hd"><span>Notifications</span><a href="#">Mark all read</a></div>
+          <div class="notif-item"><div class="notif-ico dng"><span class="ico ico-alert sm"></span></div><div><div class="notif-title">Compliance issue overdue</div><div class="notif-meta">Logistics · 5h ago</div></div></div>
+          <div class="notif-item"><div class="notif-ico wrn"><span class="ico ico-scale sm"></span></div><div><div class="notif-title">Policy acknowledgement pending</div><div class="notif-meta">12 employees · reminder sent</div></div></div>
+          <div class="notif-item"><div class="notif-ico"><span class="ico ico-award sm"></span></div><div><div class="notif-title">Badge auto-awarded</div><div class="notif-meta">Green Beginner · Priya S.</div></div></div>
+        </div>
+      </div>
       <div class="avatar">AM</div>
     </header>
 
@@ -36,69 +44,347 @@
       </div>
 
       <div class="tabs">
-        <div class="tab active">Departments</div>
-        <div class="tab">Categories</div>
-        <div class="tab">ESG Configuration</div>
-        <div class="tab">Notification Settings</div>
+        <div class="tab active" id="tab-0" onclick="switchTab(0)">Departments</div>
+        <div class="tab" id="tab-1" onclick="switchTab(1)">Categories</div>
+        <div class="tab" id="tab-2" onclick="switchTab(2)">ESG Configuration</div>
+        <div class="tab" id="tab-3" onclick="switchTab(3)">Notification Settings</div>
       </div>
 
-      <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
-        <h2 class="section" style="margin:0">Departments</h2>
-        <button class="btn sm"><span class="ico ico-plus"></span> New Department</button>
-      </div>
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead><tr><th>Name</th><th>Code</th><th>Head</th><th>Parent Dept</th><th class="num">Employees</th><th>Status</th><th></th></tr></thead>
-          <tbody>
-            <tr><td><b>Manufacturing</b></td><td>MFG</td><td><span class="avatar-sm">SN</span> S. Nair</td><td>—</td><td class="num">134</td><td><span class="pill plum"><span class="dot plum"></span> Active</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
-            <tr><td><b>Logistics</b></td><td>LOG</td><td><span class="avatar-sm">RI</span> R. Iyer</td><td>Manufacturing</td><td class="num">58</td><td><span class="pill plum"><span class="dot plum"></span> Active</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
-            <tr><td><b>Corporate</b></td><td>COR</td><td><span class="avatar-sm">AM</span> A. Mehta</td><td>—</td><td class="num">41</td><td><span class="pill plum"><span class="dot plum"></span> Active</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
-            <tr><td><b>Facilities</b></td><td>FAC</td><td><span class="avatar-sm">PS</span> P. Shah</td><td>Corporate</td><td class="num">22</td><td><span class="pill neutral"><span class="dot neutral"></span> Inactive</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
-          </tbody>
-        </table>
+      <!-- Tab 0: Departments -->
+      <div class="tab-pane active" id="pane-0">
+        <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
+          <h2 class="section" style="margin:0">Departments</h2>
+          <button class="btn sm" onclick="openModal('modal-dept')"><span class="ico ico-plus"></span> New Department</button>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Name</th><th>Code</th><th>Head</th><th>Parent Dept</th><th class="num">Employees</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>Manufacturing</b></td><td>MFG</td><td><span class="avatar-sm">SN</span> S. Nair</td><td>—</td><td class="num">134</td><td><span class="pill plum"><span class="dot plum"></span> Active</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openEditDept('Manufacturing','MFG','S. Nair','—','134','active')"><span class="ico ico-edit sm"></span></span><span class="a" onclick="openModal('modal-delete-dept')"><span class="ico ico-trash sm"></span></span></div></td></tr>
+              <tr><td><b>Logistics</b></td><td>LOG</td><td><span class="avatar-sm">RI</span> R. Iyer</td><td>Manufacturing</td><td class="num">58</td><td><span class="pill plum"><span class="dot plum"></span> Active</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openEditDept('Logistics','LOG','R. Iyer','Manufacturing','58','active')"><span class="ico ico-edit sm"></span></span><span class="a" onclick="openModal('modal-delete-dept')"><span class="ico ico-trash sm"></span></span></div></td></tr>
+              <tr><td><b>Corporate</b></td><td>COR</td><td><span class="avatar-sm">AM</span> A. Mehta</td><td>—</td><td class="num">41</td><td><span class="pill plum"><span class="dot plum"></span> Active</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openEditDept('Corporate','COR','A. Mehta','—','41','active')"><span class="ico ico-edit sm"></span></span><span class="a" onclick="openModal('modal-delete-dept')"><span class="ico ico-trash sm"></span></span></div></td></tr>
+              <tr><td><b>Facilities</b></td><td>FAC</td><td><span class="avatar-sm">PS</span> P. Shah</td><td>Corporate</td><td class="num">22</td><td><span class="pill neutral"><span class="dot neutral"></span> Inactive</span></td>
+                <td><div class="row-actions"><span class="a" onclick="openEditDept('Facilities','FAC','P. Shah','Corporate','22','inactive')"><span class="ico ico-edit sm"></span></span><span class="a" onclick="openModal('modal-delete-dept')"><span class="ico ico-trash sm"></span></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      <div class="grid cols-2" style="margin-top:24px">
-        <div class="card">
-          <div class="card-head"><h3><span class="ico ico-settings"></span> ESG Configuration</h3><span class="muted">in scope · not optional</span></div>
-          <div class="stack" style="gap:0">
-            <div class="rowflex" style="justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)">
-              <div><b>Enable auto emission calculation</b><div class="muted" style="font-size:12.5px">Carbon Transactions auto-generated from Purchase / Mfg / Expense / Fleet.</div></div>
-              <label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
-            <div class="rowflex" style="justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)">
-              <div><b>Require evidence for all CSR activities</b><div class="muted" style="font-size:12.5px">Participation cannot be approved without a proof file.</div></div>
-              <label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
-            <div class="rowflex" style="justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)">
-              <div><b>Auto-award badges</b><div class="muted" style="font-size:12.5px">Assigned the moment XP / completed-challenge count meets the unlock rule.</div></div>
-              <label class="switch"><input type="checkbox" checked><span class="track"></span></label></div>
-            <div class="rowflex" style="justify-content:space-between;padding:12px 0">
-              <div><b>Email alerts for new compliance issues</b><div class="muted" style="font-size:12.5px">Notify owner + admin; overdue issues re-flagged.</div></div>
-              <label class="switch"><input type="checkbox"><span class="track"></span></label></div>
+      <!-- Tab 1: Categories -->
+      <div class="tab-pane" id="pane-1">
+        <div class="rowflex" style="justify-content:space-between;margin-bottom:14px">
+          <span class="muted" style="font-size:13px">Shared across Social (CSR) and Gamification (Challenges)</span>
+          <button class="btn sm" onclick="openModal('modal-category')"><span class="ico ico-plus"></span> New Category</button>
+        </div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Name</th><th>Type</th><th>Status</th><th></th></tr></thead>
+            <tbody>
+              <tr><td><b>Waste Reduction</b></td><td><span class="pill neutral">Challenge</span></td><td><span class="pill plum">Active</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-category')"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
+              <tr><td><b>Community Service</b></td><td><span class="pill plum">CSR Activity</span></td><td><span class="pill plum">Active</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-category')"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
+              <tr><td><b>Energy Saving</b></td><td><span class="pill neutral">Challenge</span></td><td><span class="pill plum">Active</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-category')"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
+              <tr><td><b>Health &amp; Wellness</b></td><td><span class="pill plum">CSR Activity</span></td><td><span class="pill neutral">Inactive</span></td><td><div class="row-actions"><span class="a" onclick="openModal('modal-category')"><span class="ico ico-edit sm"></span></span><span class="a"><span class="ico ico-trash sm"></span></span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 2: ESG Configuration -->
+      <div class="tab-pane" id="pane-2">
+        <div class="grid cols-2" style="margin-top:0">
+          <div class="card">
+            <div class="card-head"><h3><span class="ico ico-settings"></span> ESG Configuration</h3><span class="muted">in scope · not optional</span></div>
+            <div class="stack" style="gap:0">
+              <div class="rowflex" style="justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)">
+                <div><b>Enable auto emission calculation</b><div class="muted" style="font-size:12.5px">Carbon Transactions auto-generated from Purchase / Mfg / Expense / Fleet.</div></div>
+                <label class="switch"><input type="checkbox" checked onchange="showToast('Auto emission calc '+(this.checked?'enabled':'disabled')+'.')"><span class="track"></span></label>
+              </div>
+              <div class="rowflex" style="justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)">
+                <div><b>Require evidence for all CSR activities</b><div class="muted" style="font-size:12.5px">Participation cannot be approved without a proof file.</div></div>
+                <label class="switch"><input type="checkbox" checked onchange="showToast('CSR evidence requirement '+(this.checked?'enabled':'disabled')+'.')"><span class="track"></span></label>
+              </div>
+              <div class="rowflex" style="justify-content:space-between;padding:12px 0;border-bottom:1px solid var(--line)">
+                <div><b>Auto-award badges</b><div class="muted" style="font-size:12.5px">Assigned the moment XP / completed-challenge count meets the unlock rule.</div></div>
+                <label class="switch"><input type="checkbox" checked onchange="showToast('Badge auto-award '+(this.checked?'enabled':'disabled')+'.')"><span class="track"></span></label>
+              </div>
+              <div class="rowflex" style="justify-content:space-between;padding:12px 0">
+                <div><b>Email alerts for new compliance issues</b><div class="muted" style="font-size:12.5px">Notify owner + admin; overdue issues re-flagged.</div></div>
+                <label class="switch"><input type="checkbox" onchange="showToast('Compliance email alerts '+(this.checked?'enabled':'disabled')+'.')"><span class="track"></span></label>
+              </div>
+            </div>
+          </div>
+
+          <div class="stack">
+            <div class="card">
+              <div class="card-head"><h3><span class="ico ico-scale"></span> ESG Score Weighting</h3><span class="muted">must total 100%</span></div>
+              <div class="stack" style="gap:12px">
+                <div><div class="rowflex" style="justify-content:space-between"><span class="meta"><span class="ico ico-leaf"></span> Environmental</span><b id="w-env-display">40%</b></div><div class="progress"><span id="bar-env" style="width:40%"></span></div></div>
+                <div><div class="rowflex" style="justify-content:space-between"><span class="meta"><span class="ico ico-users"></span> Social</span><b id="w-soc-display">30%</b></div><div class="progress"><span id="bar-soc" style="width:30%"></span></div></div>
+                <div><div class="rowflex" style="justify-content:space-between"><span class="meta"><span class="ico ico-scale"></span> Governance</span><b id="w-gov-display">30%</b></div><div class="progress"><span id="bar-gov" style="width:30%"></span></div></div>
+              </div>
+              <div class="card-foot"><span class="muted">Weights blend E / S / G into each dept score (0–100)</span><button class="btn secondary sm" onclick="openModal('modal-weights')"><span class="ico ico-edit"></span> Edit</button></div>
+            </div>
+
+            <div class="card">
+              <div class="card-head"><h3><span class="ico ico-bell"></span> Notification Settings</h3></div>
+              <div class="stack" style="gap:0">
+                <div class="list-row"><span>New compliance issue raised</span><span class="rowflex"><span class="pill plum">In-app</span><span class="pill neutral" style="cursor:pointer" onclick="toggleNotifChannel(this)">Email</span></span></div>
+                <div class="list-row"><span>CSR / Challenge approval decision</span><span class="rowflex"><span class="pill plum">In-app</span><span class="pill neutral" style="cursor:pointer" onclick="toggleNotifChannel(this)">Email</span></span></div>
+                <div class="list-row"><span>Policy acknowledgement reminder</span><span class="rowflex"><span class="pill plum">In-app</span><span class="pill plum" style="cursor:pointer" onclick="toggleNotifChannel(this)">Email</span></span></div>
+                <div class="list-row"><span>Badge unlock</span><span class="rowflex"><span class="pill plum">In-app</span><span class="pill neutral" style="cursor:pointer" onclick="toggleNotifChannel(this)">Email</span></span></div>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
 
-        <div class="stack">
-          <div class="card">
-            <div class="card-head"><h3><span class="ico ico-scale"></span> ESG Score Weighting</h3><span class="muted">must total 100%</span></div>
-            <div class="stack" style="gap:12px">
-              <div><div class="rowflex" style="justify-content:space-between"><span class="meta"><span class="ico ico-leaf"></span> Environmental</span><b>40%</b></div><div class="progress"><span style="width:40%"></span></div></div>
-              <div><div class="rowflex" style="justify-content:space-between"><span class="meta"><span class="ico ico-users"></span> Social</span><b>30%</b></div><div class="progress"><span style="width:30%"></span></div></div>
-              <div><div class="rowflex" style="justify-content:space-between"><span class="meta"><span class="ico ico-scale"></span> Governance</span><b>30%</b></div><div class="progress"><span style="width:30%"></span></div></div>
+      <!-- Tab 3: Notification Settings -->
+      <div class="tab-pane" id="pane-3">
+        <div class="card">
+          <div class="card-head"><h3><span class="ico ico-bell"></span> Notification Channels &amp; Preferences</h3></div>
+          <div class="stack" style="gap:0">
+            <div class="list-row">
+              <div style="flex:1"><b>New compliance issue raised</b><div class="muted" style="font-size:12px">Notify owner + ESG admin when an issue is created</div></div>
+              <span class="rowflex" style="gap:8px">
+                <label class="switch"><input type="checkbox" checked><span class="track"></span></label><span class="muted" style="font-size:12px">In-app</span>
+                <label class="switch"><input type="checkbox"><span class="track"></span></label><span class="muted" style="font-size:12px">Email</span>
+              </span>
             </div>
-            <div class="card-foot"><span class="muted">Weights blend E / S / G into each dept score (0–100)</span><button class="btn secondary sm">Edit</button></div>
-          </div>
-
-          <div class="card">
-            <div class="card-head"><h3><span class="ico ico-bell"></span> Notification Settings</h3></div>
-            <div class="stack" style="gap:0">
-              <div class="list-row"><span>New compliance issue raised</span><span class="rowflex"><span class="pill plum">In-app</span><span class="pill neutral">Email</span></span></div>
-              <div class="list-row"><span>CSR / Challenge approval decision</span><span class="rowflex"><span class="pill plum">In-app</span><span class="pill neutral">Email</span></span></div>
-              <div class="list-row"><span>Policy acknowledgement reminder</span><span class="rowflex"><span class="pill plum">In-app</span><span class="pill plum">Email</span></span></div>
-              <div class="list-row"><span>Badge unlock</span><span class="rowflex"><span class="pill plum">In-app</span><span class="pill neutral">Email</span></span></div>
+            <div class="list-row">
+              <div style="flex:1"><b>CSR / Challenge approval decision</b><div class="muted" style="font-size:12px">Notify employee when participation is approved or rejected</div></div>
+              <span class="rowflex" style="gap:8px">
+                <label class="switch"><input type="checkbox" checked><span class="track"></span></label><span class="muted" style="font-size:12px">In-app</span>
+                <label class="switch"><input type="checkbox"><span class="track"></span></label><span class="muted" style="font-size:12px">Email</span>
+              </span>
+            </div>
+            <div class="list-row">
+              <div style="flex:1"><b>Policy acknowledgement reminder</b><div class="muted" style="font-size:12px">Remind employees who have not acknowledged published policies</div></div>
+              <span class="rowflex" style="gap:8px">
+                <label class="switch"><input type="checkbox" checked><span class="track"></span></label><span class="muted" style="font-size:12px">In-app</span>
+                <label class="switch"><input type="checkbox" checked><span class="track"></span></label><span class="muted" style="font-size:12px">Email</span>
+              </span>
+            </div>
+            <div class="list-row">
+              <div style="flex:1"><b>Badge unlock</b><div class="muted" style="font-size:12px">Notify employee when a badge is auto-awarded</div></div>
+              <span class="rowflex" style="gap:8px">
+                <label class="switch"><input type="checkbox" checked><span class="track"></span></label><span class="muted" style="font-size:12px">In-app</span>
+                <label class="switch"><input type="checkbox"><span class="track"></span></label><span class="muted" style="font-size:12px">Email</span>
+              </span>
+            </div>
+            <div class="list-row">
+              <div style="flex:1"><b>Overdue compliance issue</b><div class="muted" style="font-size:12px">Daily scheduler re-flags and re-notifies owner + admin</div></div>
+              <span class="rowflex" style="gap:8px">
+                <label class="switch"><input type="checkbox" checked><span class="track"></span></label><span class="muted" style="font-size:12px">In-app</span>
+                <label class="switch"><input type="checkbox" checked><span class="track"></span></label><span class="muted" style="font-size:12px">Email</span>
+              </span>
             </div>
           </div>
+          <div class="card-foot"><span class="muted">Changes take effect immediately</span><button class="btn sm" onclick="showToast('Notification preferences saved.')"><span class="ico ico-check"></span> Save Preferences</button></div>
         </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ══ MODAL: New Department ══ -->
+<div class="overlay" id="modal-dept" onclick="overlayClick(event,'modal-dept')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-users"></span> New Department</h2>
+      <button class="close" onclick="closeModal('modal-dept')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field"><div class="lbl">Department Name</div><input type="text" id="dept-name" placeholder="e.g. Research &amp; Development"></div>
+        <div class="field"><div class="lbl">Code</div><input type="text" id="dept-code" placeholder="e.g. R&amp;D" maxlength="6" style="text-transform:uppercase"></div>
+      </div>
+      <div class="field"><div class="lbl">Department Head</div>
+        <select id="dept-head"><option>— select head —</option><option>S. Nair</option><option>R. Iyer</option><option>A. Mehta</option><option>P. Shah</option><option>K. Menon</option></select></div>
+      <div class="field"><div class="lbl">Parent Department</div>
+        <select id="dept-parent"><option>None (top-level)</option><option>Manufacturing</option><option>Corporate</option><option>Logistics</option></select></div>
+      <div class="field"><div class="lbl">Employee Count</div><input type="number" id="dept-count" placeholder="e.g. 45" min="0"></div>
+      <div class="field"><div class="lbl">Status</div><select id="dept-status"><option>Active</option><option>Inactive</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-dept')">Cancel</button>
+      <button class="btn" onclick="saveDept()"><span class="ico ico-check"></span> Create Department</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Edit Department ══ -->
+<div class="overlay" id="modal-edit-dept" onclick="overlayClick(event,'modal-edit-dept')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-edit"></span> Edit Department</h2>
+      <button class="close" onclick="closeModal('modal-edit-dept')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field-row">
+        <div class="field"><div class="lbl">Department Name</div><input type="text" id="edit-dept-name"></div>
+        <div class="field"><div class="lbl">Code</div><input type="text" id="edit-dept-code" maxlength="6"></div>
+      </div>
+      <div class="field"><div class="lbl">Department Head</div>
+        <select id="edit-dept-head"><option>S. Nair</option><option>R. Iyer</option><option>A. Mehta</option><option>P. Shah</option></select></div>
+      <div class="field"><div class="lbl">Parent Department</div>
+        <select id="edit-dept-parent"><option>None (top-level)</option><option>Manufacturing</option><option>Corporate</option></select></div>
+      <div class="field"><div class="lbl">Employee Count</div><input type="number" id="edit-dept-count" min="0"></div>
+      <div class="field"><div class="lbl">Status</div><select id="edit-dept-status"><option value="active">Active</option><option value="inactive">Inactive</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-edit-dept')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-edit-dept');showToast('Department updated.')"><span class="ico ico-check"></span> Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Delete Confirm ══ -->
+<div class="overlay" id="modal-delete-dept" onclick="overlayClick(event,'modal-delete-dept')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-trash"></span> Delete Department?</h2>
+      <button class="close" onclick="closeModal('modal-delete-dept')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note" style="background:var(--danger-bg);border-color:var(--danger-bg);color:var(--danger-ink)"><span class="ico ico-alert" style="color:var(--danger)"></span><div>This will permanently remove the department and reassign its employees. This action <b>cannot be undone</b>.</div></div>
+      <div style="font-size:13.5px">Are you sure you want to delete <b>Manufacturing</b>?</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-delete-dept')">Cancel</button>
+      <button class="btn danger" onclick="closeModal('modal-delete-dept');showToast('Department deleted.','danger')"><span class="ico ico-trash"></span> Delete</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Category ══ -->
+<div class="overlay" id="modal-category" onclick="overlayClick(event,'modal-category')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-settings"></span> Category</h2>
+      <button class="close" onclick="closeModal('modal-category')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="lbl">Category Name</div><input type="text" placeholder="e.g. Waste Reduction"></div>
+      <div class="field"><div class="lbl">Type</div>
+        <div class="radio-group">
+          <label><input type="radio" name="cat-type" value="csr" checked><span>CSR Activity</span></label>
+          <label><input type="radio" name="cat-type" value="challenge"><span>Challenge</span></label>
+        </div>
+        <div class="hint">Categories are shared across Social and Gamification modules</div>
+      </div>
+      <div class="field"><div class="lbl">Status</div><select><option>Active</option><option>Inactive</option></select></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-category')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-category');showToast('Category saved.')"><span class="ico ico-check"></span> Save Category</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Edit ESG Weights ══ -->
+<div class="overlay" id="modal-weights" onclick="overlayClick(event,'modal-weights')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-scale"></span> Edit ESG Score Weights</h2>
+      <button class="close" onclick="closeModal('modal-weights')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note"><span class="ico ico-alert"></span><div>Weights must total exactly <b>100%</b>. They determine how Environmental, Social, and Governance pillars blend into each department's total ESG score.</div></div>
+      <div class="weight-row">
+        <div class="lbl-sm"><span class="ico ico-leaf sm"></span> Environmental</div>
+        <input type="number" id="w-env" value="40" min="0" max="100" class="field" style="border:1px solid var(--line-strong);border-radius:var(--radius-sm);padding:7px 10px;width:64px;text-align:center" oninput="updateWeights()">
+        <div class="progress" style="flex:1"><span id="wb-env" style="width:40%"></span></div>
+      </div>
+      <div class="weight-row">
+        <div class="lbl-sm"><span class="ico ico-users sm"></span> Social</div>
+        <input type="number" id="w-soc" value="30" min="0" max="100" class="field" style="border:1px solid var(--line-strong);border-radius:var(--radius-sm);padding:7px 10px;width:64px;text-align:center" oninput="updateWeights()">
+        <div class="progress" style="flex:1"><span id="wb-soc" style="width:30%"></span></div>
+      </div>
+      <div class="weight-row">
+        <div class="lbl-sm"><span class="ico ico-scale sm"></span> Governance</div>
+        <input type="number" id="w-gov" value="30" min="0" max="100" class="field" style="border:1px solid var(--line-strong);border-radius:var(--radius-sm);padding:7px 10px;width:64px;text-align:center" oninput="updateWeights()">
+        <div class="progress" style="flex:1"><span id="wb-gov" style="width:30%"></span></div>
+      </div>
+      <div class="rowflex" style="justify-content:space-between;margin-top:4px">
+        <span class="muted" style="font-size:13px">Total</span>
+        <span class="sum-note ok" id="sum-note">100% ✓ valid</span>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-weights')">Cancel</button>
+      <button class="btn" id="save-weights-btn" onclick="saveWeights()"><span class="ico ico-check"></span> Save Weights</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function overlayClick(e,id){ if(e.target===document.getElementById(id)) closeModal(id); }
+function switchTab(n){
+  for(var i=0;i<4;i++){
+    document.getElementById('tab-'+i).classList.toggle('active',i===n);
+    document.getElementById('pane-'+i).classList.toggle('active',i===n);
+  }
+}
+function toggleNotif(){
+  var p=document.getElementById('notif-panel'); p.classList.toggle('open');
+  setTimeout(function(){ document.addEventListener('click',function h(e){ if(!document.getElementById('bell-btn').contains(e.target)&&!p.contains(e.target)){p.classList.remove('open');document.removeEventListener('click',h);} }); },0);
+}
+function openEditDept(name,code,head,parent,count,status){
+  document.getElementById('edit-dept-name').value=name;
+  document.getElementById('edit-dept-code').value=code;
+  document.getElementById('edit-dept-count').value=count;
+  openModal('modal-edit-dept');
+}
+function saveDept(){ closeModal('modal-dept'); showToast('Department created.'); }
+
+function updateWeights(){
+  var e=+document.getElementById('w-env').value||0;
+  var s=+document.getElementById('w-soc').value||0;
+  var g=+document.getElementById('w-gov').value||0;
+  var sum=e+s+g;
+  document.getElementById('wb-env').style.width=Math.min(e,100)+'%';
+  document.getElementById('wb-soc').style.width=Math.min(s,100)+'%';
+  document.getElementById('wb-gov').style.width=Math.min(g,100)+'%';
+  var note=document.getElementById('sum-note');
+  var btn=document.getElementById('save-weights-btn');
+  if(sum===100){ note.textContent='100% ✓ valid'; note.className='sum-note ok'; btn.disabled=false; }
+  else { note.textContent=sum+'% ✗ must total 100'; note.className='sum-note err'; btn.disabled=true; }
+}
+
+function saveWeights(){
+  var e=+document.getElementById('w-env').value;
+  var s=+document.getElementById('w-soc').value;
+  var g=+document.getElementById('w-gov').value;
+  if(e+s+g!==100){ showToast('Weights must total 100%.','danger'); return; }
+  document.getElementById('w-env-display').textContent=e+'%';
+  document.getElementById('w-soc-display').textContent=s+'%';
+  document.getElementById('w-gov-display').textContent=g+'%';
+  document.getElementById('bar-env').style.width=e+'%';
+  document.getElementById('bar-soc').style.width=s+'%';
+  document.getElementById('bar-gov').style.width=g+'%';
+  closeModal('modal-weights');
+  showToast('ESG weights saved: '+e+'/'+s+'/'+g+'.');
+}
+
+function toggleNotifChannel(el){
+  var active=el.classList.contains('plum');
+  el.className=active?'pill neutral':'pill plum';
+  showToast('Notification channel '+(active?'disabled':'enabled')+'.');
+}
+
+function showToast(msg,type){
+  var s=document.getElementById('toast-stack'); var t=document.createElement('div');
+  t.className='toast'+(type?' '+type:'');
+  var ico=type==='danger'?'ico-alert':'ico-check';
+  t.innerHTML='<span class="ico '+ico+'"></span><span class="toast-text">'+msg+'</span><span class="toast-close" onclick="this.parentElement.remove()">×</span>';
+  s.appendChild(t); setTimeout(()=>t.remove(),4000);
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>{o.classList.remove('open');document.body.style.overflow='';}); });
+</script>

@@ -25,7 +25,15 @@
       <div class="crumb">Social <small>/ CSR &amp; Employee Engagement</small></div>
       <div class="spacer"></div>
       <div class="search"><span class="ico ico-search sm"></span><input placeholder="Search activities…"></div>
-      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+      <div class="notif-wrap">
+        <div class="iconbtn" onclick="toggleNotif()" id="bell-btn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
+        <div class="notif-panel" id="notif-panel">
+          <div class="notif-hd"><span>Notifications</span><a href="#">Mark all read</a></div>
+          <div class="notif-item"><div class="notif-ico"><span class="ico ico-check sm"></span></div><div><div class="notif-title">Karan Shah's CSR participation approved</div><div class="notif-meta">ESG Workshop · 2h ago</div></div></div>
+          <div class="notif-item"><div class="notif-ico wrn"><span class="ico ico-alert sm"></span></div><div><div class="notif-title">1 participation pending review</div><div class="notif-meta">Tree Plantation · Aditi Rao</div></div></div>
+          <div class="notif-item"><div class="notif-ico dng"><span class="ico ico-x sm"></span></div><div><div class="notif-title">Meera Jain blocked — no proof</div><div class="notif-meta">Beach Cleanup · action required</div></div></div>
+        </div>
+      </div>
       <div class="avatar">AM</div>
     </header>
 
@@ -33,7 +41,7 @@
       <div class="page-head">
         <div><h1 class="page-title">CSR &amp; Employee Engagement</h1>
           <div class="sub">Community initiatives · participation · diversity &amp; training</div></div>
-        <button class="btn sm"><span class="ico ico-plus"></span> New Activity</button>
+        <button class="btn sm" onclick="openModal('modal-activity')"><span class="ico ico-plus"></span> New Activity</button>
       </div>
 
       <div class="card statcard">
@@ -46,54 +54,306 @@
       </div>
 
       <div class="tabs" style="margin-top:24px">
-        <div class="tab active">CSR Activities</div>
-        <div class="tab">Employee Participation</div>
-        <div class="tab">Diversity Dashboard</div>
-        <div class="tab">Training Completion</div>
+        <div class="tab active" id="tab-0" onclick="switchTab(0)">CSR Activities</div>
+        <div class="tab" id="tab-1" onclick="switchTab(1)">Employee Participation</div>
+        <div class="tab" id="tab-2" onclick="switchTab(2)">Diversity Dashboard</div>
+        <div class="tab" id="tab-3" onclick="switchTab(3)">Training Completion</div>
       </div>
 
-      <div class="grid autofit">
-        <div class="card">
-          <div class="card-head"><h3>Tree Plantation</h3><span class="pill neutral">Community</span></div>
-          <div class="muted">Plant 500 saplings at the Riverside reserve.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill warning">Evidence Required</span><span class="meta"><span class="ico ico-users"></span> 34 joined</span></div>
-          <div class="card-foot"><span class="meta"><span class="ico ico-award"></span> 50 pts</span><button class="btn sm">Join</button></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h3>Blood Donation</h3><span class="pill neutral">Health</span></div>
-          <div class="muted">Quarterly donation camp with Red Cross.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill warning">Evidence Required</span><span class="meta"><span class="ico ico-users"></span> 28 joined</span></div>
-          <div class="card-foot"><span class="meta"><span class="ico ico-award"></span> 40 pts</span><button class="btn sm">Join</button></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h3>Beach Cleanup</h3><span class="pill neutral">Environment</span></div>
-          <div class="muted">Coastal cleanup drive, Sunday morning.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill neutral">Open</span><span class="meta"><span class="ico ico-users"></span> 31 joined</span></div>
-          <div class="card-foot"><span class="meta"><span class="ico ico-award"></span> 60 pts</span><button class="btn sm">Join</button></div>
-        </div>
-        <div class="card">
-          <div class="card-head"><h3>ESG Workshop</h3><span class="pill neutral">Education</span></div>
-          <div class="muted">Lunch-and-learn on sustainability basics.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill neutral">Open</span><span class="meta"><span class="ico ico-users"></span> 52 joined</span></div>
-          <div class="card-foot"><span class="meta"><span class="ico ico-award"></span> 30 pts</span><button class="btn sm">Join</button></div>
+      <!-- Tab 0: CSR Activities -->
+      <div class="tab-pane active" id="pane-0">
+        <div class="grid autofit">
+          <div class="card">
+            <div class="card-head"><h3>Tree Plantation</h3><span class="pill neutral">Community</span></div>
+            <div class="muted">Plant 500 saplings at the Riverside reserve.</div>
+            <div class="rowflex" style="margin-top:12px"><span class="pill warning">Evidence Required</span><span class="meta"><span class="ico ico-users"></span> 34 joined</span></div>
+            <div class="card-foot"><span class="meta"><span class="ico ico-award"></span> 50 pts</span>
+              <div class="rowflex" style="gap:8px">
+                <button class="btn secondary sm" onclick="openModal('modal-view-activity')"><span class="ico ico-eye"></span></button>
+                <button class="btn sm" onclick="setJoin('Tree Plantation',true);openModal('modal-join')">Join</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Blood Donation</h3><span class="pill neutral">Health</span></div>
+            <div class="muted">Quarterly donation camp with Red Cross.</div>
+            <div class="rowflex" style="margin-top:12px"><span class="pill warning">Evidence Required</span><span class="meta"><span class="ico ico-users"></span> 28 joined</span></div>
+            <div class="card-foot"><span class="meta"><span class="ico ico-award"></span> 40 pts</span>
+              <div class="rowflex" style="gap:8px">
+                <button class="btn secondary sm" onclick="openModal('modal-view-activity')"><span class="ico ico-eye"></span></button>
+                <button class="btn sm" onclick="setJoin('Blood Donation',true);openModal('modal-join')">Join</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Beach Cleanup</h3><span class="pill neutral">Environment</span></div>
+            <div class="muted">Coastal cleanup drive, Sunday morning.</div>
+            <div class="rowflex" style="margin-top:12px"><span class="pill neutral">Open</span><span class="meta"><span class="ico ico-users"></span> 31 joined</span></div>
+            <div class="card-foot"><span class="meta"><span class="ico ico-award"></span> 60 pts</span>
+              <div class="rowflex" style="gap:8px">
+                <button class="btn secondary sm" onclick="openModal('modal-view-activity')"><span class="ico ico-eye"></span></button>
+                <button class="btn sm" onclick="setJoin('Beach Cleanup',false);openModal('modal-join')">Join</button>
+              </div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>ESG Workshop</h3><span class="pill neutral">Education</span></div>
+            <div class="muted">Lunch-and-learn on sustainability basics.</div>
+            <div class="rowflex" style="margin-top:12px"><span class="pill neutral">Open</span><span class="meta"><span class="ico ico-users"></span> 52 joined</span></div>
+            <div class="card-foot"><span class="meta"><span class="ico ico-award"></span> 30 pts</span>
+              <div class="rowflex" style="gap:8px">
+                <button class="btn secondary sm" onclick="openModal('modal-view-activity')"><span class="ico ico-eye"></span></button>
+                <button class="btn sm" onclick="setJoin('ESG Workshop',false);openModal('modal-join')">Join</button>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <h2 class="section">Participation approval queue</h2>
-      <div class="note" style="margin-bottom:16px"><span class="ico ico-alert"></span><div>With <b>“Require evidence for all CSR activities”</b> on, participation cannot be approved without an attached proof file.</div></div>
-      <div class="table-wrap">
-        <table class="tbl">
-          <thead><tr><th>Employee</th><th>Activity</th><th>Proof</th><th class="num">Points</th><th>Status</th><th>Action</th></tr></thead>
-          <tbody>
-            <tr><td><span class="avatar-sm">AR</span> Aditi Rao</td><td>Tree Plantation</td><td><a href="#"><span class="ico ico-clip sm"></span> photo.jpg</a></td><td class="num">50</td><td><span class="pill warning"><span class="dot warning"></span> Pending</span></td>
-              <td><div class="rowflex"><button class="btn sm"><span class="ico ico-check"></span> Approve</button><button class="btn secondary sm">Reject</button></div></td></tr>
-            <tr><td><span class="avatar-sm">KS</span> Karan Shah</td><td>ESG Workshop</td><td><a href="#"><span class="ico ico-clip sm"></span> cert.pdf</a></td><td class="num">30</td><td><span class="pill plum"><span class="dot plum"></span> Approved</span></td>
-              <td><span class="muted">by Head · 2h ago</span></td></tr>
-            <tr><td><span class="avatar-sm">MJ</span> Meera Jain</td><td>Beach Cleanup</td><td><span class="pill danger">No proof</span></td><td class="num">—</td><td><span class="pill danger"><span class="dot danger"></span> Blocked</span></td>
-              <td><button class="btn secondary sm" disabled>Approve</button></td></tr>
-          </tbody>
-        </table>
+      <!-- Tab 1: Participation Queue -->
+      <div class="tab-pane" id="pane-1">
+        <div class="note" style="margin-bottom:16px"><span class="ico ico-alert"></span><div>With <b>"Require evidence for all CSR activities"</b> on, participation cannot be approved without an attached proof file.</div></div>
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Employee</th><th>Activity</th><th>Proof</th><th class="num">Points</th><th>Status</th><th>Action</th></tr></thead>
+            <tbody>
+              <tr><td><span class="avatar-sm">AR</span> Aditi Rao</td><td>Tree Plantation</td>
+                <td><a href="#" onclick="openModal('modal-view-proof');return false"><span class="ico ico-clip sm"></span> photo.jpg</a></td>
+                <td class="num">50</td><td><span class="pill warning"><span class="dot warning"></span> Pending</span></td>
+                <td><div class="rowflex">
+                  <button class="btn sm" onclick="setPending('Aditi Rao','Tree Plantation',50);openModal('modal-approve')"><span class="ico ico-check"></span> Approve</button>
+                  <button class="btn secondary sm" onclick="setPending('Aditi Rao','Tree Plantation',50);openModal('modal-reject')">Reject</button>
+                </div></td></tr>
+              <tr><td><span class="avatar-sm">KS</span> Karan Shah</td><td>ESG Workshop</td>
+                <td><a href="#" onclick="openModal('modal-view-proof');return false"><span class="ico ico-clip sm"></span> cert.pdf</a></td>
+                <td class="num">30</td><td><span class="pill plum"><span class="dot plum"></span> Approved</span></td>
+                <td><span class="muted">by Head · 2h ago</span></td></tr>
+              <tr><td><span class="avatar-sm">MJ</span> Meera Jain</td><td>Beach Cleanup</td>
+                <td><span class="pill danger">No proof</span></td>
+                <td class="num">—</td><td><span class="pill danger"><span class="dot danger"></span> Blocked</span></td>
+                <td><button class="btn secondary sm" disabled>Approve</button></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Tab 2: Diversity Dashboard -->
+      <div class="tab-pane" id="pane-2">
+        <div class="grid cols-2" style="gap:20px">
+          <div class="card">
+            <div class="card-head"><h3>Gender Distribution</h3></div>
+            <div style="padding:10px 0">
+              <div class="list-row"><div style="width:140px">Women</div><div class="progress" style="flex:1;margin:0 14px"><span style="width:43%"></span></div><b>43%</b></div>
+              <div class="list-row"><div style="width:140px">Men</div><div class="progress" style="flex:1;margin:0 14px"><span style="width:54%"></span></div><b>54%</b></div>
+              <div class="list-row"><div style="width:140px">Non-binary</div><div class="progress" style="flex:1;margin:0 14px"><span style="width:3%"></span></div><b>3%</b></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-head"><h3>Leadership Representation</h3></div>
+            <div style="padding:10px 0">
+              <div class="list-row"><div style="width:140px">Women in mgmt</div><div class="progress" style="flex:1;margin:0 14px"><span class="warning" style="width:38%"></span></div><b>38%</b></div>
+              <div class="list-row"><div style="width:140px">Diverse leaders</div><div class="progress" style="flex:1;margin:0 14px"><span style="width:52%"></span></div><b>52%</b></div>
+              <div class="list-row"><div style="width:140px">Target (2026)</div><div class="progress" style="flex:1;margin:0 14px"><span class="danger" style="width:50%"></span></div><b>50%</b></div>
+            </div>
+          </div>
+        </div>
+        <div class="note" style="margin-top:20px"><span class="ico ico-alert"></span><div>Leadership diversity target (50% by end of FY2026) is <b style="color:var(--danger)">under-track</b> at 38%. Recommended: targeted mentoring + hiring pipeline review.</div></div>
+      </div>
+
+      <!-- Tab 3: Training Completion -->
+      <div class="tab-pane" id="pane-3">
+        <div class="table-wrap">
+          <table class="tbl">
+            <thead><tr><th>Training</th><th>Assigned To</th><th class="num">Completed</th><th class="num">Total</th><th>Completion %</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td><b>ESG Fundamentals</b></td><td>All employees</td><td class="num">241</td><td class="num">255</td><td><div class="rowflex"><div class="progress"><span style="width:94%"></span></div><span class="muted">94%</span></div></td><td><span class="pill plum">Active</span></td></tr>
+              <tr><td><b>Anti-Corruption Awareness</b></td><td>All employees</td><td class="num">198</td><td class="num">255</td><td><div class="rowflex"><div class="progress"><span class="warning" style="width:78%"></span></div><span class="muted">78%</span></div></td><td><span class="pill plum">Active</span></td></tr>
+              <tr><td><b>Carbon Accounting Basics</b></td><td>Dept heads</td><td class="num">14</td><td class="num">15</td><td><div class="rowflex"><div class="progress"><span style="width:93%"></span></div><span class="muted">93%</span></div></td><td><span class="pill plum">Active</span></td></tr>
+              <tr><td><b>Waste Reduction Module</b></td><td>Manufacturing</td><td class="num">110</td><td class="num">134</td><td><div class="rowflex"><div class="progress"><span class="warning" style="width:82%"></span></div><span class="muted">82%</span></div></td><td><span class="pill plum">Active</span></td></tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>
 </div>
+
+<!-- ══ MODAL: New CSR Activity ══ -->
+<div class="overlay" id="modal-activity" onclick="overlayClick(event,'modal-activity')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-users"></span> New CSR Activity</h2>
+      <button class="close" onclick="closeModal('modal-activity')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="field"><div class="lbl">Activity Title</div><input type="text" placeholder="e.g. Tree Plantation Drive"></div>
+      <div class="field"><div class="lbl">Category</div><select><option>Community</option><option>Environment</option><option>Health</option><option>Education</option></select></div>
+      <div class="field"><div class="lbl">Description</div><textarea placeholder="Describe the activity, location, and what participants should do…"></textarea></div>
+      <div class="field-row">
+        <div class="field"><div class="lbl">Points Awarded</div><input type="number" placeholder="e.g. 50" min="0"></div>
+        <div class="field"><div class="lbl">Activity Date</div><input type="date"></div>
+      </div>
+      <div class="rowflex" style="justify-content:space-between;padding:10px 0;border-top:1px solid var(--line)">
+        <div><b style="font-size:13.5px">Require evidence for participation</b><div class="muted" style="font-size:12px">Participants must upload proof before approval</div></div>
+        <label class="switch"><input type="checkbox" checked><span class="track"></span></label>
+      </div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-activity')">Cancel</button>
+      <button class="btn" onclick="closeModal('modal-activity');showToast('CSR activity created.')"><span class="ico ico-check"></span> Create Activity</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: View Activity ══ -->
+<div class="overlay" id="modal-view-activity" onclick="overlayClick(event,'modal-view-activity')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-eye"></span> Activity Details</h2>
+      <button class="close" onclick="closeModal('modal-view-activity')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Activity</span><b>Tree Plantation Drive</b></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Category</span><span class="pill neutral">Community</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Points</span><b>50 pts</b></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Evidence Required</span><span class="pill warning">Yes</span></div>
+      <div class="rowflex" style="justify-content:space-between"><span class="muted">Participants</span><span>34 joined</span></div>
+      <div class="divider"></div>
+      <div class="muted" style="font-size:13px">Plant 500 saplings at the Riverside reserve. Participants should bring gardening gloves. Proof of attendance (photo) is required.</div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-view-activity')">Close</button>
+      <button class="btn" onclick="closeModal('modal-view-activity');setJoin('Tree Plantation',true);openModal('modal-join')">Join Activity</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Join Activity ══ -->
+<div class="overlay" id="modal-join" onclick="overlayClick(event,'modal-join')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-users"></span> Join Activity</h2>
+      <button class="close" onclick="closeModal('modal-join')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div class="note" id="join-evidence-note" style="display:none"><span class="ico ico-alert"></span><div><b>Evidence required.</b> Upload a proof photo or document before submitting. Participation cannot be approved without it.</div></div>
+      <div style="padding:4px 0"><b id="join-activity-name" style="font-size:15px">Tree Plantation</b><div class="muted" style="margin-top:4px">Confirm your participation. You will earn points after approval.</div></div>
+      <div class="field" id="join-proof-field">
+        <div class="lbl">Upload Proof <span style="color:var(--ink-muted);font-weight:400;text-transform:none;letter-spacing:0" id="join-proof-required">(required)</span></div>
+        <div class="upload-area"><span class="ico ico-upload"></span><div>Drag &amp; drop or <b style="color:var(--brand)">browse</b></div><div style="margin-top:4px;font-size:12px">Photo, PDF · max 10 MB</div></div>
+      </div>
+      <div class="field"><div class="lbl">Notes (optional)</div><textarea placeholder="Any notes about your participation…"></textarea></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-join')">Cancel</button>
+      <button class="btn" onclick="joinActivity()"><span class="ico ico-check"></span> Confirm &amp; Submit</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Approve Participation ══ -->
+<div class="overlay" id="modal-approve" onclick="overlayClick(event,'modal-approve')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-check"></span> Approve Participation</h2>
+      <button class="close" onclick="closeModal('modal-approve')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div style="padding:8px 0">
+        <div class="rowflex" style="justify-content:space-between"><span class="muted">Employee</span><b id="ap-employee">Aditi Rao</b></div>
+        <div class="rowflex" style="justify-content:space-between;margin-top:10px"><span class="muted">Activity</span><span id="ap-activity">Tree Plantation</span></div>
+        <div class="rowflex" style="justify-content:space-between;margin-top:10px"><span class="muted">Points to Award</span><b id="ap-pts" style="color:var(--brand)">50 pts</b></div>
+      </div>
+      <div class="field"><div class="lbl">Proof</div><a href="#" onclick="openModal('modal-view-proof');return false"><span class="ico ico-clip sm"></span> photo.jpg — click to view</a></div>
+      <div class="note" style="background:var(--brand-100);border-color:var(--brand-100);color:var(--brand)"><span class="ico ico-award"></span><div>Approving will immediately <b>award 50 points</b> to the employee's balance and trigger a notification.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-approve')">Cancel</button>
+      <button class="btn" onclick="doApprove()"><span class="ico ico-check"></span> Approve &amp; Award Points</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: Reject Participation ══ -->
+<div class="overlay" id="modal-reject" onclick="overlayClick(event,'modal-reject')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-x"></span> Reject Participation</h2>
+      <button class="close" onclick="closeModal('modal-reject')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body">
+      <div style="padding:4px 0">
+        <div class="rowflex" style="justify-content:space-between"><span class="muted">Employee</span><b id="rj-employee">Aditi Rao</b></div>
+        <div class="rowflex" style="justify-content:space-between;margin-top:10px"><span class="muted">Activity</span><span id="rj-activity">Tree Plantation</span></div>
+      </div>
+      <div class="field"><div class="lbl">Reason for Rejection</div><textarea placeholder="e.g. Proof image is unclear or does not match the activity requirements…"></textarea></div>
+      <div class="note"><span class="ico ico-alert"></span><div>The employee will be notified with this reason and may resubmit with corrected proof.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-reject')">Cancel</button>
+      <button class="btn danger" onclick="doReject()"><span class="ico ico-x"></span> Reject</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ MODAL: View Proof ══ -->
+<div class="overlay" id="modal-view-proof" onclick="overlayClick(event,'modal-view-proof')">
+  <div class="modal">
+    <div class="modal-head">
+      <h2><span class="ico ico-clip"></span> Proof — photo.jpg</h2>
+      <button class="close" onclick="closeModal('modal-view-proof')"><span class="ico ico-x"></span></button>
+    </div>
+    <div class="modal-body" style="align-items:center">
+      <div style="width:100%;height:220px;background:var(--canvas);border:1px solid var(--line);border-radius:var(--radius-sm);display:grid;place-items:center;color:var(--ink-muted)">
+        <div style="text-align:center"><span class="ico ico-clip" style="width:32px;height:32px;opacity:.3"></span><div style="margin-top:10px">[ Proof image preview ]</div><div style="font-size:12px;margin-top:4px">photo.jpg · 2.1 MB</div></div>
+      </div>
+      <div class="note"><span class="ico ico-check"></span><div>Uploaded by Aditi Rao · 11 Jul 2026 09:14 · timestamp verified.</div></div>
+    </div>
+    <div class="modal-foot">
+      <button class="btn secondary" onclick="closeModal('modal-view-proof')">Close</button>
+      <button class="btn secondary" onclick="showToast('Downloading proof…');closeModal('modal-view-proof')"><span class="ico ico-download"></span> Download</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast-stack" id="toast-stack"></div>
+
+<script>
+var _joinEvidence=false, _joinName='';
+function setJoin(name,ev){ _joinName=name; _joinEvidence=ev;
+  document.getElementById('join-activity-name').textContent=name;
+  document.getElementById('join-evidence-note').style.display=ev?'':'none';
+}
+var _pendingEmp='', _pendingAct='', _pendingPts=0;
+function setPending(e,a,p){ _pendingEmp=e; _pendingAct=a; _pendingPts=p;
+  document.getElementById('ap-employee').textContent=e;
+  document.getElementById('ap-activity').textContent=a;
+  document.getElementById('ap-pts').textContent=p+' pts';
+  document.getElementById('rj-employee').textContent=e;
+  document.getElementById('rj-activity').textContent=a;
+}
+function openModal(id){ document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id){ document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function overlayClick(e,id){ if(e.target===document.getElementById(id)) closeModal(id); }
+function switchTab(n){
+  for(var i=0;i<4;i++){
+    document.getElementById('tab-'+i).classList.toggle('active',i===n);
+    document.getElementById('pane-'+i).classList.toggle('active',i===n);
+  }
+}
+function toggleNotif(){
+  var p=document.getElementById('notif-panel'); p.classList.toggle('open');
+  setTimeout(function(){ document.addEventListener('click',function h(e){ if(!document.getElementById('bell-btn').contains(e.target)&&!p.contains(e.target)){p.classList.remove('open');document.removeEventListener('click',h);} }); },0);
+}
+function joinActivity(){ closeModal('modal-join'); showToast('Participation submitted · awaiting dept head approval.'); }
+function doApprove(){ closeModal('modal-approve'); showToast('Participation approved · '+_pendingPts+' pts awarded to '+_pendingEmp+'.'); }
+function doReject(){ closeModal('modal-reject'); showToast('Participation rejected · employee notified.','warning'); }
+function showToast(msg,type){
+  var s=document.getElementById('toast-stack'); var t=document.createElement('div');
+  t.className='toast'+(type?' '+type:'');
+  t.innerHTML='<span class="ico ico-check"></span><span class="toast-text">'+msg+'</span><span class="toast-close" onclick="this.parentElement.remove()">×</span>';
+  if(type==='warning') t.querySelector('.ico').className='ico ico-alert';
+  s.appendChild(t); setTimeout(()=>t.remove(),4000);
+}
+document.addEventListener('keydown',function(e){ if(e.key==='Escape') document.querySelectorAll('.overlay.open').forEach(o=>{o.classList.remove('open');document.body.style.overflow='';}); });
+</script>
