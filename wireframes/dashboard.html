@@ -5,39 +5,29 @@
 
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><span class="logo">🌐</span> EcoSphere</div>
+    <div class="brand"><span class="logo"><span class="ico ico-leaf"></span></span> EcoSphere</div>
     <div class="nav-group">
-      <a class="nav-item active" href="dashboard.html"><span class="ico">▦</span> Dashboard</a>
+      <a class="nav-item active" href="dashboard.html"><span class="ico ico-dashboard"></span> Dashboard</a>
     </div>
-    <div class="nav-group">
-      <div class="nav-title">Environmental</div>
-      <a class="nav-item" href="environmental.html"><span class="ico">🌿</span> Emissions &amp; Goals</a>
-    </div>
-    <div class="nav-group">
-      <div class="nav-title">Social</div>
-      <a class="nav-item" href="social.html"><span class="ico">🤝</span> CSR &amp; Engagement</a>
-    </div>
-    <div class="nav-group">
-      <div class="nav-title">Governance</div>
-      <a class="nav-item" href="governance.html"><span class="ico">⚖️</span> Policies &amp; Audits</a>
-    </div>
-    <div class="nav-group">
-      <div class="nav-title">Gamification</div>
-      <a class="nav-item" href="gamification.html"><span class="ico">🎮</span> Challenges</a>
-    </div>
-    <div class="nav-group">
-      <div class="nav-title">Insights</div>
-      <a class="nav-item" href="reports.html"><span class="ico">📊</span> Reports</a>
-      <a class="nav-item" href="settings.html"><span class="ico">⚙️</span> Settings</a>
-    </div>
+    <div class="nav-group"><div class="nav-title">Environmental</div>
+      <a class="nav-item" href="environmental.html"><span class="ico ico-leaf"></span> Emissions &amp; Goals</a></div>
+    <div class="nav-group"><div class="nav-title">Social</div>
+      <a class="nav-item" href="social.html"><span class="ico ico-users"></span> CSR &amp; Engagement</a></div>
+    <div class="nav-group"><div class="nav-title">Governance</div>
+      <a class="nav-item" href="governance.html"><span class="ico ico-scale"></span> Policies &amp; Audits</a></div>
+    <div class="nav-group"><div class="nav-title">Gamification</div>
+      <a class="nav-item" href="gamification.html"><span class="ico ico-target"></span> Challenges</a></div>
+    <div class="nav-group"><div class="nav-title">Insights</div>
+      <a class="nav-item" href="reports.html"><span class="ico ico-chart"></span> Reports</a>
+      <a class="nav-item" href="settings.html"><span class="ico ico-settings"></span> Settings</a></div>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <div class="crumb">Dashboard <small>/ Executive Overview</small></div>
       <div class="spacer"></div>
-      <div class="search"><span>🔍</span><input placeholder="Search departments, challenges…"></div>
-      <div class="iconbtn">🔔<span class="bell-badge">3</span></div>
+      <div class="search"><span class="ico ico-search sm"></span><input placeholder="Search departments, challenges…"></div>
+      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
       <div class="avatar">AM</div>
     </header>
 
@@ -48,32 +38,34 @@
           <div class="sub">Organization-wide ESG performance · FY2026 · updated 12 Jul 2026</div>
         </div>
         <div class="rowflex">
-          <button class="btn secondary sm">Log Carbon Data</button>
-          <button class="btn sm">＋ New Report</button>
+          <button class="btn secondary sm"><span class="ico ico-upload"></span> Log Carbon Data</button>
+          <button class="btn sm"><span class="ico ico-plus"></span> New Report</button>
         </div>
       </div>
 
-      <!-- Score tiles -->
-      <div class="grid cols-4">
-        <div class="tile" style="border-top-color:var(--env)">
-          <div class="label">Environmental</div>
-          <div class="metric" style="color:var(--env)">82<small> / 100</small></div>
-          <div class="delta up">▲ 4.1 vs last quarter</div>
-        </div>
-        <div class="tile" style="border-top-color:var(--social)">
-          <div class="label">Social</div>
-          <div class="metric" style="color:var(--social)">74<small> / 100</small></div>
-          <div class="delta up">▲ 2.3 vs last quarter</div>
-        </div>
-        <div class="tile" style="border-top-color:var(--gov)">
-          <div class="label">Governance</div>
-          <div class="metric" style="color:var(--gov)">88<small> / 100</small></div>
-          <div class="delta down">▼ 1.2 vs last quarter</div>
-        </div>
-        <div class="tile" style="border-top-color:var(--brand)">
-          <div class="label">Overall ESG Score</div>
-          <div class="metric" style="color:var(--brand)">81<small> / 100</small></div>
-          <div class="delta"><span class="pill plum" style="font-size:11px">40 / 30 / 30 weighting</span></div>
+      <!-- Single black & white stat card -->
+      <div class="card statcard">
+        <div class="statbar">
+          <div class="stat">
+            <div class="label">Environmental</div>
+            <div class="num">82<small> / 100</small></div>
+            <div class="sub">▲ 4.1 vs last quarter</div>
+          </div>
+          <div class="stat">
+            <div class="label">Social</div>
+            <div class="num">74<small> / 100</small></div>
+            <div class="sub">▲ 2.3 vs last quarter</div>
+          </div>
+          <div class="stat">
+            <div class="label">Governance</div>
+            <div class="num">88<small> / 100</small></div>
+            <div class="sub">▼ 1.2 vs last quarter</div>
+          </div>
+          <div class="stat">
+            <div class="label">Overall ESG Score</div>
+            <div class="num">81<small> / 100</small></div>
+            <div class="sub"><span class="pill neutral">40 / 30 / 30 weighting</span></div>
+          </div>
         </div>
       </div>
 
@@ -81,16 +73,16 @@
       <div class="grid cols-2" style="margin-top:24px">
         <div class="card">
           <div class="card-head">
-            <h3>Emissions Trend <span class="muted">· 12 months (t CO₂)</span></h3>
-            <span class="pill success">▼ 18% YoY</span>
+            <h3>Emissions Trend <span class="muted" style="font-weight:400">· 12 months (t CO₂)</span></h3>
+            <span class="pill plum">▼ 18% YoY</span>
           </div>
           <svg class="spark" viewBox="0 0 520 150" preserveAspectRatio="none">
             <defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0" stop-color="#1F9254" stop-opacity=".18"/><stop offset="1" stop-color="#1F9254" stop-opacity="0"/>
+              <stop offset="0" stop-color="#714B67" stop-opacity=".16"/><stop offset="1" stop-color="#714B67" stop-opacity="0"/>
             </linearGradient></defs>
             <line x1="0" y1="37" x2="520" y2="37" stroke="#E9ECEF"/><line x1="0" y1="75" x2="520" y2="75" stroke="#E9ECEF"/><line x1="0" y1="113" x2="520" y2="113" stroke="#E9ECEF"/>
             <path d="M0,40 L47,52 L94,44 L141,66 L188,60 L235,82 L282,74 L329,96 L376,88 L423,104 L470,100 L520,118 L520,150 L0,150 Z" fill="url(#g)"/>
-            <path d="M0,40 L47,52 L94,44 L141,66 L188,60 L235,82 L282,74 L329,96 L376,88 L423,104 L470,100 L520,118" fill="none" stroke="#1F9254" stroke-width="2.5"/>
+            <path d="M0,40 L47,52 L94,44 L141,66 L188,60 L235,82 L282,74 L329,96 L376,88 L423,104 L470,100 L520,118" fill="none" stroke="#714B67" stroke-width="2.5"/>
           </svg>
           <div class="rowflex" style="justify-content:space-between;color:var(--ink-muted);font-size:11px;margin-top:6px">
             <span>Aug</span><span>Oct</span><span>Dec</span><span>Feb</span><span>Apr</span><span>Jun</span>
@@ -100,14 +92,14 @@
         <div class="card">
           <div class="card-head">
             <h3>Department ESG Ranking</h3>
-            <a href="reports.html" class="muted">View all →</a>
+            <a href="reports.html" class="muted">View all</a>
           </div>
           <div class="bars">
-            <div class="bar" style="height:88%;background:var(--env)"><em>88</em><span>Corp</span></div>
-            <div class="bar" style="height:82%;background:#7BAF3A"><em>82</em><span>R&amp;D</span></div>
-            <div class="bar" style="height:74%;background:#7BAF3A"><em>74</em><span>Mfg</span></div>
-            <div class="bar" style="height:61%;background:var(--warning)"><em>61</em><span>Logi</span></div>
-            <div class="bar" style="height:47%;background:var(--danger)"><em>47</em><span>Sales</span></div>
+            <div class="bar" style="height:88%"><em>88</em><span>Corp</span></div>
+            <div class="bar" style="height:82%"><em>82</em><span>R&amp;D</span></div>
+            <div class="bar" style="height:74%"><em>74</em><span>Mfg</span></div>
+            <div class="bar warning" style="height:61%"><em>61</em><span>Logi</span></div>
+            <div class="bar danger" style="height:47%"><em>47</em><span>Sales</span></div>
           </div>
         </div>
       </div>
@@ -116,29 +108,26 @@
       <div class="grid cols-2" style="margin-top:24px">
         <div class="card">
           <div class="card-head"><h3>Recent Activity</h3></div>
-          <div class="stack" style="gap:14px">
-            <div class="rowflex"><span class="avatar-sm">PS</span><div><b>Priya S.</b> completed <b>Zero Waste Week</b> challenge <span class="pill game" style="margin-left:4px">+200 XP</span><div class="muted">2h ago · Manufacturing</div></div></div>
-            <div class="divider" style="margin:0"></div>
-            <div class="rowflex"><span class="avatar-sm" style="background:var(--danger-bg);color:var(--danger)">!</span><div>New compliance issue raised in <b>Logistics</b> <span class="pill danger" style="margin-left:4px">High</span><div class="muted">5h ago · by Auditor R. Iyer</div></div></div>
-            <div class="divider" style="margin:0"></div>
-            <div class="rowflex"><span class="avatar-sm" style="background:var(--env-bg);color:var(--env)">↻</span><div><b>42</b> new carbon transactions logged (Fleet)<div class="muted">Today · auto-calculated</div></div></div>
-            <div class="divider" style="margin:0"></div>
-            <div class="rowflex"><span class="avatar-sm" style="background:var(--gov-bg);color:var(--gov)">✓</span><div><b>R&amp;D</b> acknowledged <b>Anti-Corruption Policy</b><div class="muted">Yesterday · 41/41 employees</div></div></div>
+          <div class="stack" style="gap:0">
+            <div class="rowflex list-row"><span class="avatar-sm">PS</span><div style="flex:1">Priya S. completed <b>Zero Waste Week</b> <span class="pill plum">+200 XP</span><div class="muted">2h ago · Manufacturing</div></div></div>
+            <div class="rowflex list-row"><span class="tile-ico" style="width:28px;height:28px;background:var(--danger-bg);color:var(--danger-ink)"><span class="ico ico-alert sm"></span></span><div style="flex:1">New compliance issue in <b>Logistics</b> <span class="pill danger">High</span><div class="muted">5h ago · Auditor R. Iyer</div></div></div>
+            <div class="rowflex list-row"><span class="tile-ico" style="width:28px;height:28px"><span class="ico ico-refresh sm"></span></span><div style="flex:1"><b>42</b> new carbon transactions (Fleet)<div class="muted">Today · auto-calculated</div></div></div>
+            <div class="rowflex list-row"><span class="tile-ico" style="width:28px;height:28px"><span class="ico ico-check sm"></span></span><div style="flex:1"><b>R&amp;D</b> acknowledged Anti-Corruption Policy<div class="muted">Yesterday · 41/41 employees</div></div></div>
           </div>
         </div>
 
         <div class="card">
           <div class="card-head"><h3>Quick Actions</h3></div>
           <div class="grid cols-2" style="gap:12px">
-            <button class="btn secondary" style="justify-content:flex-start">📥 Log Carbon Data</button>
-            <button class="btn secondary" style="justify-content:flex-start">🎯 Create Challenge</button>
-            <button class="btn secondary" style="justify-content:flex-start">📄 Publish Policy</button>
-            <button class="btn secondary" style="justify-content:flex-start">📊 Generate Report</button>
+            <button class="btn secondary" style="justify-content:flex-start"><span class="ico ico-upload"></span> Log Carbon Data</button>
+            <button class="btn secondary" style="justify-content:flex-start"><span class="ico ico-target"></span> Create Challenge</button>
+            <button class="btn secondary" style="justify-content:flex-start"><span class="ico ico-file"></span> Publish Policy</button>
+            <button class="btn secondary" style="justify-content:flex-start"><span class="ico ico-chart"></span> Generate Report</button>
           </div>
-          <div class="note" style="margin-top:16px">🎯 <b>3 goals</b> due this quarter · <b>2 compliance issues</b> approaching due date.</div>
+          <div class="note" style="margin-top:16px"><span class="ico ico-alert"></span><div><b>3 goals</b> due this quarter · <b>2 compliance issues</b> approaching due date.</div></div>
           <div class="card-foot" style="margin-top:16px">
             <span class="muted">ESG Budget utilization</span>
-            <div class="rowflex"><div class="progress" style="width:140px"><span style="width:64%;background:var(--brand)"></span></div><b>64%</b></div>
+            <div class="rowflex"><div class="progress" style="width:140px"><span style="width:64%"></span></div><b>64%</b></div>
           </div>
         </div>
       </div>

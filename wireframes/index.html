@@ -3,16 +3,17 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="stylesheet" href="assets/theme.css">
 <style>
-  .hub { max-width:1100px; margin:0 auto; padding:48px 24px 80px; }
-  .hero { margin-bottom:40px; }
-  .hero .kicker { font-family:var(--font-display); font-size:34px; color:var(--brand); }
-  .hero h1 { font-size:40px; font-weight:700; line-height:1.1; margin:2px 0 10px; }
+  .hub { max-width:1080px; margin:0 auto; padding:48px 24px 80px; }
+  .hero { margin-bottom:36px; }
+  .hero .kicker { font-family:var(--font-display); font-size:32px; color:var(--brand); }
+  .hero h1 { font-size:36px; font-weight:700; line-height:1.1; margin:2px 0 10px; }
   .hero p { color:var(--ink-muted); max-width:640px; font-size:15px; }
-  .screens { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:16px; margin:24px 0 48px; }
+  .screens { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:16px; margin:24px 0 48px; }
   .screen-card { display:block; background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
     box-shadow:var(--shadow-sm); overflow:hidden; color:inherit; }
   .screen-card:hover { box-shadow:var(--shadow-md); text-decoration:none; transform:translateY(-2px); transition:.15s; }
-  .screen-card .thumb { height:96px; display:grid; place-items:center; font-size:34px; color:#fff; }
+  .screen-card .thumb { height:84px; display:grid; place-items:center; background:var(--brand-900); }
+  .screen-card .thumb .ico { width:30px; height:30px; color:#E5D4DF; }
   .screen-card .body { padding:14px 16px; }
   .screen-card h3 { font-size:15px; font-weight:600; }
   .screen-card p { font-size:12.5px; color:var(--ink-muted); margin-top:3px; }
@@ -27,53 +28,49 @@
   <div class="hero">
     <div class="kicker">EcoSphere</div>
     <h1>ESG Management Platform — Hi-Fi Wireframes</h1>
-    <p>Odoo-inspired design language (plum primary, Inter + Caveat, flat cards). These are static, click-through
-    reference screens for the module-based UI. Tokens live in <code>assets/theme.css</code>; the spec is in
+    <p>Odoo-inspired, restrained design: plum brand, Inter + Caveat, flat cards, monochrome line icons, and a strict
+    3-colour accent system (plum · yellow · red). Tokens live in <code>assets/theme.css</code>; the spec is in
     <code>design.md</code>. Role-based portals (employee · operational · auditor · admin) map onto these modules.</p>
   </div>
 
   <h2 class="section">Screens</h2>
   <div class="screens">
-    <a class="screen-card" href="dashboard.html"><div class="thumb" style="background:var(--brand)">▦</div><div class="body"><h3>Dashboard</h3><p>Executive overview · 4 score tiles · trends · ranking</p></div></a>
-    <a class="screen-card" href="environmental.html"><div class="thumb" style="background:var(--env)">🌿</div><div class="body"><h3>Environmental</h3><p>Emission factors · carbon txns · goals</p></div></a>
-    <a class="screen-card" href="social.html"><div class="thumb" style="background:var(--social)">🤝</div><div class="body"><h3>Social</h3><p>CSR · participation queue · diversity</p></div></a>
-    <a class="screen-card" href="governance.html"><div class="thumb" style="background:var(--gov)">⚖️</div><div class="body"><h3>Governance</h3><p>Policies · audits · compliance</p></div></a>
-    <a class="screen-card" href="gamification.html"><div class="thumb" style="background:var(--game)">🎮</div><div class="body"><h3>Gamification</h3><p>Challenges · badges · leaderboard</p></div></a>
-    <a class="screen-card" href="reports.html"><div class="thumb" style="background:#4B5563">📊</div><div class="body"><h3>Reports</h3><p>ESG reports · custom builder · export</p></div></a>
-    <a class="screen-card" href="settings.html"><div class="thumb" style="background:var(--brand-700)">⚙️</div><div class="body"><h3>Settings</h3><p>Departments · categories · ESG config</p></div></a>
+    <a class="screen-card" href="dashboard.html"><div class="thumb"><span class="ico ico-dashboard"></span></div><div class="body"><h3>Dashboard</h3><p>Executive overview · single stat card · trends</p></div></a>
+    <a class="screen-card" href="environmental.html"><div class="thumb"><span class="ico ico-leaf"></span></div><div class="body"><h3>Environmental</h3><p>Emission factors · carbon txns · goals</p></div></a>
+    <a class="screen-card" href="social.html"><div class="thumb"><span class="ico ico-users"></span></div><div class="body"><h3>Social</h3><p>CSR · participation queue · diversity</p></div></a>
+    <a class="screen-card" href="governance.html"><div class="thumb"><span class="ico ico-scale"></span></div><div class="body"><h3>Governance</h3><p>Policies · audits · compliance</p></div></a>
+    <a class="screen-card" href="gamification.html"><div class="thumb"><span class="ico ico-target"></span></div><div class="body"><h3>Gamification</h3><p>Challenges · badges · leaderboard</p></div></a>
+    <a class="screen-card" href="reports.html"><div class="thumb"><span class="ico ico-chart"></span></div><div class="body"><h3>Reports</h3><p>ESG reports · custom builder · export</p></div></a>
+    <a class="screen-card" href="settings.html"><div class="thumb"><span class="ico ico-settings"></span></div><div class="body"><h3>Settings</h3><p>Departments · categories · ESG config</p></div></a>
   </div>
 
-  <h2 class="section">Palette</h2>
+  <h2 class="section">Palette — 3 accents + grayscale</h2>
   <div class="swatches">
     <div class="sw"><div class="chip" style="background:var(--brand)"></div><div class="lbl"><b>Plum</b><span>#714B67 · brand</span></div></div>
     <div class="sw"><div class="chip" style="background:var(--brand-900)"></div><div class="lbl"><b>Plum-black</b><span>#1B1319 · nav</span></div></div>
-    <div class="sw"><div class="chip" style="background:var(--env)"></div><div class="lbl"><b>Environmental</b><span>#1F9254</span></div></div>
-    <div class="sw"><div class="chip" style="background:var(--social)"></div><div class="lbl"><b>Social</b><span>#2F6FED</span></div></div>
-    <div class="sw"><div class="chip" style="background:var(--gov)"></div><div class="lbl"><b>Governance</b><span>#6D28D9</span></div></div>
-    <div class="sw"><div class="chip" style="background:var(--game)"></div><div class="lbl"><b>Gamification</b><span>#E8833A</span></div></div>
-    <div class="sw"><div class="chip" style="background:var(--warning)"></div><div class="lbl"><b>Warning</b><span>#C77700</span></div></div>
-    <div class="sw"><div class="chip" style="background:var(--danger)"></div><div class="lbl"><b>Danger</b><span>#C0392B</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--yellow)"></div><div class="lbl"><b>Yellow</b><span>#E0A800 · attention</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--danger)"></div><div class="lbl"><b>Red</b><span>#C0392B · critical</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--ink)"></div><div class="lbl"><b>Ink</b><span>#1F2328 · text</span></div></div>
+    <div class="sw"><div class="chip" style="background:var(--canvas);border-right:1px solid var(--line)"></div><div class="lbl"><b>Canvas</b><span>#F6F7F8 · bg</span></div></div>
   </div>
 
   <h2 class="section">Typography</h2>
   <div class="card">
-    <div class="type-row"><span class="tag">Display · Caveat</span><span class="flourish" style="font-size:34px">Sustainability, gamified</span></div>
-    <div class="type-row"><span class="tag">H1 · Inter 700</span><span style="font-size:26px;font-weight:700">Executive Overview</span></div>
-    <div class="type-row"><span class="tag">H3 · Inter 600</span><span style="font-size:16px;font-weight:600">Department ESG Ranking</span></div>
+    <div class="type-row"><span class="tag">Display · Caveat</span><span class="flourish" style="font-size:32px">Sustainability, gamified</span></div>
+    <div class="type-row"><span class="tag">H1 · Inter 700</span><span style="font-size:25px;font-weight:700">Executive Overview</span></div>
     <div class="type-row"><span class="tag">Body · Inter 400</span><span>Carbon transactions are computed as quantity × emission factor.</span></div>
-    <div class="type-row" style="border:0"><span class="tag">Metric · Inter 700</span><span style="font-size:30px;font-weight:700">81<small style="font-size:15px;color:var(--ink-muted)"> / 100</small></span></div>
+    <div class="type-row" style="border:0"><span class="tag">Metric · Inter 700</span><span style="font-size:30px;font-weight:700">81<small style="font-size:14px;color:var(--ink-faint)"> / 100</small></span></div>
   </div>
 
   <h2 class="section">Components</h2>
-  <div class="card rowflex" style="gap:20px">
-    <button class="btn">Primary</button>
+  <div class="card rowflex" style="gap:18px">
+    <button class="btn"><span class="ico ico-plus"></span> Primary</button>
     <button class="btn secondary">Secondary</button>
     <button class="btn ghost">Ghost</button>
-    <span class="pill success">● Active</span>
-    <span class="pill warning">● Under Review</span>
-    <span class="pill danger">● Overdue</span>
-    <span class="pill neutral">● Draft</span>
-    <span class="pill plum">Badge</span>
+    <span class="pill plum"><span class="dot plum"></span> Active</span>
+    <span class="pill warning"><span class="dot warning"></span> Pending</span>
+    <span class="pill danger"><span class="dot danger"></span> Overdue</span>
+    <span class="pill neutral"><span class="dot neutral"></span> Draft</span>
     <label class="switch"><input type="checkbox" checked><span class="track"></span></label>
     <div class="progress" style="width:120px"><span style="width:72%"></span></div>
   </div>

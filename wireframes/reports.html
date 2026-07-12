@@ -5,27 +5,27 @@
 
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><span class="logo">🌐</span> EcoSphere</div>
-    <div class="nav-group"><a class="nav-item" href="dashboard.html"><span class="ico">▦</span> Dashboard</a></div>
+    <div class="brand"><span class="logo"><span class="ico ico-leaf"></span></span> EcoSphere</div>
+    <div class="nav-group"><a class="nav-item" href="dashboard.html"><span class="ico ico-dashboard"></span> Dashboard</a></div>
     <div class="nav-group"><div class="nav-title">Environmental</div>
-      <a class="nav-item" href="environmental.html"><span class="ico">🌿</span> Emissions &amp; Goals</a></div>
+      <a class="nav-item" href="environmental.html"><span class="ico ico-leaf"></span> Emissions &amp; Goals</a></div>
     <div class="nav-group"><div class="nav-title">Social</div>
-      <a class="nav-item" href="social.html"><span class="ico">🤝</span> CSR &amp; Engagement</a></div>
+      <a class="nav-item" href="social.html"><span class="ico ico-users"></span> CSR &amp; Engagement</a></div>
     <div class="nav-group"><div class="nav-title">Governance</div>
-      <a class="nav-item" href="governance.html"><span class="ico">⚖️</span> Policies &amp; Audits</a></div>
+      <a class="nav-item" href="governance.html"><span class="ico ico-scale"></span> Policies &amp; Audits</a></div>
     <div class="nav-group"><div class="nav-title">Gamification</div>
-      <a class="nav-item" href="gamification.html"><span class="ico">🎮</span> Challenges</a></div>
+      <a class="nav-item" href="gamification.html"><span class="ico ico-target"></span> Challenges</a></div>
     <div class="nav-group"><div class="nav-title">Insights</div>
-      <a class="nav-item active" href="reports.html"><span class="ico">📊</span> Reports</a>
-      <a class="nav-item" href="settings.html"><span class="ico">⚙️</span> Settings</a></div>
+      <a class="nav-item active" href="reports.html"><span class="ico ico-chart"></span> Reports</a>
+      <a class="nav-item" href="settings.html"><span class="ico ico-settings"></span> Settings</a></div>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <div class="crumb">Reports <small>/ Analytics &amp; Custom Builder</small></div>
       <div class="spacer"></div>
-      <div class="search"><span>🔍</span><input placeholder="Search saved reports…"></div>
-      <div class="iconbtn">🔔<span class="bell-badge">3</span></div>
+      <div class="search"><span class="ico ico-search sm"></span><input placeholder="Search saved reports…"></div>
+      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
       <div class="avatar">AM</div>
     </header>
 
@@ -36,48 +36,48 @@
       </div>
 
       <div class="grid cols-4">
-        <div class="card accent-top" style="border-top-color:var(--env)">
-          <div class="card-head"><h3>🌿 Environmental</h3></div>
+        <div class="card">
+          <div class="card-head"><h3><span class="ico ico-leaf"></span> Environmental</h3></div>
           <div class="muted">Emissions, goals, product &amp; source breakdown.</div>
           <div class="card-foot"><span class="muted">Standard</span><button class="btn sm">Generate</button></div>
         </div>
-        <div class="card accent-top" style="border-top-color:var(--social)">
-          <div class="card-head"><h3>🤝 Social</h3></div>
+        <div class="card">
+          <div class="card-head"><h3><span class="ico ico-users"></span> Social</h3></div>
           <div class="muted">Diversity, CSR participation, training completion.</div>
           <div class="card-foot"><span class="muted">Standard</span><button class="btn sm">Generate</button></div>
         </div>
-        <div class="card accent-top" style="border-top-color:var(--gov)">
-          <div class="card-head"><h3>⚖️ Governance</h3></div>
+        <div class="card">
+          <div class="card-head"><h3><span class="ico ico-scale"></span> Governance</h3></div>
           <div class="muted">Policies, audits, compliance &amp; risk summary.</div>
           <div class="card-foot"><span class="muted">Standard</span><button class="btn sm">Generate</button></div>
         </div>
-        <div class="card accent-top" style="border-top-color:var(--brand)">
-          <div class="card-head"><h3>📋 ESG Summary</h3></div>
+        <div class="card">
+          <div class="card-head"><h3><span class="ico ico-file"></span> ESG Summary</h3></div>
           <div class="muted">Executive overview: all 4 scores + dept comparison.</div>
           <div class="card-foot"><span class="muted">Executive</span><button class="btn sm">Generate</button></div>
         </div>
       </div>
 
       <div class="card" style="margin-top:24px">
-        <div class="card-head"><h3>🛠️ Custom Report Builder</h3><span class="pill plum">Combine filters → export</span></div>
+        <div class="card-head"><h3><span class="ico ico-filter"></span> Custom Report Builder</h3><span class="pill plum">Combine filters → export</span></div>
         <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:14px">
-          <div><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Report Type</div>
+          <div><div class="label" style="font-size:10.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Report Type</div>
             <select style="width:100%;padding:9px 12px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);font-family:var(--font)"><option>ESG Summary</option><option>Environmental</option><option>Social</option><option>Governance</option></select></div>
-          <div><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Date Range</div>
+          <div><div class="label" style="font-size:10.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Date Range</div>
             <select style="width:100%;padding:9px 12px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);font-family:var(--font)"><option>FY 2026</option><option>Last quarter</option><option>Custom…</option></select></div>
-          <div><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Department</div>
+          <div><div class="label" style="font-size:10.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Department</div>
             <select style="width:100%;padding:9px 12px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);font-family:var(--font)"><option>All departments</option><option>Manufacturing</option><option>Logistics</option></select></div>
-          <div><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Module</div>
+          <div><div class="label" style="font-size:10.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Module</div>
             <select style="width:100%;padding:9px 12px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);font-family:var(--font)"><option>All modules</option><option>Environmental</option><option>Social</option><option>Governance</option><option>Gamification</option></select></div>
-          <div><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Employee</div>
+          <div><div class="label" style="font-size:10.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Employee</div>
             <select style="width:100%;padding:9px 12px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);font-family:var(--font)"><option>Any</option></select></div>
-          <div><div class="label" style="font-size:11px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Challenge / ESG Category</div>
+          <div><div class="label" style="font-size:10.5px;text-transform:uppercase;color:var(--ink-muted);font-weight:600;margin-bottom:6px">Challenge / ESG Category</div>
             <select style="width:100%;padding:9px 12px;border:1px solid var(--line-strong);border-radius:var(--radius-sm);font-family:var(--font)"><option>Any</option></select></div>
         </div>
         <div class="divider"></div>
         <div class="rowflex" style="justify-content:space-between">
-          <button class="btn">▶ Run Report</button>
-          <div class="rowflex"><button class="btn secondary sm">⬇ PDF</button><button class="btn secondary sm">⬇ Excel</button><button class="btn secondary sm">⬇ CSV</button></div>
+          <button class="btn"><span class="ico ico-play"></span> Run Report</button>
+          <div class="rowflex"><button class="btn secondary sm"><span class="ico ico-download"></span> PDF</button><button class="btn secondary sm"><span class="ico ico-download"></span> Excel</button><button class="btn secondary sm"><span class="ico ico-download"></span> CSV</button></div>
         </div>
       </div>
 
@@ -86,9 +86,9 @@
         <table class="tbl">
           <thead><tr><th>Report</th><th>Type</th><th>Scope</th><th>Generated</th><th>By</th><th></th></tr></thead>
           <tbody>
-            <tr><td><b>Q2 ESG Summary</b></td><td><span class="pill plum">ESG Summary</span></td><td>All departments</td><td>10 Jul 2026</td><td>A. Mehta</td><td><div class="row-actions"><span class="a">⬇</span><span class="a">👁</span></div></td></tr>
-            <tr><td><b>Fleet Emissions — H1</b></td><td><span class="pill env">Environmental</span></td><td>Logistics</td><td>08 Jul 2026</td><td>R. Iyer</td><td><div class="row-actions"><span class="a">⬇</span><span class="a">👁</span></div></td></tr>
-            <tr><td><b>Diversity &amp; Training</b></td><td><span class="pill social">Social</span></td><td>All departments</td><td>02 Jul 2026</td><td>A. Mehta</td><td><div class="row-actions"><span class="a">⬇</span><span class="a">👁</span></div></td></tr>
+            <tr><td><b>Q2 ESG Summary</b></td><td><span class="pill plum">ESG Summary</span></td><td>All departments</td><td>10 Jul 2026</td><td>A. Mehta</td><td><div class="row-actions"><span class="a"><span class="ico ico-download sm"></span></span><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
+            <tr><td><b>Fleet Emissions — H1</b></td><td><span class="pill neutral">Environmental</span></td><td>Logistics</td><td>08 Jul 2026</td><td>R. Iyer</td><td><div class="row-actions"><span class="a"><span class="ico ico-download sm"></span></span><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
+            <tr><td><b>Diversity &amp; Training</b></td><td><span class="pill neutral">Social</span></td><td>All departments</td><td>02 Jul 2026</td><td>A. Mehta</td><td><div class="row-actions"><span class="a"><span class="ico ico-download sm"></span></span><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
           </tbody>
         </table>
       </div>

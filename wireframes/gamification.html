@@ -5,27 +5,27 @@
 
 <div class="app">
   <aside class="sidebar">
-    <div class="brand"><span class="logo">🌐</span> EcoSphere</div>
-    <div class="nav-group"><a class="nav-item" href="dashboard.html"><span class="ico">▦</span> Dashboard</a></div>
+    <div class="brand"><span class="logo"><span class="ico ico-leaf"></span></span> EcoSphere</div>
+    <div class="nav-group"><a class="nav-item" href="dashboard.html"><span class="ico ico-dashboard"></span> Dashboard</a></div>
     <div class="nav-group"><div class="nav-title">Environmental</div>
-      <a class="nav-item" href="environmental.html"><span class="ico">🌿</span> Emissions &amp; Goals</a></div>
+      <a class="nav-item" href="environmental.html"><span class="ico ico-leaf"></span> Emissions &amp; Goals</a></div>
     <div class="nav-group"><div class="nav-title">Social</div>
-      <a class="nav-item" href="social.html"><span class="ico">🤝</span> CSR &amp; Engagement</a></div>
+      <a class="nav-item" href="social.html"><span class="ico ico-users"></span> CSR &amp; Engagement</a></div>
     <div class="nav-group"><div class="nav-title">Governance</div>
-      <a class="nav-item" href="governance.html"><span class="ico">⚖️</span> Policies &amp; Audits</a></div>
+      <a class="nav-item" href="governance.html"><span class="ico ico-scale"></span> Policies &amp; Audits</a></div>
     <div class="nav-group"><div class="nav-title">Gamification</div>
-      <a class="nav-item active" href="gamification.html"><span class="ico">🎮</span> Challenges</a></div>
+      <a class="nav-item active" href="gamification.html"><span class="ico ico-target"></span> Challenges</a></div>
     <div class="nav-group"><div class="nav-title">Insights</div>
-      <a class="nav-item" href="reports.html"><span class="ico">📊</span> Reports</a>
-      <a class="nav-item" href="settings.html"><span class="ico">⚙️</span> Settings</a></div>
+      <a class="nav-item" href="reports.html"><span class="ico ico-chart"></span> Reports</a>
+      <a class="nav-item" href="settings.html"><span class="ico ico-settings"></span> Settings</a></div>
   </aside>
 
   <div class="main">
     <header class="topbar">
       <div class="crumb">Gamification <small>/ Challenges, Badges &amp; Leaderboard</small></div>
       <div class="spacer"></div>
-      <div class="search"><span>🔍</span><input placeholder="Search challenges…"></div>
-      <div class="iconbtn">🔔<span class="bell-badge">3</span></div>
+      <div class="search"><span class="ico ico-search sm"></span><input placeholder="Search challenges…"></div>
+      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">3</span></div>
       <div class="avatar">AM</div>
     </header>
 
@@ -33,70 +33,69 @@
       <div class="page-head">
         <div><h1 class="page-title">Challenges, Badges &amp; Leaderboard</h1>
           <div class="sub">Drive sustainability through participation, XP and rewards</div></div>
-        <button class="btn sm">＋ New Challenge</button>
+        <button class="btn sm"><span class="ico ico-plus"></span> New Challenge</button>
       </div>
 
       <div class="tabs">
-        <div class="tab">Challenges</div>
+        <div class="tab active">Challenges</div>
         <div class="tab">Challenge Participation</div>
         <div class="tab">Badges</div>
         <div class="tab">Rewards</div>
         <div class="tab">Leaderboard</div>
       </div>
 
-      <!-- Lifecycle filter -->
       <div class="rowflex" style="margin-bottom:16px">
         <span class="pill neutral">Draft 2</span>
-        <span class="pill success">Active 5</span>
+        <span class="pill plum">Active 5</span>
         <span class="pill warning">Under Review 3</span>
-        <span class="pill info">Completed 14</span>
+        <span class="pill neutral">Completed 14</span>
         <span class="pill neutral">Archived 8</span>
         <span class="muted" style="font-size:12px">lifecycle: Draft → Active → Under Review → Completed (Archived anytime)</span>
       </div>
 
       <div class="grid autofit">
-        <div class="card accent-top" style="border-top-color:var(--game)">
-          <div class="card-head"><h3>♻️ Sustainability Sprint</h3><span class="pill success">Active</span></div>
+        <div class="card">
+          <div class="card-head"><h3>Sustainability Sprint</h3><span class="pill plum">Active</span></div>
           <div class="muted">Log 5 sustainable actions this week.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill game">200 XP</span><span class="pill neutral">Hard</span><span class="meta">📷 Evidence</span></div>
-          <div class="card-foot"><span class="meta">⏳ Ends 20 Jul</span><button class="btn sm">Join Challenge</button></div>
+          <div class="rowflex" style="margin-top:12px"><span class="pill warning">200 XP</span><span class="pill neutral">Hard</span><span class="meta"><span class="ico ico-clip"></span> Evidence</span></div>
+          <div class="card-foot"><span class="meta"><span class="ico ico-clock"></span> Ends 20 Jul</span><button class="btn sm">Join Challenge</button></div>
         </div>
-        <div class="card accent-top" style="border-top-color:var(--game)">
-          <div class="card-head"><h3>🚲 Commute Green Week</h3><span class="pill success">Active</span></div>
+        <div class="card">
+          <div class="card-head"><h3>Commute Green Week</h3><span class="pill plum">Active</span></div>
           <div class="muted">Cycle or carpool to work for 5 days.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill game">120 XP</span><span class="pill neutral">Medium</span><span class="meta">📷 Evidence</span></div>
-          <div class="card-foot"><span class="meta">⏳ Ends 25 Jul</span><button class="btn sm">Join Challenge</button></div>
+          <div class="rowflex" style="margin-top:12px"><span class="pill warning">120 XP</span><span class="pill neutral">Medium</span><span class="meta"><span class="ico ico-clip"></span> Evidence</span></div>
+          <div class="card-foot"><span class="meta"><span class="ico ico-clock"></span> Ends 25 Jul</span><button class="btn sm">Join Challenge</button></div>
         </div>
-        <div class="card accent-top" style="border-top-color:var(--game)">
-          <div class="card-head"><h3>🗑️ Recycle Challenge</h3><span class="pill warning">Under Review</span></div>
+        <div class="card">
+          <div class="card-head"><h3>Recycle Challenge</h3><span class="pill warning">Under Review</span></div>
           <div class="muted">Sort and recycle office waste for a week.</div>
-          <div class="rowflex" style="margin-top:12px"><span class="pill game">80 XP</span><span class="pill neutral">Easy</span><span class="meta">📷 Evidence</span></div>
+          <div class="rowflex" style="margin-top:12px"><span class="pill warning">80 XP</span><span class="pill neutral">Easy</span><span class="meta"><span class="ico ico-clip"></span> Evidence</span></div>
           <div class="card-foot"><span class="meta">3 submissions pending</span><button class="btn secondary sm">Review</button></div>
         </div>
       </div>
 
       <div class="grid cols-2" style="margin-top:24px">
         <div class="card">
-          <div class="card-head"><h3>🏅 Badge Gallery</h3><span class="muted">auto-awarded on unlock rule</span></div>
+          <div class="card-head"><h3><span class="ico ico-award"></span> Badge Gallery</h3><span class="muted">auto-awarded on unlock rule</span></div>
           <div class="grid cols-2" style="gap:12px">
-            <div class="rowflex" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><span style="font-size:26px">🌱</span><div><b>Green Beginner</b><div class="muted" style="font-size:12px">Unlock: 100 XP</div></div></div>
-            <div class="rowflex" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><span style="font-size:26px">♻️</span><div><b>Carbon Saver</b><div class="muted" style="font-size:12px">Unlock: 5 challenges</div></div></div>
-            <div class="rowflex" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><span style="font-size:26px">🏆</span><div><b>Sustainability Champ</b><div class="muted" style="font-size:12px">Unlock: 1000 XP</div></div></div>
-            <div class="rowflex" style="border:1px dashed var(--line-strong);border-radius:var(--radius-sm);padding:12px;opacity:.55"><span style="font-size:26px">⭐</span><div><b>Team Player</b><div class="muted" style="font-size:12px">Locked · 10 CSR</div></div></div>
+            <div class="rowflex" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><span class="tile-ico"><span class="ico ico-award"></span></span><div><b>Green Beginner</b><div class="muted" style="font-size:12px">Unlock: 100 XP</div></div></div>
+            <div class="rowflex" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><span class="tile-ico"><span class="ico ico-award"></span></span><div><b>Carbon Saver</b><div class="muted" style="font-size:12px">Unlock: 5 challenges</div></div></div>
+            <div class="rowflex" style="border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><span class="tile-ico warn"><span class="ico ico-trophy"></span></span><div><b>Sustainability Champ</b><div class="muted" style="font-size:12px">Unlock: 1000 XP</div></div></div>
+            <div class="rowflex" style="border:1px dashed var(--line-strong);border-radius:var(--radius-sm);padding:12px;opacity:.5"><span class="tile-ico" style="background:var(--neutral-bg);color:var(--neutral)"><span class="ico ico-award"></span></span><div><b>Team Player</b><div class="muted" style="font-size:12px">Locked · 10 CSR</div></div></div>
           </div>
         </div>
 
         <div class="card">
-          <div class="card-head"><h3>🏆 Leaderboard</h3><span class="muted">this quarter</span></div>
+          <div class="card-head"><h3><span class="ico ico-trophy"></span> Leaderboard</h3><span class="muted">this quarter</span></div>
           <div class="table-wrap" style="border:0">
             <table class="tbl" style="min-width:auto">
-              <thead><tr><th>#</th><th>Employee / Dept</th><th class="num">XP</th><th>Badges</th></tr></thead>
+              <thead><tr><th>#</th><th>Employee / Dept</th><th class="num">XP</th><th class="num">Badges</th></tr></thead>
               <tbody>
-                <tr><td><b>1</b></td><td><span class="avatar-sm">MF</span> Manufacturing Dept</td><td class="num"><b>4,820</b></td><td>🌱♻️🏆</td></tr>
-                <tr><td><b>2</b></td><td><span class="avatar-sm">AR</span> Aditi Rao</td><td class="num">3,910</td><td>🌱♻️</td></tr>
-                <tr><td><b>3</b></td><td><span class="avatar-sm">CO</span> Corporate Dept</td><td class="num">3,505</td><td>🌱🏆</td></tr>
-                <tr><td>4</td><td><span class="avatar-sm">KS</span> Karan Shah</td><td class="num">2,980</td><td>🌱</td></tr>
-                <tr><td>5</td><td><span class="avatar-sm">PS</span> Priya S.</td><td class="num">2,640</td><td>🌱♻️</td></tr>
+                <tr><td><b>1</b></td><td><span class="avatar-sm">MF</span> Manufacturing Dept</td><td class="num"><b>4,820</b></td><td class="num">3</td></tr>
+                <tr><td><b>2</b></td><td><span class="avatar-sm">AR</span> Aditi Rao</td><td class="num">3,910</td><td class="num">2</td></tr>
+                <tr><td><b>3</b></td><td><span class="avatar-sm">CO</span> Corporate Dept</td><td class="num">3,505</td><td class="num">2</td></tr>
+                <tr><td>4</td><td><span class="avatar-sm">KS</span> Karan Shah</td><td class="num">2,980</td><td class="num">1</td></tr>
+                <tr><td>5</td><td><span class="avatar-sm">PS</span> Priya S.</td><td class="num">2,640</td><td class="num">2</td></tr>
               </tbody>
             </table>
           </div>
@@ -104,12 +103,12 @@
       </div>
 
       <div class="card" style="margin-top:24px">
-        <div class="card-head"><h3>🎁 Rewards catalog</h3><span class="muted">redeem XP · stock-limited · deducts points</span></div>
-        <div class="grid cols-4">
-          <div class="rowflex" style="justify-content:space-between;border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><div><b>₹500 Gift Card</b><div class="muted" style="font-size:12px">Stock: 12</div></div><span class="pill game">800 pts</span></div>
-          <div class="rowflex" style="justify-content:space-between;border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><div><b>Eco Water Bottle</b><div class="muted" style="font-size:12px">Stock: 40</div></div><span class="pill game">300 pts</span></div>
-          <div class="rowflex" style="justify-content:space-between;border:1px solid var(--line);border-radius:var(--radius-sm);padding:12px"><div><b>Extra Leave Day</b><div class="muted" style="font-size:12px">Stock: 5</div></div><span class="pill game">1500 pts</span></div>
-          <div class="rowflex" style="justify-content:space-between;border:1px dashed var(--line-strong);border-radius:var(--radius-sm);padding:12px;opacity:.55"><div><b>Plant a Tree</b><div class="muted" style="font-size:12px">Out of stock</div></div><span class="pill neutral">200 pts</span></div>
+        <div class="card-head"><h3><span class="ico ico-gift"></span> Rewards catalog</h3><span class="muted">redeem XP · stock-limited · deducts points</span></div>
+        <div class="stack" style="gap:0">
+          <div class="list-row"><div><b>₹500 Gift Card</b> <span class="muted">· Stock: 12</span></div><span class="pill plum">800 pts</span></div>
+          <div class="list-row"><div><b>Eco Water Bottle</b> <span class="muted">· Stock: 40</span></div><span class="pill plum">300 pts</span></div>
+          <div class="list-row"><div><b>Extra Leave Day</b> <span class="muted">· Stock: 5</span></div><span class="pill plum">1500 pts</span></div>
+          <div class="list-row" style="opacity:.55"><div><b>Plant a Tree</b> <span class="muted">· Out of stock</span></div><span class="pill neutral">200 pts</span></div>
         </div>
       </div>
     </div>
