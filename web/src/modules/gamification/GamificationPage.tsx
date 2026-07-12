@@ -29,7 +29,6 @@ export function GamificationPage() {
           <div>
             <p className="eyebrow">Gamification</p>
             <h1>Challenges, Badges &amp; Leaderboard</h1>
-            <p className="muted">Drive sustainability through participation, XP and rewards</p>
           </div>
         </header>
         <div className="tabs" role="tablist" aria-label="Gamification sections">
@@ -113,9 +112,6 @@ function ChallengesPanel() {
           <Pill status="under_review">Under Review {c.under_review ?? 0}</Pill>
           <Pill status="neutral">Completed {c.completed ?? 0}</Pill>
           <Pill status="neutral">Archived {c.archived ?? 0}</Pill>
-          <span className="muted" style={{ fontSize: 12 }}>
-            lifecycle: Draft → Active → Under Review → Completed (Archived anytime)
-          </span>
         </div>
         <RoleGuard roles={['admin', 'dept_head']}>
           <Button className="primary sm" onClick={() => setOpen(true)}>
@@ -128,7 +124,7 @@ function ChallengesPanel() {
       ) : (list.data?.items ?? []).length === 0 ? (
         <EmptyState>
           <h3>No challenges yet</h3>
-          <p className="muted">Create a challenge to start the gamification loop.</p>
+          
         </EmptyState>
       ) : (
         <div className="grid autofit">
@@ -138,7 +134,6 @@ function ChallengesPanel() {
                 <h3>{ch.title}</h3>
                 <Pill status={ch.status}>{ch.status.replace('_', ' ')}</Pill>
               </div>
-              <div className="muted">{ch.description || 'No description'}</div>
               <div className="rowflex" style={{ marginTop: 12 }}>
                 <Pill status="warning">{ch.xp} XP</Pill>
                 <Pill status="neutral">{ch.difficulty}</Pill>
@@ -476,7 +471,7 @@ function RewardsPanel() {
       <Card>
         <div className="card-head">
           <h3>Rewards catalog</h3>
-          <span className="muted">redeem points · stock-limited</span>
+          
         </div>
         <div className="stack">
           {(list.data?.items ?? []).map((r: Reward) => {

@@ -21,9 +21,9 @@ export function AppShell() {
       <aside className="sidebar">
         <div className="brand">
           <span>EcoSphere</span>
-          <small className="portal-tag">{meta.name.replace(' Portal', '')}</small>
+          <span className="portal-tag">{meta.name.replace(' Portal', '')}</span>
         </div>
-        <nav aria-label="Primary navigation">
+        <nav className="sidebar-nav" aria-label="Primary navigation">
           {groups.map((group, gi) => (
             <div className="nav-group" key={group.title ?? `g-${gi}`}>
               {group.title ? <div className="nav-title">{group.title}</div> : null}
@@ -64,7 +64,9 @@ export function AppShell() {
             Sign out
           </button>
         </header>
-        <Outlet />
+        <div className="main-scroll">
+          <Outlet />
+        </div>
         <PolicyAckModal />
       </div>
     </div>
