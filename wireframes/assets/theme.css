@@ -86,9 +86,9 @@ a:hover { text-decoration:underline; }
 .sidebar .brand .logo { display:none; }
 .sidebar .brand .logo .ico { color:#fff; width:16px; height:16px; }
 .nav-group { margin-bottom:var(--space-4); }
-.nav-group > .nav-title { font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:#7E6577; padding:8px 10px 4px; font-weight:600; }
+.nav-group > .nav-title { font-size:13.5px; letter-spacing:0; text-transform:none; color:#7E6577; padding:8px 10px 4px; font-weight:600; }
 .nav-item { display:flex; align-items:center; gap:11px; padding:8px 10px; border-radius:var(--radius-sm); color:#C9B6C2; font-size:13.5px; cursor:pointer; }
-.nav-item .ico { width:17px; height:17px; opacity:.85; }
+.nav-item .ico { display:none; }
 .nav-item:hover { background:var(--brand-700); color:#fff; text-decoration:none; }
 .nav-item:hover .ico { opacity:1; }
 .nav-item.active { background:var(--brand-700); color:#fff; font-weight:600; }
@@ -108,7 +108,26 @@ a:hover { text-decoration:underline; }
 .bell-badge { position:absolute; top:5px; right:5px; background:var(--danger); color:#fff; font-size:10px; font-weight:700; border-radius:var(--radius-pill); padding:0 5px; line-height:15px; }
 .avatar { width:34px;height:34px;border-radius:var(--radius-pill); background:var(--brand); color:#fff; display:grid;place-items:center; font-weight:600; font-size:13px; }
 
-.content { padding:var(--space-5) var(--space-5) var(--space-8); width:100%; }
+/* Single-card main layout: the whole page body sits in ONE surface card,
+   and inner widgets render as flat sections split by subtle hairline rules. */
+.content { background:var(--surface); border:1px solid var(--line); border-radius:var(--radius);
+  box-shadow:var(--shadow-sm); margin:var(--space-5); padding:var(--space-5); }
+.content .card { background:transparent; border:0; border-radius:0; box-shadow:none; padding:0; }
+.content .card-foot { margin:16px 0 0; border-radius:0; }
+
+/* Normalize section top-margins (incl. inline styles) so the rules meet edge-to-edge */
+.content > * { margin-top:0 !important; }
+
+/* Subtle HORIZONTAL rules between stacked top-level sections */
+.content > * + * { border-top:1px solid var(--line); padding-top:var(--space-5); }
+
+/* Subtle VERTICAL rules between columns. Grids drop their own top padding so the
+   vertical hairline runs full-height and connects to the horizontal rule above it;
+   breathing room is moved onto each cell instead. */
+.content > .grid { gap:0; padding-top:0; }
+.content > .grid > * { border-left:1px solid var(--line); padding:var(--space-5); }
+.content > .grid > *:first-child { border-left:0; padding-left:0; }
+.content > .grid > *:last-child { padding-right:0; }
 
 /* ---------- Headings ---------- */
 .page-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:var(--space-5); flex-wrap:wrap; }
@@ -143,7 +162,7 @@ h2.section { font-size:17px; font-weight:700; margin:var(--space-5) 0 var(--spac
 .statbar { display:grid; grid-auto-flow:column; grid-auto-columns:1fr; }
 .statbar .stat { padding:18px 22px; border-left:1px solid var(--line); }
 .statbar .stat:first-child { border-left:0; }
-.statbar .stat .label { font-size:10.5px; letter-spacing:.07em; text-transform:uppercase; color:var(--ink-muted); font-weight:600; }
+.statbar .stat .label { font-size:13px; letter-spacing:0; text-transform:none; color:var(--ink-muted); font-weight:600; }
 .statbar .stat .num { font-size:30px; font-weight:700; color:var(--ink); line-height:1.15; margin-top:7px; letter-spacing:-.5px; }
 .statbar .stat .num small { font-size:14px; color:var(--ink-faint); font-weight:500; letter-spacing:0; }
 .statbar .stat .sub { font-size:12px; margin-top:6px; color:var(--ink-muted); display:flex; align-items:center; gap:5px; }
