@@ -24,18 +24,25 @@ import (
 	govpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/governance/adapter/postgres"
 	govapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/governance/app"
 	identityhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/http"
-	notifhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/notification/adapter/http"
-	notifpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/notification/adapter/postgres"
-	notifapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/notification/app"
 	identitypg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/postgres"
 	identityapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/app"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/domain"
+	notifhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/notification/adapter/http"
+	notifpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/notification/adapter/postgres"
+	notifapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/notification/app"
 	departmenthttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/adapter/http"
 	departmentpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/adapter/postgres"
 	departmentapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/app"
 	masterhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/adapter/http"
 	masterpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/adapter/postgres"
 	masterapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/app"
+	reporthttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/reporting/adapter/http"
+	reportexport "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/reporting/adapter/export"
+	reportpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/reporting/adapter/postgres"
+	reportapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/reporting/app"
+	scorehttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/scoring/adapter/http"
+	scorepg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/scoring/adapter/postgres"
+	scoreapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/scoring/app"
 	socialhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/social/adapter/http"
 	socialpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/social/adapter/postgres"
 	socialapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/social/app"
@@ -84,14 +91,16 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	aiGW := platformai.NewGateway(cfg.OpenRouterAPIKey, cfg.OpenRouterModel, cfg.AIFixtureMode)
 	var aiGateway carbonport.AIGateway
-	if cfg.AIFixtureMode {
+	if aiGW.UseFixture() {
 		aiGateway = platformai.Fixture{}
 	} else {
-		aiGateway = platformai.NewOpenRouter(cfg.OpenRouterAPIKey, cfg.OpenRouterModel)
+		aiGateway = aiGW.Live()
 	}
 	ingestService := carbonapp.NewIngest(objectStorage, aiGateway, flags, cfg.AIConfidence)
 	environmentalHandler := environmentalhttp.New(carbonService, goalService, ingestService)
+	aiHandler := platformai.NewHandler(aiGW)
 
 	// Phase 3 — Social
 	socialRepo := socialpg.New(pool)
@@ -145,6 +154,18 @@ func main() {
 	notifHandler := notifhttp.New(notifService)
 	sched := scheduler.New(pool, govService, notifService, bus)
 	sched.Start(ctx)
+
+	// Phase 5 — Scoring & Reports
+	scoreService := scoreapp.New(scorepg.NewMetrics(pool), scorepg.NewStore(pool), bus)
+	scoreHandler := scorehttp.New(scoreService)
+	reportService := reportapp.New(
+		reportpg.NewStore(pool),
+		reportpg.NewData(pool),
+		scoreService,
+		aiGW,
+		reportexport.New(),
+	)
+	reportHandler := reporthttp.New(reportService)
 
 	router := chi.NewRouter()
 	router.Use(httpserver.Recover, httpserver.RequestID, httpserver.Logger, httpserver.CORS(cfg.CORSOrigin), middleware.StripSlashes)
@@ -277,6 +298,21 @@ func main() {
 		r.Get("/", notifHandler.List)
 		r.Post("/{id}/read", notifHandler.MarkRead)
 	})
+
+	// Phase 5 — Scores, reports, AI evidence assist
+	router.Route("/scores", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/departments", scoreHandler.Departments)
+		r.Get("/overall", scoreHandler.Overall)
+		r.With(platformauth.RequireRole(domain.RoleAdmin)).Post("/recompute", scoreHandler.Recompute)
+	})
+	router.Route("/reports", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Post("/generate", reportHandler.Generate)
+		r.Get("/{id}", reportHandler.Get)
+		r.Get("/{id}/export", reportHandler.Export)
+	})
+	router.With(platformauth.Authenticate([]byte(cfg.JWTSecret))).Post("/ai/evidence-review", aiHandler.ReviewEvidence)
 
 	server := &http.Server{Addr: cfg.Addr, Handler: router, ReadHeaderTimeout: 5 * time.Second}
 	go func() {
