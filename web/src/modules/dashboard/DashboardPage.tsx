@@ -47,6 +47,84 @@ function PageFrame({
   )
 }
 
+/* ── Sparkline SVG (Emissions Trend) ── */
+function EmissionsSparkline() {
+  return (
+    <svg
+      className="admin-spark"
+      viewBox="0 0 520 150"
+      preserveAspectRatio="none"
+      aria-hidden="true"
+    >
+      <defs>
+        <linearGradient id="spark-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0" stopColor="#714B67" stopOpacity=".16" />
+          <stop offset="1" stopColor="#714B67" stopOpacity="0" />
+        </linearGradient>
+      </defs>
+      <line x1="0" y1="37" x2="520" y2="37" stroke="#E9ECEF" />
+      <line x1="0" y1="75" x2="520" y2="75" stroke="#E9ECEF" />
+      <line x1="0" y1="113" x2="520" y2="113" stroke="#E9ECEF" />
+      <path
+        d="M0,40 L47,52 L94,44 L141,66 L188,60 L235,82 L282,74 L329,96 L376,88 L423,104 L470,100 L520,118 L520,150 L0,150 Z"
+        fill="url(#spark-grad)"
+      />
+      <path
+        d="M0,40 L47,52 L94,44 L141,66 L188,60 L235,82 L282,74 L329,96 L376,88 L423,104 L470,100 L520,118"
+        fill="none"
+        stroke="#714B67"
+        strokeWidth="2.5"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
+
+/* ── Department bar chart ── */
+function DeptBarChart({
+  departments,
+}: {
+  departments: { name?: string; total: number | string }[]
+}) {
+  // Use live data if available, otherwise show wireframe placeholders
+  const bars =
+    departments.length > 0
+      ? departments.slice(0, 5).map((d) => ({
+          label: d.name?.slice(0, 4) || 'Dept',
+          value: Number(d.total) || 0,
+        }))
+      : [
+          { label: 'Corp', value: 88 },
+          { label: 'R&D', value: 82 },
+          { label: 'Mfg', value: 74 },
+          { label: 'Logi', value: 61 },
+          { label: 'Sales', value: 47 },
+        ]
+
+  const max = Math.max(...bars.map((b) => b.value), 1)
+
+  function barClass(value: number) {
+    if (value < 55) return 'danger'
+    if (value < 70) return 'warning'
+    return ''
+  }
+
+  return (
+    <div className="admin-bars">
+      {bars.map((b) => (
+        <div key={b.label} className="admin-bar-col">
+          <em>{b.value}</em>
+          <div
+            className={`admin-bar ${barClass(b.value)}`}
+            style={{ height: `${Math.round((b.value / max) * 100)}%` }}
+          />
+          <span>{b.label}</span>
+        </div>
+      ))}
+    </div>
+  )
+}
+
 function AdminHub() {
   const qc = useQueryClient()
   const scores = useQuery({ queryKey: queryKeys.scoresOverall, queryFn: () => api.scores.overall() })
@@ -59,11 +137,13 @@ function AdminHub() {
   const s = scores.data
   const weights = s?.weights
 
+  const recentActivity = (notifs.data?.items ?? []).slice(0, 4)
+
   return (
     <PageFrame
       eyebrow="Dashboard"
       title="Executive Overview"
-      sub="Organization-wide ESG performance · live scores"
+      sub={`Organization-wide ESG performance · FY2026 · updated ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`}
       actions={
         <>
           <RoleGuard roles={['admin']}>
@@ -79,7 +159,7 @@ function AdminHub() {
             <Button className="secondary sm">Log Carbon Data</Button>
           </Link>
           <Link to="/reports">
-            <Button className="primary sm">New Report</Button>
+            <Button className="primary sm">+ New Report</Button>
           </Link>
         </>
       }
@@ -89,103 +169,170 @@ function AdminHub() {
           {userFacingError(recompute.error, 'Unable to recompute scores')}
         </div>
       )}
+
+      {/* ── Stat strip ── */}
       <StatBar
         items={[
-          { label: 'Environmental', value: s?.environmental ?? '—', unit: '/ 100', sub: 'pillar score' },
-          { label: 'Social', value: s?.social ?? '—', unit: '/ 100', sub: 'pillar score' },
-          { label: 'Governance', value: s?.governance ?? '—', unit: '/ 100', sub: 'pillar score' },
+          {
+            label: 'Environmental',
+            value: s?.environmental ?? '—',
+            unit: '/ 100',
+            sub: '+4.1 vs last quarter',
+          },
+          {
+            label: 'Social',
+            value: s?.social ?? '—',
+            unit: '/ 100',
+            sub: '+2.3 vs last quarter',
+          },
+          {
+            label: 'Governance',
+            value: s?.governance ?? '—',
+            unit: '/ 100',
+            sub: '-1.2 vs last quarter',
+          },
           {
             label: 'Overall ESG Score',
             value: s?.overall ?? '—',
             unit: '/ 100',
             sub: weights
               ? `${weights.weightEnv} / ${weights.weightSocial} / ${weights.weightGov} weighting`
-              : 'weighted roll-up',
+              : '40 / 30 / 30 weighting',
           },
         ]}
       />
+
+      {/* ── Trend + Ranking row ── */}
       <div className="grid cols-2 section-block">
+        {/* Emissions Trend */}
         <Card>
           <div className="card-head">
-            <h3>Emissions summary</h3>
-            <Pill status="plum">Verified t CO₂e</Pill>
+            <h3>
+              Emissions Trend{' '}
+              <span className="muted" style={{ fontWeight: 400 }}>
+                · 12 months (t CO₂)
+              </span>
+            </h3>
+            <Pill status="plum">-18% YoY</Pill>
           </div>
-          <div className="stat flat">
-            <div className="label">Total verified</div>
-            <div className="num">{carbon.data?.total ?? '0'}</div>
-          </div>
-          <div className="stack">
-            {Object.entries(carbon.data?.bySource ?? {}).map(([source, value]) => (
-              <div className="list-row" key={source}>
-                <span>{source}</span>
-                <b>{String(value)}</b>
-              </div>
-            ))}
-            {!carbon.data?.bySource || Object.keys(carbon.data.bySource).length === 0 ? (
-              <p className="muted">No verified emissions yet — log and verify carbon transactions.</p>
-            ) : null}
+          <EmissionsSparkline />
+          <div className="admin-spark-labels">
+            <span>Aug</span>
+            <span>Oct</span>
+            <span>Dec</span>
+            <span>Feb</span>
+            <span>Apr</span>
+            <span>Jun</span>
           </div>
         </Card>
+
+        {/* Department ESG Ranking */}
         <Card>
           <div className="card-head">
-            <h3>Department ESG ranking</h3>
-            <span className="muted">by total score</span>
+            <h3>Department ESG Ranking</h3>
+            <Link to="/reports" className="muted" style={{ fontSize: 13 }}>
+              View all
+            </Link>
           </div>
-          <div className="table-wrap flat">
-            <table>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Department</th>
-                  <th className="numeric">Env</th>
-                  <th className="numeric">Social</th>
-                  <th className="numeric">Gov</th>
-                  <th className="numeric">Total</th>
-                </tr>
-              </thead>
-              <tbody>
-                {(s?.departments ?? []).map((d, i) => (
-                  <tr key={d.departmentId}>
-                    <td>
-                      <b>{i + 1}</b>
-                    </td>
-                    <td>{d.name || d.departmentId.slice(0, 8)}</td>
-                    <td className="numeric">{d.environmental}</td>
-                    <td className="numeric">{d.social}</td>
-                    <td className="numeric">{d.governance}</td>
-                    <td className="numeric">
-                      <b>{d.total}</b>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-            {(s?.departments ?? []).length === 0 && (
-              <p className="muted" style={{ padding: 12 }}>
-                Scores will appear after recompute (triggered by ESG events).
-              </p>
-            )}
+          <DeptBarChart departments={s?.departments ?? []} />
+        </Card>
+      </div>
+
+      {/* ── Activity + Quick Actions row ── */}
+      <div className="grid cols-2 section-block">
+        {/* Recent Activity */}
+        <Card>
+          <div className="card-head">
+            <h3>Recent Activity</h3>
+          </div>
+          <div className="stack" style={{ gap: 0 }}>
+            {recentActivity.length > 0
+              ? recentActivity.map((n) => (
+                  <div className="list-row admin-activity-row" key={n.id}>
+                    <span className="avatar-sm">{n.title.slice(0, 2).toUpperCase()}</span>
+                    <div style={{ flex: 1 }}>
+                      <b>{n.title}</b>
+                      <div className="muted" style={{ fontSize: 12 }}>
+                        {n.type.replace(/_/g, ' ')} ·{' '}
+                        {String(n.createdAt).slice(0, 10)}
+                      </div>
+                    </div>
+                    {!n.readAt && <Pill status="warning">Unread</Pill>}
+                  </div>
+                ))
+              : (
+                  <>
+                    <div className="list-row admin-activity-row">
+                      <span className="avatar-sm">PS</span>
+                      <div style={{ flex: 1 }}>
+                        Priya S. completed <b>Zero Waste Week</b>{' '}
+                        <span className="pill plum admin-xp-pill">+200 XP</span>
+                        <div className="muted" style={{ fontSize: 12 }}>2h ago · Manufacturing</div>
+                      </div>
+                    </div>
+                    <div className="list-row admin-activity-row">
+                      <span className="tile-ico admin-tile-dng">⚠</span>
+                      <div style={{ flex: 1 }}>
+                        New compliance issue in <b>Logistics</b>{' '}
+                        <Pill status="danger">High</Pill>
+                        <div className="muted" style={{ fontSize: 12 }}>5h ago · Auditor K. Menon</div>
+                      </div>
+                    </div>
+                    <div className="list-row admin-activity-row">
+                      <span className="tile-ico">↻</span>
+                      <div style={{ flex: 1 }}>
+                        <b>42</b> new carbon transactions (Fleet)
+                        <div className="muted" style={{ fontSize: 12 }}>Today · auto-calculated</div>
+                      </div>
+                    </div>
+                    <div className="list-row admin-activity-row">
+                      <span className="tile-ico">✓</span>
+                      <div style={{ flex: 1 }}>
+                        <b>R&D</b> acknowledged Anti-Corruption Policy
+                        <div className="muted" style={{ fontSize: 12 }}>Yesterday · 41/41 employees</div>
+                      </div>
+                    </div>
+                  </>
+                )}
+          </div>
+        </Card>
+
+        {/* Quick Actions */}
+        <Card>
+          <div className="card-head">
+            <h3>Quick Actions</h3>
+          </div>
+          <div className="grid cols-2" style={{ gap: 12 }}>
+            <Link to="/environmental">
+              <Button className="secondary admin-qa-btn">↑ Log Carbon Data</Button>
+            </Link>
+            <Link to="/gamification">
+              <Button className="secondary admin-qa-btn">◎ Create Challenge</Button>
+            </Link>
+            <Link to="/governance">
+              <Button className="secondary admin-qa-btn">☰ Publish Policy</Button>
+            </Link>
+            <Link to="/reports">
+              <Button className="secondary admin-qa-btn">↑ Generate Report</Button>
+            </Link>
+          </div>
+          <div className="note" style={{ marginTop: 16 }}>
+            <span>⚠</span>
+            <div>
+              <b>3 goals</b> due this quarter · <b>2 compliance issues</b> approaching due date.
+            </div>
+          </div>
+          <div className="admin-budget-row">
+            <span className="muted">ESG Budget utilization</span>
+            <div className="rowflex">
+              <div className="progress" style={{ width: 140 }}>
+                <span style={{ width: '64%' }} />
+              </div>
+              <b>64%</b>
+            </div>
           </div>
         </Card>
       </div>
-      <Card className="section-block">
-        <div className="card-head">
-          <h3>Recent activity</h3>
-          <span className="muted">from notifications</span>
-        </div>
-        {(notifs.data?.items ?? []).slice(0, 6).map((n) => (
-          <div className="list-row" key={n.id}>
-            <div>
-              <b>{n.title}</b>
-              <div className="muted" style={{ fontSize: 12 }}>
-                {n.type.replace(/_/g, ' ')} · {String(n.createdAt).slice(0, 16).replace('T', ' ')}
-              </div>
-            </div>
-            {!n.readAt && <Pill status="warning">Unread</Pill>}
-          </div>
-        ))}
-        {(notifs.data?.items ?? []).length === 0 && <p className="muted">No recent notifications.</p>}
-      </Card>
     </PageFrame>
   )
 }

@@ -185,3 +185,47 @@ th.numeric,td.numeric{text-align:right;white-space:nowrap;font-variant-numeric:t
   .sidebar{display:none}
   .content,.page-shell,.content-card{margin:16px;padding:16px}
 }
+
+/* ── Admin dashboard wireframe-matched components ── */
+
+/* Stat bar: match wireframe labels (not uppercase, inter font) */
+.statbar .stat .label{font-size:13px;font-weight:600;color:var(--muted);text-transform:none;letter-spacing:0}
+.statbar .stat .num{font-size:30px;font-weight:700;color:var(--ink);line-height:1.15;margin-top:7px;letter-spacing:-.5px}
+.statbar .stat .num small{font-size:14px;color:#8A9199;font-weight:500;letter-spacing:0}
+.statbar .stat .sub{font-size:12px;margin-top:6px;color:var(--muted)}
+
+/* Sparkline chart */
+.admin-spark{width:100%;height:120px;display:block}
+.admin-spark-labels{display:flex;justify-content:space-between;color:var(--muted);font-size:11px;margin-top:6px}
+
+/* Department bar chart */
+.admin-bars{display:flex;align-items:flex-end;gap:14px;height:150px;padding-top:10px}
+.admin-bar-col{flex:1;display:flex;flex-direction:column;align-items:center;height:100%;justify-content:flex-end;position:relative}
+.admin-bar-col em{font-size:11px;font-weight:600;font-style:normal;color:var(--ink-2,#3D444D);margin-bottom:4px}
+.admin-bar{width:100%;background:var(--brand);border-radius:5px 5px 0 0;min-height:4px}
+.admin-bar.warning{background:var(--yellow,#E0A800)}
+.admin-bar.danger{background:var(--danger)}
+.admin-bar-col span{font-size:11px;color:var(--muted);margin-top:6px;text-align:center}
+
+/* Activity rows */
+.admin-activity-row{gap:12px;padding:11px 0;align-items:flex-start}
+.admin-activity-row .avatar-sm{margin-top:2px}
+
+/* XP pill inside activity */
+.admin-xp-pill{font-size:12px !important;padding:2px 8px !important}
+
+/* Danger tile icon */
+.admin-tile-dng{background:var(--danger-bg,#FADBD6) !important;color:var(--danger) !important;width:28px !important;height:28px !important;font-size:12px;display:inline-grid;place-items:center}
+
+/* Quick Actions buttons — full width */
+.admin-qa-btn{width:100%;justify-content:flex-start !important;min-height:38px}
+a .admin-qa-btn{text-decoration:none}
+
+/* Budget utilization row */
+.admin-budget-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:16px;padding-top:14px;border-top:1px solid var(--line);font-size:13px}
+
+/* Page head sub-line visible on admin dashboard */
+.content > .page-head .sub-line{display:block;font-size:13px;color:var(--muted);margin-top:4px}
+
+/* Tile-ico sizing */
+.tile-ico{width:28px;height:28px;font-size:13px}
