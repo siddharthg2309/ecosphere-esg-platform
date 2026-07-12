@@ -109,3 +109,53 @@ Promotes employee engagement by encouraging participation in ESG initiatives.
 - Redeem rewards
 - Display department and employee leaderboards
 - Increase long-term participation through incentives
+
+
+## real time example 
+ABC Factory
+        │
+        ▼
+Buys Diesel
+        │
+        ▼
+Software Calculates CO₂
+        │
+        ▼
+Environmental Score Updated
+        │
+────────────────────────────
+        │
+Employees Join Tree Plantation
+        │
+        ▼
+Manager Approves
+        │
+        ▼
+Social Score Updated
+        │
+────────────────────────────
+        │
+Safety Audit Happens
+        │
+        ▼
+Issues Found
+        │
+        ▼
+Governance Score Updated
+        │
+────────────────────────────
+        │
+Employees Complete Challenges
+        │
+        ▼
+XP + Badges + Rewards
+        │
+────────────────────────────
+        │
+Final Dashboard Shows
+
+Environmental ✔
+Social ✔
+Governance ✔
+
+Overall ESG Score
