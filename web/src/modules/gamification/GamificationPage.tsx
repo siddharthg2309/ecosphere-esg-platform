@@ -3,7 +3,8 @@ import { useState, type FormEvent } from 'react'
 import { RoleGuard } from '../../app/RoleGuard'
 import { useAuthStore } from '../../app/authStore'
 import { Button, Card, EmptyState, Modal, Note, Pill, Progress, initials } from '../../design/components'
-import { api, RequestError } from '../../lib/apiClient'
+import { api } from '../../lib/apiClient'
+import { userFacingError } from '../../lib/userFacingError'
 import { queryKeys } from '../../lib/queryKeys'
 import type { Category, Challenge, ChallengeParticipation, ChallengeStatus, Reward } from '../../lib/types'
 import { allowedTransitions, canApproveParticipation } from './challengeTransitions'
@@ -444,7 +445,7 @@ function RewardsPanel() {
     },
     onError: (_err, _id, ctx) => {
       if (ctx?.prev != null) setPoints(rollbackPoints(ctx.prev))
-      setError(_err instanceof RequestError ? _err.body.message : 'Redeem failed')
+      setError(userFacingError(_err, 'Redeem failed'))
     },
     onSuccess: () => {
       void qc.invalidateQueries({ queryKey: queryKeys.gameRewards })
@@ -585,5 +586,9 @@ function LeaderboardPanel() {
 
 function ErrorMessage({ error }: { error: unknown }) {
   if (!error) return null
-  return <div className="form-error" role="alert">{error instanceof RequestError ? error.body.message : 'Unable to save changes'}</div>
+  return (
+    <div className="form-error" role="alert">
+      {userFacingError(error, 'Unable to save changes')}
+    </div>
+  )
 }

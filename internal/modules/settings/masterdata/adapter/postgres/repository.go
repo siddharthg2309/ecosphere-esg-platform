@@ -19,6 +19,7 @@ import (
 	master "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/domain"
 	policy "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/policy/domain"
 	product "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/product/domain"
+	platformdb "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db/sqlc"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/errs"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/id"
@@ -33,25 +34,28 @@ type Repository struct {
 
 func New(pool *pgxpool.Pool) *Repository { return &Repository{pool: pool, q: sqlc.New(pool)} }
 func mapWrite(err error) error {
+	if err == nil {
+		return nil
+	}
+	// Prefer master-data-specific copy for common constraint codes, else soft generic map.
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
-		if pgErr.Code == "23505" {
+		switch pgErr.Code {
+		case "23505":
 			return errs.Conflict("duplicate_master_data", "A record with this unique value already exists")
-		}
-		if pgErr.Code == "23503" {
+		case "23503":
 			return errs.Conflict("record_in_use", "This record is referenced and cannot be deleted")
-		}
-		if pgErr.Code == "23514" {
+		case "23514":
 			return errs.Invalid("constraint_failed", "The record violates a business rule", nil)
 		}
 	}
-	return err
+	return platformdb.MapError(err)
 }
 func absent(err error, code, name string) error {
 	if errors.Is(err, pgx.ErrNoRows) {
 		return errs.NotFound(code, name+" not found")
 	}
-	return err
+	return platformdb.MapError(err)
 }
 func uuid(v id.ID) pgtype.UUID { var out pgtype.UUID; _ = out.Scan(v.String()); return out }
 func nullableUUID(v *id.ID) pgtype.UUID {

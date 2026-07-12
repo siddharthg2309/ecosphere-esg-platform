@@ -13,6 +13,7 @@ import (
 	carbondomain "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/carbon/domain"
 	carbonport "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/carbon/port"
 	goaldomain "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/goal/domain"
+	platformdb "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db/sqlc"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/errs"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/id"
@@ -62,13 +63,13 @@ func notFound(err error, code, message string) error {
 	if errors.Is(err, pgx.ErrNoRows) {
 		return errs.NotFound(code, message)
 	}
-	return err
+	return platformdb.MapError(err)
 }
 
 func (r *Repository) Create(ctx context.Context, t *carbondomain.Transaction) error {
 	row, err := r.q.CreateCarbonTransaction(ctx, sqlc.CreateCarbonTransactionParams{ID: uuid(t.ID), DepartmentID: uuid(t.DepartmentID), Source: string(t.Source), Quantity: numeric(t.Quantity), EmissionFactorID: uuid(t.EmissionFactorID), FactorValue: numeric(t.FactorValue), ComputedCo2: numeric(t.ComputedCO2), TxnDate: date(t.TxnDate), EvidenceUrl: text(t.EvidenceURL), Status: string(t.Status), CreatedAt: pgtype.Timestamptz{Time: t.CreatedAt, Valid: true}})
 	if err != nil {
-		return err
+		return platformdb.MapError(err)
 	}
 	*t = mapTransaction(row)
 	return nil
@@ -87,7 +88,7 @@ func (r *Repository) SaveVerified(ctx context.Context, t *carbondomain.Transacti
 		return errs.Conflict("already_verified", "Verified carbon transactions are immutable")
 	}
 	if err != nil {
-		return err
+		return platformdb.MapError(err)
 	}
 	*t = mapTransaction(row)
 	return nil
@@ -155,7 +156,7 @@ func NewGoals(pool *pgxpool.Pool) *GoalRepository { return &GoalRepository{q: sq
 func (r *GoalRepository) Create(ctx context.Context, g *goaldomain.Goal) error {
 	row, err := r.q.CreateEnvironmentalGoal(ctx, sqlc.CreateEnvironmentalGoalParams{ID: uuid(g.ID), Name: g.Name, DepartmentID: uuid(g.DepartmentID), TargetCo2: numeric(g.TargetCO2), CurrentCo2: numeric(g.CurrentCO2), Deadline: date(g.Deadline), Status: string(g.Status), CreatedAt: pgtype.Timestamptz{Time: g.CreatedAt, Valid: true}, UpdatedAt: pgtype.Timestamptz{Time: g.UpdatedAt, Valid: true}})
 	if err != nil {
-		return err
+		return platformdb.MapError(err)
 	}
 	*g = mapGoal(row)
 	return nil

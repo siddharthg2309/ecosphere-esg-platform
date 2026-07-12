@@ -15,6 +15,7 @@ import (
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/gamification/port"
 	reward "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/gamification/reward/domain"
 	category "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/category/domain"
+	platformdb "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/errs"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/id"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/page"
@@ -25,16 +26,19 @@ type Repository struct{ pool *pgxpool.Pool }
 func New(pool *pgxpool.Pool) *Repository { return &Repository{pool: pool} }
 
 func mapWrite(err error) error {
+	if err == nil {
+		return nil
+	}
 	var pgErr *pgconn.PgError
 	if errors.As(err, &pgErr) {
-		if pgErr.Code == "23505" {
+		switch pgErr.Code {
+		case "23505":
 			return errs.Conflict("duplicate_participation", "Already joined this challenge")
-		}
-		if pgErr.Code == "23503" {
+		case "23503":
 			return errs.Invalid("invalid_reference", "Referenced record does not exist", nil)
 		}
 	}
-	return err
+	return platformdb.MapError(err)
 }
 
 func (r *Repository) CreateChallenge(ctx context.Context, c *challenge.Challenge) error {

@@ -3,15 +3,43 @@ import type {
   ChallengeStatus, Department, DepartmentInput, DiversityMetrics, ESGConfig, GameBadge,
   LeaderboardEntry, NotificationPreference, PageResult, Reward, Training, User,
 } from './types'
+import { sanitizeErrorMessage } from './userFacingError'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
 
-export class RequestError extends Error { constructor(public status:number, public body:ApiError){super(body.message)} }
+export class RequestError extends Error {
+  public body: ApiError
+  constructor(public status: number, body: ApiError) {
+    const fallback = status >= 500 ? 'Something went wrong. Please try again.' : 'Unable to complete this request'
+    const safeMessage = sanitizeErrorMessage(body?.message, fallback)
+    const safeBody: ApiError = { ...body, message: safeMessage, code: body?.code || 'request_failed' }
+    super(safeMessage)
+    this.body = safeBody
+  }
+}
 
-export async function request<T>(path:string, init:RequestInit={}) {
+export async function request<T>(path: string, init: RequestInit = {}) {
   const token = localStorage.getItem('ecosphere.accessToken')
-  const response = await fetch(`${API_URL}${path}`, { ...init, headers:{'Content-Type':'application/json',...(token?{Authorization:`Bearer ${token}`}:{ }),...init.headers} })
-  if (!response.ok) { const body = await response.json().catch(()=>({code:'request_failed',message:'Request failed'})) as ApiError; throw new RequestError(response.status,body) }
+  let response: Response
+  try {
+    response = await fetch(`${API_URL}${path}`, {
+      ...init,
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...init.headers,
+      },
+    })
+  } catch {
+    throw new RequestError(0, { code: 'network_error', message: 'Unable to reach the server. Please try again.' })
+  }
+  if (!response.ok) {
+    const body = (await response.json().catch(() => ({
+      code: 'request_failed',
+      message: response.status >= 500 ? 'Something went wrong. Please try again.' : 'Unable to complete this request',
+    }))) as ApiError
+    throw new RequestError(response.status, body)
+  }
   if (response.status === 204) return undefined as T
   return response.json() as Promise<T>
 }

@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/errs"
 )
 
@@ -22,14 +23,36 @@ func JSON(w http.ResponseWriter, status int, value any) {
 	_ = json.NewEncoder(w).Encode(value)
 }
 
+// Error maps infrastructure/database failures to soft domain errors, logs the
+// original cause server-side, and never writes raw driver text to the response.
 func Error(w http.ResponseWriter, err error) {
-	if domainErr, ok := errs.As(err); ok {
-		status := map[errs.Kind]int{errs.KindInvalid: 400, errs.KindUnauthorized: 401, errs.KindForbidden: 403, errs.KindNotFound: 404, errs.KindConflict: 409}[domainErr.Kind]
-		JSON(w, status, domainErr)
+	if err == nil {
 		return
 	}
-	slog.Error("unhandled request error", "error", err)
-	JSON(w, http.StatusInternalServerError, map[string]string{"code": "internal", "message": "Internal server error"})
+
+	// Log the real error before sanitization (includes SQL / driver detail for ops).
+	if _, ok := errs.As(err); !ok {
+		slog.Error("request error", "error", err)
+	} else if e, ok := errs.As(err); ok && errs.LooksTechnical(e.Message) {
+		slog.Error("request domain error with technical message", "code", e.Code, "error", err)
+	}
+
+	mapped := db.MapError(err)
+	safe := errs.ClientSafe(mapped)
+
+	statusByKind := map[errs.Kind]int{
+		errs.KindInvalid:      http.StatusBadRequest,
+		errs.KindUnauthorized: http.StatusUnauthorized,
+		errs.KindForbidden:    http.StatusForbidden,
+		errs.KindNotFound:     http.StatusNotFound,
+		errs.KindConflict:     http.StatusConflict,
+		errs.KindInternal:     http.StatusInternalServerError,
+	}
+	status := statusByKind[safe.Kind]
+	if status == 0 {
+		status = http.StatusInternalServerError
+	}
+	JSON(w, status, safe)
 }
 
 func RequestID(next http.Handler) http.Handler {
@@ -48,7 +71,7 @@ func Recover(next http.Handler) http.Handler {
 		defer func() {
 			if recovered := recover(); recovered != nil {
 				slog.Error("panic", "value", recovered, "stack", string(debug.Stack()))
-				JSON(w, 500, map[string]string{"code": "internal", "message": "Internal server error"})
+				JSON(w, http.StatusInternalServerError, errs.Internal("internal", errs.GenericClientMessage))
 			}
 		}()
 		next.ServeHTTP(w, r)

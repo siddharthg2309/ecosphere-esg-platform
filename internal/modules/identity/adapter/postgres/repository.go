@@ -9,6 +9,7 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/domain"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/port"
+	platformdb "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db/sqlc"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/errs"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/id"
@@ -20,7 +21,7 @@ func New(queries *sqlc.Queries) *Repository { return &Repository{queries: querie
 
 func (r *Repository) Create(ctx context.Context, user *domain.User) error {
 	_, err := r.queries.CreateUser(ctx, sqlc.CreateUserParams{ID: uuid(user.ID), Name: user.Name, Email: user.Email, PasswordHash: user.PasswordHash, Role: string(user.Role), DepartmentID: nullableUUID(user.DepartmentID)})
-	return err
+	return platformdb.MapError(err)
 }
 
 func (r *Repository) ByEmail(ctx context.Context, email string) (*domain.User, error) {
@@ -29,7 +30,7 @@ func (r *Repository) ByEmail(ctx context.Context, email string) (*domain.User, e
 		return nil, errs.NotFound("user_not_found", "User not found")
 	}
 	if err != nil {
-		return nil, err
+		return nil, platformdb.MapError(err)
 	}
 	return mapUser(row)
 }
@@ -40,13 +41,13 @@ func (r *Repository) ByID(ctx context.Context, userID id.ID) (*domain.User, erro
 		return nil, errs.NotFound("user_not_found", "User not found")
 	}
 	if err != nil {
-		return nil, err
+		return nil, platformdb.MapError(err)
 	}
 	return mapUser(row)
 }
 
 func (r *Repository) SaveRefreshToken(ctx context.Context, token port.RefreshToken) error {
-	return r.queries.CreateRefreshToken(ctx, sqlc.CreateRefreshTokenParams{ID: uuid(token.ID), UserID: uuid(token.UserID), TokenHash: token.TokenHash, ExpiresAt: pgtype.Timestamptz{Time: token.ExpiresAt, Valid: true}})
+	return platformdb.MapError(r.queries.CreateRefreshToken(ctx, sqlc.CreateRefreshTokenParams{ID: uuid(token.ID), UserID: uuid(token.UserID), TokenHash: token.TokenHash, ExpiresAt: pgtype.Timestamptz{Time: token.ExpiresAt, Valid: true}}))
 }
 
 func (r *Repository) ActiveRefreshToken(ctx context.Context, hash string) (port.RefreshToken, error) {
@@ -55,13 +56,13 @@ func (r *Repository) ActiveRefreshToken(ctx context.Context, hash string) (port.
 		return port.RefreshToken{}, errs.NotFound("refresh_token_not_found", "Refresh token not found")
 	}
 	if err != nil {
-		return port.RefreshToken{}, err
+		return port.RefreshToken{}, platformdb.MapError(err)
 	}
 	return port.RefreshToken{ID: fromUUID(row.ID), UserID: fromUUID(row.UserID), TokenHash: row.TokenHash, ExpiresAt: row.ExpiresAt.Time}, nil
 }
 
 func (r *Repository) RevokeRefreshToken(ctx context.Context, tokenID id.ID) error {
-	return r.queries.RevokeRefreshToken(ctx, uuid(tokenID))
+	return platformdb.MapError(r.queries.RevokeRefreshToken(ctx, uuid(tokenID)))
 }
 
 func mapUser(row sqlc.User) (*domain.User, error) {

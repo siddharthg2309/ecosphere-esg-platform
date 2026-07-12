@@ -2,7 +2,8 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useState, type FormEvent } from 'react'
 import { RoleGuard } from '../../app/RoleGuard'
 import { Button, Card, EmptyState, Modal, Note, Pill, Progress, StatBar, initials } from '../../design/components'
-import { api, RequestError } from '../../lib/apiClient'
+import { api } from '../../lib/apiClient'
+import { userFacingError } from '../../lib/userFacingError'
 import { queryKeys } from '../../lib/queryKeys'
 import type { Category, CSRActivity, CSRParticipation } from '../../lib/types'
 import { canApproveParticipation } from '../gamification/challengeTransitions'
@@ -523,5 +524,9 @@ function TrainingPanel() {
 
 function ErrorMessage({ error }: { error: unknown }) {
   if (!error) return null
-  return <div className="form-error" role="alert">{error instanceof RequestError ? error.body.message : 'Unable to save changes'}</div>
+  return (
+    <div className="form-error" role="alert">
+      {userFacingError(error, 'Unable to save changes')}
+    </div>
+  )
 }

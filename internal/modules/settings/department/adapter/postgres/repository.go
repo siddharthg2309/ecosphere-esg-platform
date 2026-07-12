@@ -8,6 +8,7 @@ import (
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/department/domain"
+	platformdb "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/db/sqlc"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/errs"
 	"github.com/siddharthg2309/ecosphere-esg-platform/pkg/id"
@@ -19,12 +20,12 @@ type Repository struct{ queries *sqlc.Queries }
 func New(queries *sqlc.Queries) *Repository { return &Repository{queries: queries} }
 func (r *Repository) Create(ctx context.Context, d *domain.Department) error {
 	_, err := r.queries.CreateDepartment(ctx, sqlc.CreateDepartmentParams{ID: uuid(d.ID), Name: d.Name, Code: d.Code, HeadID: nullableUUID(d.HeadID), ParentID: nullableUUID(d.ParentID), EmployeeCount: int32(d.EmployeeCount), Status: string(d.Status)})
-	return err
+	return platformdb.MapError(err)
 }
 func (r *Repository) Update(ctx context.Context, d *domain.Department) error {
 	row, err := r.queries.UpdateDepartment(ctx, sqlc.UpdateDepartmentParams{ID: uuid(d.ID), Name: d.Name, Code: d.Code, HeadID: nullableUUID(d.HeadID), ParentID: nullableUUID(d.ParentID), EmployeeCount: int32(d.EmployeeCount), Status: string(d.Status)})
 	if err != nil {
-		return err
+		return platformdb.MapError(err)
 	}
 	*d = mapDepartment(row)
 	return nil
@@ -35,7 +36,7 @@ func (r *Repository) ByID(ctx context.Context, departmentID id.ID) (*domain.Depa
 		return nil, errs.NotFound("department_not_found", "Department not found")
 	}
 	if err != nil {
-		return nil, err
+		return nil, platformdb.MapError(err)
 	}
 	d := mapDepartment(row)
 	return &d, nil
@@ -43,11 +44,11 @@ func (r *Repository) ByID(ctx context.Context, departmentID id.ID) (*domain.Depa
 func (r *Repository) List(ctx context.Context, p page.Page) (page.Result[domain.Department], error) {
 	rows, err := r.queries.ListDepartments(ctx, sqlc.ListDepartmentsParams{Limit: int32(p.Limit), Offset: int32(p.Offset)})
 	if err != nil {
-		return page.Result[domain.Department]{}, err
+		return page.Result[domain.Department]{}, platformdb.MapError(err)
 	}
 	total, err := r.queries.CountDepartments(ctx)
 	if err != nil {
-		return page.Result[domain.Department]{}, err
+		return page.Result[domain.Department]{}, platformdb.MapError(err)
 	}
 	items := make([]domain.Department, 0, len(rows))
 	for _, row := range rows {
@@ -67,7 +68,7 @@ func (r *Repository) Deactivate(ctx context.Context, departmentID id.ID) (*domai
 		return nil, errs.NotFound("department_not_found", "Department not found")
 	}
 	if err != nil {
-		return nil, err
+		return nil, platformdb.MapError(err)
 	}
 	d := mapDepartment(row)
 	return &d, nil
