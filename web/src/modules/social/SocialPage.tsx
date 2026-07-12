@@ -1,12 +1,13 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { RoleGuard } from '../../app/RoleGuard'
 import { Button, Card, EmptyState, Modal, Note, Pill, Progress, StatBar, initials } from '../../design/components'
 import { api } from '../../lib/apiClient'
 import { userFacingError } from '../../lib/userFacingError'
 import { queryKeys } from '../../lib/queryKeys'
 import type { Category, CSRActivity, CSRParticipation } from '../../lib/types'
-import { EvidenceAssist } from '../ai/EvidenceAssist'
+import { EvidenceAssist, ProofUploadField } from '../ai/EvidenceAssist'
 import { canApproveParticipation } from '../gamification/challengeTransitions'
 
 type Tab = 'activities' | 'participation' | 'diversity' | 'training'
@@ -17,12 +18,34 @@ const tabs: [Tab, string][] = [
   ['training', 'Training Completion'],
 ]
 
+function isTab(v: string | null): v is Tab {
+  return v === 'activities' || v === 'participation' || v === 'diversity' || v === 'training'
+}
+
 export function SocialPage() {
-  const [tab, setTab] = useState<Tab>('activities')
+  const [params, setParams] = useSearchParams()
+  const paramTab = params.get('tab')
+  const [tab, setTab] = useState<Tab>(() => (isTab(paramTab) ? paramTab : 'activities'))
+
+  useEffect(() => {
+    if (isTab(params.get('tab'))) {
+      setTab(params.get('tab') as Tab)
+    }
+  }, [params])
+
+  function selectTab(next: Tab) {
+    setTab(next)
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('tab', next)
+    nextParams.delete('action')
+    setParams(nextParams, { replace: true })
+  }
+
   const diversity = useQuery({ queryKey: queryKeys.diversity, queryFn: api.social.diversity })
   const d = diversity.data
   return (
     <main className="page">
+
       <div className="content">
         <header className="page-head">
           <div>
@@ -40,7 +63,7 @@ export function SocialPage() {
         />
         <div className="tabs" role="tablist" aria-label="Social sections">
           {tabs.map(([id, label]) => (
-            <button key={id} role="tab" aria-selected={tab === id} className={`tab ${tab === id ? 'active' : ''}`} onClick={() => setTab(id)}>
+            <button key={id} role="tab" aria-selected={tab === id} className={`tab ${tab === id ? 'active' : ''}`} onClick={() => selectTab(id)}>
               {label}
             </button>
           ))}
@@ -56,12 +79,24 @@ export function SocialPage() {
 
 function ActivitiesPanel() {
   const qc = useQueryClient()
+  const [params, setParams] = useSearchParams()
   const activities = useQuery({ queryKey: queryKeys.csrActivities, queryFn: api.social.activities })
   const categories = useQuery({ queryKey: queryKeys.categories, queryFn: () => api.master.list<Category>('categories') })
   const [openCreate, setOpenCreate] = useState(false)
   const [join, setJoin] = useState<CSRActivity | null>(null)
   const [view, setView] = useState<CSRActivity | null>(null)
   const [error, setError] = useState<unknown>()
+
+  const action = params.get('action')
+  useEffect(() => {
+    if (action === 'new-activity') {
+      setOpenCreate(true)
+      const nextParams = new URLSearchParams(window.location.search)
+      nextParams.delete('action')
+      setParams(nextParams, { replace: true })
+    }
+  }, [action])
+
   const create = useMutation({
     mutationFn: api.social.createActivity,
     onSuccess: () => {
@@ -274,10 +309,7 @@ function ActivitiesPanel() {
             <div className="muted">Confirm your participation. You will earn points after approval.</div>
           </p>
           <form id="join-activity" className="modal-form" onSubmit={submitJoin}>
-            <label>
-              Proof URL {join.evidenceRequired ? '(required)' : '(optional)'}
-              <input name="proofUrl" placeholder="https://… or file reference" required={join.evidenceRequired} />
-            </label>
+            <ProofUploadField required={join.evidenceRequired} name="proofUrl" />
             <label>
               Notes (optional)
               <textarea name="notes" rows={2} />
@@ -369,13 +401,19 @@ function ParticipationRow({
       <td>{row.activityTitle}</td>
       <td>
         {row.proofUrl ? (
-          <a href={row.proofUrl} target="_blank" rel="noreferrer">
-            proof
-          </a>
+          row.proofUrl.startsWith('http') ? (
+            <a href={row.proofUrl} target="_blank" rel="noreferrer">
+              proof
+            </a>
+          ) : (
+            <span className="muted" title={row.proofUrl}>
+              {row.proofUrl.replace(/^upload:/, '')}
+            </span>
+          )
         ) : (
           <Pill status="danger">No proof</Pill>
         )}
-        {row.approval === 'pending' && row.proofUrl ? <EvidenceAssist proofUrl={row.proofUrl} /> : null}
+        {row.approval === 'pending' ? <EvidenceAssist proofUrl={row.proofUrl} /> : null}
       </td>
       <td className="numeric">{row.approval === 'approved' ? row.pointsEarned : row.activityPoints ?? '—'}</td>
       <td>

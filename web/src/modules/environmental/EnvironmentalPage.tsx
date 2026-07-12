@@ -1,4 +1,5 @@
 import { useEffect, useState, type FormEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { Button, EmptyState } from '../../design/components'
 import { RequestError } from '../../lib/apiClient'
 import type { CarbonSource, EmissionFactor, EnvironmentalGoal, GoalStatus } from '../../lib/types'
@@ -18,12 +19,52 @@ const statusLabels: Record<GoalStatus, string> = {
   completed: 'Completed',
 }
 
+function isTab(v: string | null): v is Tab {
+  return v === 'transactions' || v === 'goals' || v === 'factors' || v === 'products'
+}
+
 export function EnvironmentalPage() {
   const vm = useEnvironmentalVM()
-  const [tab, setTab] = useState<Tab>('transactions')
+  const [params, setParams] = useSearchParams()
+  const paramTab = params.get('tab')
+  const [tab, setTab] = useState<Tab>(() => (isTab(paramTab) ? paramTab : 'transactions'))
   const [entry, setEntry] = useState(false)
   const [goal, setGoal] = useState(false)
+
+  const action = params.get('action')
+
+  useEffect(() => {
+    if (isTab(params.get('tab'))) {
+      setTab(params.get('tab') as Tab)
+    }
+  }, [params])
+
+  useEffect(() => {
+    if (action === 'log-carbon') {
+      setEntry(true)
+      clearAction()
+    } else if (action === 'new-goal') {
+      setGoal(true)
+      clearAction()
+    }
+  }, [action])
+
+  function selectTab(next: Tab) {
+    setTab(next)
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('tab', next)
+    nextParams.delete('action')
+    setParams(nextParams, { replace: true })
+  }
+
+  function clearAction() {
+    const nextParams = new URLSearchParams(window.location.search)
+    nextParams.delete('action')
+    setParams(nextParams, { replace: true })
+  }
+
   const total = Number(vm.summary?.total ?? 0)
+
 
   return (
     <main className="page environmental-page">
@@ -69,7 +110,7 @@ export function EnvironmentalPage() {
               role="tab"
               aria-selected={tab === id}
               className={`tab ${tab === id ? 'active' : ''}`}
-              onClick={() => setTab(id)}
+              onClick={() => selectTab(id)}
             >
               {label}
             </button>

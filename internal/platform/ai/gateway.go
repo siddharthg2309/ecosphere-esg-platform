@@ -13,6 +13,13 @@ type EvidenceReview struct {
 	Notes      string  `json:"notes"`
 }
 
+// EvidenceInput is either a public URL or an in-memory data URL (not persisted by this service).
+type EvidenceInput struct {
+	ImageURL  string // http(s) or short marker like upload:file.jpg
+	DataURL   string // data:image/...;base64,... — used only for live vision review
+	FileName  string
+}
+
 // EvidenceAssistor reviews proof evidence (advisory only).
 type EvidenceAssistor interface {
 	ReviewEvidence(ctx context.Context, imageURL string) (EvidenceReview, error)
@@ -24,12 +31,20 @@ type Narrator interface {
 }
 
 func (f Fixture) ReviewEvidence(_ context.Context, imageURL string) (EvidenceReview, error) {
-	u := strings.ToLower(imageURL)
+	return f.Review(EvidenceInput{ImageURL: imageURL})
+}
+
+func (f Fixture) Review(in EvidenceInput) (EvidenceReview, error) {
+	u := strings.ToLower(in.ImageURL + " " + in.FileName + " " + in.DataURL)
 	switch {
-	case u == "" || strings.Contains(u, "missing") || strings.Contains(u, "none"):
+	case strings.TrimSpace(in.ImageURL) == "" && strings.TrimSpace(in.DataURL) == "":
+		return EvidenceReview{LooksValid: false, Confidence: 0.2, Notes: "No proof image provided."}, nil
+	case strings.Contains(u, "missing") || strings.Contains(u, "none"):
 		return EvidenceReview{LooksValid: false, Confidence: 0.2, Notes: "No proof image URL provided."}, nil
 	case strings.Contains(u, "blur") || strings.Contains(u, "unclear"):
 		return EvidenceReview{LooksValid: false, Confidence: 0.45, Notes: "Image appears unclear — request a sharper photo."}, nil
+	case strings.HasPrefix(strings.TrimSpace(in.DataURL), "data:image/"):
+		return EvidenceReview{LooksValid: true, Confidence: 0.86, Notes: "Uploaded image received (fixture AI). Looks like usable activity proof — advisory only."}, nil
 	default:
 		return EvidenceReview{LooksValid: true, Confidence: 0.88, Notes: "Proof appears consistent with a sustainability activity (fixture AI)."}, nil
 	}
@@ -40,8 +55,12 @@ func (f Fixture) Summarize(_ context.Context, _ map[string]any) (string, error) 
 }
 
 func (a *OpenRouter) ReviewEvidence(ctx context.Context, imageURL string) (EvidenceReview, error) {
+	return a.Review(ctx, EvidenceInput{ImageURL: imageURL})
+}
+
+func (a *OpenRouter) Review(ctx context.Context, in EvidenceInput) (EvidenceReview, error) {
 	if a.apiKey == "" {
-		return Fixture{}.ReviewEvidence(ctx, imageURL)
+		return Fixture{}.Review(in)
 	}
 	schema := map[string]any{
 		"name": "evidence_review", "strict": true,
@@ -55,14 +74,27 @@ func (a *OpenRouter) ReviewEvidence(ctx context.Context, imageURL string) (Evide
 			},
 		},
 	}
-	prompt := "Review this sustainability participation proof image. Decide if it looks like valid evidence of the claimed activity. Do not approve or reject on behalf of a human — advisory only. Image URL: " + imageURL
-	content, err := a.chatJSON(ctx, prompt, schema)
+	prompt := "Review this sustainability participation proof image. Decide if it looks like valid evidence of the claimed activity. Do not approve or reject on behalf of a human — advisory only."
+	if in.FileName != "" {
+		prompt += " Filename: " + in.FileName + "."
+	}
+	var content string
+	var err error
+	if strings.HasPrefix(strings.TrimSpace(in.DataURL), "data:") {
+		content, err = a.chatVisionJSON(ctx, prompt, in.DataURL, schema)
+	} else {
+		ref := in.ImageURL
+		if ref == "" {
+			ref = "(no image)"
+		}
+		content, err = a.chatJSON(ctx, prompt+" Image URL or reference: "+ref, schema)
+	}
 	if err != nil {
-		return Fixture{}.ReviewEvidence(ctx, imageURL)
+		return Fixture{}.Review(in)
 	}
 	var out EvidenceReview
 	if err := jsonUnmarshal(content, &out); err != nil {
-		return Fixture{}.ReviewEvidence(ctx, imageURL)
+		return Fixture{}.Review(in)
 	}
 	if out.Confidence < 0 {
 		out.Confidence = 0
@@ -115,10 +147,14 @@ func (g *Gateway) Live() *OpenRouter { return g.live }
 func (g *Gateway) UseFixture() bool  { return g.useFixture }
 
 func (g *Gateway) ReviewEvidence(ctx context.Context, imageURL string) (EvidenceReview, error) {
+	return g.Review(ctx, EvidenceInput{ImageURL: imageURL})
+}
+
+func (g *Gateway) Review(ctx context.Context, in EvidenceInput) (EvidenceReview, error) {
 	if g.useFixture {
-		return Fixture{}.ReviewEvidence(ctx, imageURL)
+		return Fixture{}.Review(in)
 	}
-	return g.live.ReviewEvidence(ctx, imageURL)
+	return g.live.Review(ctx, in)
 }
 
 func (g *Gateway) Summarize(ctx context.Context, figures map[string]any) (string, error) {

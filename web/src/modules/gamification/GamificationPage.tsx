@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState, type FormEvent } from 'react'
+import { useState, useEffect, type FormEvent } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { RoleGuard } from '../../app/RoleGuard'
 import { useAuthStore } from '../../app/authStore'
 import { Button, Card, EmptyState, Modal, Note, Pill, Progress, initials } from '../../design/components'
@@ -7,7 +8,7 @@ import { api } from '../../lib/apiClient'
 import { userFacingError } from '../../lib/userFacingError'
 import { queryKeys } from '../../lib/queryKeys'
 import type { Category, Challenge, ChallengeParticipation, ChallengeStatus, Reward } from '../../lib/types'
-import { EvidenceAssist } from '../ai/EvidenceAssist'
+import { EvidenceAssist, ProofUploadField } from '../ai/EvidenceAssist'
 import { allowedTransitions, canApproveParticipation } from './challengeTransitions'
 import { applyOptimisticRedeem, canRedeem, rollbackPoints } from './redeemVM'
 
@@ -20,8 +21,29 @@ const tabs: [Tab, string][] = [
   ['leaderboard', 'Leaderboard'],
 ]
 
+function isTab(v: string | null): v is Tab {
+  return v === 'challenges' || v === 'participation' || v === 'badges' || v === 'rewards' || v === 'leaderboard'
+}
+
 export function GamificationPage() {
-  const [tab, setTab] = useState<Tab>('challenges')
+  const [params, setParams] = useSearchParams()
+  const paramTab = params.get('tab')
+  const [tab, setTab] = useState<Tab>(() => (isTab(paramTab) ? paramTab : 'challenges'))
+
+  useEffect(() => {
+    if (isTab(params.get('tab'))) {
+      setTab(params.get('tab') as Tab)
+    }
+  }, [params])
+
+  function selectTab(next: Tab) {
+    setTab(next)
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('tab', next)
+    nextParams.delete('action')
+    setParams(nextParams, { replace: true })
+  }
+
   return (
     <main className="page">
       <div className="content">
@@ -33,7 +55,7 @@ export function GamificationPage() {
         </header>
         <div className="tabs" role="tablist" aria-label="Gamification sections">
           {tabs.map(([id, label]) => (
-            <button key={id} role="tab" aria-selected={tab === id} className={`tab ${tab === id ? 'active' : ''}`} onClick={() => setTab(id)}>
+            <button key={id} role="tab" aria-selected={tab === id} className={`tab ${tab === id ? 'active' : ''}`} onClick={() => selectTab(id)}>
               {label}
             </button>
           ))}
@@ -50,6 +72,7 @@ export function GamificationPage() {
 
 function ChallengesPanel() {
   const qc = useQueryClient()
+  const [params, setParams] = useSearchParams()
   const list = useQuery({ queryKey: queryKeys.challenges, queryFn: api.game.challenges })
   const counts = useQuery({ queryKey: queryKeys.challengeCounts, queryFn: api.game.statusCounts })
   const categories = useQuery({ queryKey: queryKeys.categories, queryFn: () => api.master.list<Category>('categories') })
@@ -57,6 +80,17 @@ function ChallengesPanel() {
   const [transition, setTransition] = useState<Challenge | null>(null)
   const [join, setJoin] = useState<Challenge | null>(null)
   const [error, setError] = useState<unknown>()
+
+  const action = params.get('action')
+  useEffect(() => {
+    if (action === 'new-challenge') {
+      setOpen(true)
+      const nextParams = new URLSearchParams(window.location.search)
+      nextParams.delete('action')
+      setParams(nextParams, { replace: true })
+    }
+  }, [action])
+
   const create = useMutation({
     mutationFn: api.game.createChallenge,
     onSuccess: () => {
@@ -268,10 +302,7 @@ function ChallengesPanel() {
               void participate.mutateAsync({ id: join.id, proofUrl: String(f.get('proofUrl') || '') }).catch(setError)
             }}
           >
-            <label>
-              Proof URL {join.evidenceRequired ? '(required)' : ''}
-              <input name="proofUrl" required={join.evidenceRequired} placeholder="proof file reference" />
-            </label>
+            <ProofUploadField required={join.evidenceRequired} name="proofUrl" />
             <ErrorMessage error={error} />
           </form>
         </Modal>
@@ -353,13 +384,19 @@ function ChallengePartRow({
       </td>
       <td>
         {row.proofUrl ? (
-          <a href={row.proofUrl} target="_blank" rel="noreferrer">
-            proof
-          </a>
+          row.proofUrl.startsWith('http') ? (
+            <a href={row.proofUrl} target="_blank" rel="noreferrer">
+              proof
+            </a>
+          ) : (
+            <span className="muted" title={row.proofUrl}>
+              {row.proofUrl.replace(/^upload:/, '')}
+            </span>
+          )
         ) : (
           <Pill status="neutral">No proof yet</Pill>
         )}
-        {row.approval === 'pending' && row.proofUrl ? <EvidenceAssist proofUrl={row.proofUrl} /> : null}
+        {row.approval === 'pending' ? <EvidenceAssist proofUrl={row.proofUrl} /> : null}
       </td>
       <td className="numeric">{row.approval === 'approved' ? row.xpAwarded : row.challengeXp ?? '—'}</td>
       <td>

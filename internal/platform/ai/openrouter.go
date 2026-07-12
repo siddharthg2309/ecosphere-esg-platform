@@ -24,16 +24,36 @@ func NewOpenRouter(apiKey, model string) *OpenRouter {
 }
 
 func (a *OpenRouter) chatJSON(ctx context.Context, userPrompt string, schema map[string]any) (string, error) {
+	return a.chatMessages(ctx, []map[string]any{
+		{"role": "system", "content": "You are an ESG assistant for EcoSphere. Be precise. Never invent numeric ESG scores or CO2 values. Outputs are advisory only."},
+		{"role": "user", "content": userPrompt},
+	}, schema)
+}
+
+// chatVisionJSON sends a multimodal user message (text + image data URL). Image is not stored server-side.
+func (a *OpenRouter) chatVisionJSON(ctx context.Context, userPrompt, dataURL string, schema map[string]any) (string, error) {
+	// Cap very large payloads (~4MB data URL) to avoid provider rejections.
+	if len(dataURL) > 4_500_000 {
+		return "", errors.New("image too large for evidence review (max ~3MB)")
+	}
+	userContent := []map[string]any{
+		{"type": "text", "text": userPrompt},
+		{"type": "image_url", "image_url": map[string]any{"url": dataURL}},
+	}
+	return a.chatMessages(ctx, []map[string]any{
+		{"role": "system", "content": "You are an ESG assistant for EcoSphere. Be precise. Never invent numeric ESG scores or CO2 values. Outputs are advisory only. You can see the attached proof image."},
+		{"role": "user", "content": userContent},
+	}, schema)
+}
+
+func (a *OpenRouter) chatMessages(ctx context.Context, messages []map[string]any, schema map[string]any) (string, error) {
 	if a.apiKey == "" {
 		return "", errors.New("OpenRouter API key is not configured")
 	}
 	body := map[string]any{
 		"model": a.model, "max_tokens": 500,
 		"response_format": map[string]any{"type": "json_schema", "json_schema": schema},
-		"messages": []map[string]any{
-			{"role": "system", "content": "You are an ESG assistant for EcoSphere. Be precise. Never invent numeric ESG scores or CO2 values. Outputs are advisory only."},
-			{"role": "user", "content": userPrompt},
-		},
+		"messages":        messages,
 	}
 	raw, _ := json.Marshal(body)
 	var last error
@@ -53,11 +73,12 @@ func (a *OpenRouter) chatJSON(ctx context.Context, userPrompt string, schema map
 				} `json:"choices"`
 			}
 			decodeErr := json.NewDecoder(resp.Body).Decode(&out)
+			status := resp.StatusCode
 			_ = resp.Body.Close()
-			if resp.StatusCode >= 200 && resp.StatusCode < 300 && decodeErr == nil && len(out.Choices) > 0 {
+			if status >= 200 && status < 300 && decodeErr == nil && len(out.Choices) > 0 {
 				return out.Choices[0].Message.Content, nil
 			}
-			last = fmt.Errorf("OpenRouter status %d", resp.StatusCode)
+			last = fmt.Errorf("OpenRouter status %d", status)
 		}
 		if attempt < 2 {
 			select {

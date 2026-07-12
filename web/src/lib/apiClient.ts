@@ -135,7 +135,13 @@ export const api = {
     exportUrl:(id:string,fmt:'pdf'|'xlsx'|'csv')=>`${API_URL}/reports/${id}/export?fmt=${fmt}`,
   },
   ai:{
-    evidenceReview:(proofUrl:string)=>request<EvidenceReview>('/ai/evidence-review',{method:'POST',body:JSON.stringify({proofUrl,imageUrl:proofUrl})}),
+    /** Advisory only. Prefer imageDataUrl for uploads (not stored server-side beyond the request). */
+    evidenceReview:(input:string|{proofUrl?:string;imageUrl?:string;imageDataUrl?:string;fileName?:string})=>{
+      const body=typeof input==='string'
+        ?{proofUrl:input,imageUrl:input}
+        :{proofUrl:input.proofUrl,imageUrl:input.imageUrl??input.proofUrl,imageDataUrl:input.imageDataUrl,fileName:input.fileName}
+      return request<EvidenceReview>('/ai/evidence-review',{method:'POST',body:JSON.stringify(body)})
+    },
   },
 }
 

@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { useState, type FormEvent, type ReactNode } from 'react'
+import { useState, useEffect, type FormEvent, type ReactNode } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { RoleGuard } from '../../app/RoleGuard'
 import { Button, EmptyState, Pill } from '../../design/components'
 import { api } from '../../lib/apiClient'
@@ -11,7 +12,32 @@ import { weightsValid } from './settingsValidation'
 type Tab='departments'|'categories'|'master'|'config'|'notifications'|'employees'
 const tabs:[Tab,string][]=[['departments','Departments'],['categories','Categories'],['master','Master Data'],['config','ESG Configuration'],['notifications','Notification Settings'],['employees','Employees']]
 
-export function DepartmentsPage(){const[tab,setTab]=useState<Tab>('departments');return <main className="page"><section className="content"><header className="page-head"><div><p className="eyebrow">Settings</p><h1>Configuration &amp; Administration</h1></div></header><div className="tabs" role="tablist" aria-label="Settings sections">{tabs.map(([id,label])=><button key={id} role="tab" aria-selected={tab===id} className={`tab ${tab===id?'active':''}`} onClick={()=>setTab(id)}>{label}</button>)}</div>{tab==='departments'&&<DepartmentsPanel/>}{tab==='categories'&&<CategoriesPanel/>}{tab==='master'&&<MasterDataPanel/>}{tab==='config'&&<ConfigPanel/>}{tab==='notifications'&&<NotificationsPanel/>}{tab==='employees'&&<EmployeesPanel/>}</section></main>}
+function isTab(v: string | null): v is Tab {
+  return v === 'departments' || v === 'categories' || v === 'master' || v === 'config' || v === 'notifications' || v === 'employees'
+}
+
+export function DepartmentsPage(){
+  const [params, setParams] = useSearchParams()
+  const paramTab = params.get('tab')
+  const [tab, setTab] = useState<Tab>(() => (isTab(paramTab) ? paramTab : 'departments'))
+
+  useEffect(() => {
+    if (isTab(params.get('tab'))) {
+      setTab(params.get('tab') as Tab)
+    }
+  }, [params])
+
+  function selectTab(next: Tab) {
+    setTab(next)
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('tab', next)
+    if (next !== 'master') {
+      nextParams.delete('kind')
+    }
+    setParams(nextParams, { replace: true })
+  }
+
+  return <main className="page"><section className="content"><header className="page-head"><div><p className="eyebrow">Settings</p><h1 className="page-title">Configuration &amp; Administration</h1></div></header><div className="tabs" role="tablist" aria-label="Settings sections">{tabs.map(([id,label])=><button key={id} role="tab" aria-selected={tab===id} className={`tab ${tab===id?'active':''}`} onClick={()=>selectTab(id)}>{label}</button>)}</div>{tab==='departments'&&<DepartmentsPanel/>}{tab==='categories'&&<CategoriesPanel/>}{tab==='master'&&<MasterDataPanel/>}{tab==='config'&&<ConfigPanel/>}{tab==='notifications'&&<NotificationsPanel/>}{tab==='employees'&&<EmployeesPanel/>}</section></main>}
 
 function SectionHead({title,description,action}:{title:string;description?:string;action?:ReactNode}){return <div className="section-head"><div><h2>{title}</h2>{description&&<p className="muted compact">{description}</p>}</div>{action}</div>}
 function Modal({title,children,onClose}:{title:string;children:ReactNode;onClose():void}){return <div className="modal-backdrop" role="presentation" onMouseDown={onClose}><section className="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title" onMouseDown={e=>e.stopPropagation()}><header className="modal-head"><h2 id="modal-title">{title}</h2><button className="close-button" onClick={onClose} aria-label="Close">×</button></header>{children}</section></div>}
@@ -25,7 +51,29 @@ function useEntity<T>(entity:string){const qc=useQueryClient();const query=useQu
 function CategoriesPanel(){const data=useEntity<Category>('categories');const[selected,setSelected]=useState<Category>();const[open,setOpen]=useState(false);const[error,setError]=useState<unknown>();async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();const form=new FormData(e.currentTarget);try{await data.save(selected?.id,{name:form.get('name'),type:form.get('type'),status:form.get('status')});setOpen(false)}catch(err){setError(err)}}return <><SectionHead title="Categories"  action={<RoleGuard roles={['admin']}><Button className="primary" onClick={()=>{setSelected(undefined);setOpen(true)}}>New Category</Button></RoleGuard>}/><SimpleTable loading={data.loading} headers={['Name','Type','Status','Actions']}>{data.rows.map(row=><tr key={row.id}><td><strong>{row.name}</strong></td><td>{row.type==='csr_activity'?'CSR Activity':'Challenge'}</td><td><Pill status={row.status}/></td><td><Actions onEdit={()=>{setSelected(row);setOpen(true)}} onDelete={()=>void data.remove(row.id)}/></td></tr>)}</SimpleTable>{open&&<Modal title={selected?'Edit Category':'New Category'} onClose={()=>setOpen(false)}><form onSubmit={submit} className="modal-form"><label>Name<input name="name" required defaultValue={selected?.name}/></label><label>Type<select name="type" defaultValue={selected?.type??'csr_activity'}><option value="csr_activity">CSR Activity</option><option value="challenge">Challenge</option></select></label><label>Status<select name="status" defaultValue={selected?.status??'active'}><option value="active">Active</option><option value="inactive">Inactive</option></select></label><ErrorMessage error={error}/><footer><Button type="button" className="secondary" onClick={()=>setOpen(false)}>Cancel</Button><Button className="primary" disabled={data.saving}>Save Category</Button></footer></form></Modal>}</>}
 
 type MasterKind='emission-factors'|'products'|'policies'|'badges'|'rewards';const masterKinds:[MasterKind,string][]=[['emission-factors','Emission Factors'],['products','Product ESG Profiles'],['policies','ESG Policies'],['badges','Badges'],['rewards','Rewards']]
-function MasterDataPanel(){const[kind,setKind]=useState<MasterKind>('emission-factors');return <><SectionHead title="Master Data" /><div className="segmented">{masterKinds.map(([id,label])=><button className={kind===id?'active':''} onClick={()=>setKind(id)} key={id}>{label}</button>)}</div><MasterEntityPanel key={kind} kind={kind}/></>}
+function isMasterKind(v: string | null): v is MasterKind {
+  return v === 'emission-factors' || v === 'products' || v === 'policies' || v === 'badges' || v === 'rewards'
+}
+
+function MasterDataPanel(){
+  const [params, setParams] = useSearchParams()
+  const paramKind = params.get('kind')
+  const [kind, setKind] = useState<MasterKind>(() => (isMasterKind(paramKind) ? paramKind : 'emission-factors'))
+
+  useEffect(() => {
+    if (isMasterKind(params.get('kind'))) {
+      setKind(params.get('kind') as MasterKind)
+    }
+  }, [params])
+
+  function selectKind(next: MasterKind) {
+    setKind(next)
+    const nextParams = new URLSearchParams(params)
+    nextParams.set('kind', next)
+    setParams(nextParams, { replace: true })
+  }
+
+  return <><SectionHead title="Master Data" /><div className="segmented">{masterKinds.map(([id,label])=><button className={kind===id?'active':''} onClick={()=>selectKind(id)} key={id}>{label}</button>)}</div><MasterEntityPanel key={kind} kind={kind}/></>}
 
 function MasterEntityPanel({kind}:{kind:MasterKind}){const data=useEntity<Record<string,unknown>&{id:string}>(kind);const categories=useQuery({queryKey:['master','categories','all'],queryFn:()=>api.master.list<Category>('categories')});const factors=useQuery({queryKey:['master','emission-factors','all'],queryFn:()=>api.master.list<EmissionFactor>('emission-factors')});const[selected,setSelected]=useState<(Record<string,unknown>&{id:string})>();const[open,setOpen]=useState(false);const[error,setError]=useState<unknown>();const label=masterKinds.find(v=>v[0]===kind)?.[1]??kind;async function submit(e:FormEvent<HTMLFormElement>){e.preventDefault();const f=new FormData(e.currentTarget);let input:Record<string,unknown>;if(kind==='emission-factors')input={name:f.get('name'),categoryId:f.get('categoryId'),unit:f.get('unit'),kgCo2PerUnit:f.get('kgCo2PerUnit'),status:f.get('status')};else if(kind==='products')input={product:f.get('product'),attributes:JSON.parse(String(f.get('attributes')||'{}')),emissionFactorId:f.get('emissionFactorId')||null};else if(kind==='policies')input={title:f.get('title'),body:f.get('body'),effectiveDate:f.get('effectiveDate')};else if(kind==='badges')input={name:f.get('name'),description:f.get('description'),icon:f.get('icon'),unlockRule:{type:f.get('ruleType'),value:Number(f.get('ruleValue'))}};else input={name:f.get('name'),description:f.get('description'),pointsRequired:Number(f.get('pointsRequired')),stock:Number(f.get('stock')),status:f.get('status')};try{await data.save(selected?.id,input);setOpen(false)}catch(err){setError(err)}}return <><div className="entity-toolbar"><span className="muted">{data.rows.length} records</span><RoleGuard roles={['admin']}><Button className="primary" onClick={()=>{setSelected(undefined);setError(undefined);setOpen(true)}}>New {label.replace(/s$/,'')}</Button></RoleGuard></div><SimpleTable loading={data.loading} headers={['Name','Details','Status / Version','Actions']}>{data.rows.map(row=><tr key={row.id}><td><strong>{String(row.name??row.product??row.title)}</strong></td><td>{entityDetails(kind,row,categories.data?.items??[])}</td><td>{String(row.status??(row.version?`v${row.version}`:'Active'))}</td><td><Actions onEdit={()=>{setSelected(row);setOpen(true)}} onDelete={()=>void data.remove(row.id)}/></td></tr>)}</SimpleTable>{open&&<Modal title={`${selected?'Edit':'New'} ${label.replace(/s$/,'')}`} onClose={()=>setOpen(false)}><form onSubmit={submit} className="modal-form"><MasterFields kind={kind} value={selected} categories={categories.data?.items??[]} factors={factors.data?.items??[]}/><ErrorMessage error={error}/><footer><Button type="button" className="secondary" onClick={()=>setOpen(false)}>Cancel</Button><Button className="primary" disabled={data.saving}>Save</Button></footer></form></Modal>}</>}
 

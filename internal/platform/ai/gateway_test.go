@@ -32,6 +32,11 @@ func TestFixtureReviewEvidence(t *testing.T) {
 	if blur.LooksValid {
 		t.Fatalf("blurry proof should flag needs-review: %+v", blur)
 	}
+
+	up, err := f.Review(EvidenceInput{DataURL: "data:image/png;base64,aaa", FileName: "tree.jpg"})
+	if err != nil || !up.LooksValid {
+		t.Fatalf("uploaded data url fixture: %+v %v", up, err)
+	}
 }
 
 func TestGatewayUsesFixtureWhenNoKey(t *testing.T) {

@@ -152,7 +152,7 @@ function AdminHub() {
               {recompute.isPending ? 'Recomputing…' : 'Recompute scores'}
             </Button>
           </RoleGuard>
-          <Link to="/environmental">
+          <Link to="/environmental?action=log-carbon">
             <Button className="secondary sm">Log Carbon Data</Button>
           </Link>
           <Link to="/reports">
@@ -300,13 +300,13 @@ function AdminHub() {
             <h3>Quick Actions</h3>
           </div>
           <div className="grid cols-2" style={{ gap: 12 }}>
-            <Link to="/environmental">
+            <Link to="/environmental?action=log-carbon">
               <Button className="secondary admin-qa-btn">↑ Log Carbon Data</Button>
             </Link>
-            <Link to="/gamification">
+            <Link to="/gamification?action=new-challenge">
               <Button className="secondary admin-qa-btn">◎ Create Challenge</Button>
             </Link>
-            <Link to="/governance">
+            <Link to="/settings?tab=master&kind=policies">
               <Button className="secondary admin-qa-btn">☰ Publish Policy</Button>
             </Link>
             <Link to="/reports">
@@ -361,10 +361,10 @@ function EmployeeHub() {
       title={`Welcome back, ${user?.name?.split(' ')[0] ?? 'there'}`}
       actions={
         <>
-          <Link to="/social">
+          <Link to="/social?tab=activities">
             <Button className="secondary sm">Browse CSR</Button>
           </Link>
-          <Link to="/gamification">
+          <Link to="/gamification?tab=challenges">
             <Button className="primary sm">Join Challenge</Button>
           </Link>
         </>
@@ -388,7 +388,7 @@ function EmployeeHub() {
             </b>{' '}
             — open Policy Sign-off to stay compliant.
             <div style={{ marginTop: 8 }}>
-              <Link to="/governance">
+              <Link to="/governance?tab=policies">
                 <Button className="sm primary">Policy Sign-off</Button>
               </Link>
             </div>
@@ -412,7 +412,7 @@ function EmployeeHub() {
               <span className="meta">
                 {c.deadline ? `Ends ${String(c.deadline).slice(0, 10)}` : 'No deadline'} · {c.difficulty}
               </span>
-              <Link to="/gamification">
+              <Link to="/gamification?tab=challenges">
                 <Button className="sm primary">Open</Button>
               </Link>
             </div>
@@ -435,7 +435,7 @@ function EmployeeHub() {
             </div>
             <div className="card-foot">
               <span className="meta">{a.points} pts</span>
-              <Link to="/social">
+              <Link to="/social?tab=activities">
                 <Button className="sm">View</Button>
               </Link>
             </div>
@@ -471,10 +471,10 @@ function DepartmentHub() {
       title="Department operations"
       actions={
         <>
-          <Link to="/environmental">
+          <Link to="/environmental?action=log-carbon">
             <Button className="secondary sm">Log Carbon</Button>
           </Link>
-          <Link to="/environmental">
+          <Link to="/environmental?tab=goals&action=new-goal">
             <Button className="primary sm">New Goal</Button>
           </Link>
         </>
@@ -506,7 +506,7 @@ function DepartmentHub() {
         <Card>
           <div className="card-head">
             <h3>Emissions by source</h3>
-            <Link to="/environmental" className="muted">
+            <Link to="/environmental?tab=transactions" className="muted">
               Open
             </Link>
           </div>
@@ -525,7 +525,7 @@ function DepartmentHub() {
         <Card>
           <div className="card-head">
             <h3>Department goals</h3>
-            <Link to="/environmental" className="muted">
+            <Link to="/environmental?tab=goals" className="muted">
               View all
             </Link>
           </div>
@@ -558,10 +558,10 @@ function DepartmentHub() {
         <div className="card-head">
           <h3>Team approvals queue</h3>
           <div className="rowflex">
-            <Link to="/social">
+            <Link to="/social?tab=participation">
               <Button className="sm secondary">CSR queue</Button>
             </Link>
-            <Link to="/gamification">
+            <Link to="/gamification?tab=participation">
               <Button className="sm primary">Challenge queue</Button>
             </Link>
           </div>
