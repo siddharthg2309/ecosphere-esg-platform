@@ -18,6 +18,22 @@ type Badge struct {
 	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
 }
 
+type CarbonTransaction struct {
+	ID               pgtype.UUID        `json:"id"`
+	DepartmentID     pgtype.UUID        `json:"department_id"`
+	Source           string             `json:"source"`
+	Quantity         pgtype.Numeric     `json:"quantity"`
+	EmissionFactorID pgtype.UUID        `json:"emission_factor_id"`
+	FactorValue      pgtype.Numeric     `json:"factor_value"`
+	ComputedCo2      pgtype.Numeric     `json:"computed_co2"`
+	TxnDate          pgtype.Date        `json:"txn_date"`
+	EvidenceUrl      pgtype.Text        `json:"evidence_url"`
+	Status           string             `json:"status"`
+	VerifiedBy       pgtype.UUID        `json:"verified_by"`
+	VerifiedAt       pgtype.Timestamptz `json:"verified_at"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+}
+
 type Category struct {
 	ID        pgtype.UUID        `json:"id"`
 	Name      string             `json:"name"`
@@ -45,6 +61,18 @@ type EmissionFactor struct {
 	CategoryID   pgtype.UUID        `json:"category_id"`
 	Unit         string             `json:"unit"`
 	Kgco2PerUnit pgtype.Numeric     `json:"kgco2_per_unit"`
+	Status       string             `json:"status"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
+}
+
+type EnvironmentalGoal struct {
+	ID           pgtype.UUID        `json:"id"`
+	Name         string             `json:"name"`
+	DepartmentID pgtype.UUID        `json:"department_id"`
+	TargetCo2    pgtype.Numeric     `json:"target_co2"`
+	CurrentCo2   pgtype.Numeric     `json:"current_co2"`
+	Deadline     pgtype.Date        `json:"deadline"`
 	Status       string             `json:"status"`
 	CreatedAt    pgtype.Timestamptz `json:"created_at"`
 	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
