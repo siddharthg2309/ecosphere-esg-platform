@@ -55,7 +55,7 @@ func (q *Queries) CreateRefreshToken(ctx context.Context, arg CreateRefreshToken
 const createUser = `-- name: CreateUser :one
 INSERT INTO users (id, name, email, password_hash, role, department_id)
 VALUES ($1, $2, $3, $4, $5, $6)
-RETURNING id, name, email, password_hash, role, department_id, created_at, updated_at
+RETURNING id, name, email, password_hash, role, department_id, created_at, updated_at, xp, points, completed_challenges, status
 `
 
 type CreateUserParams struct {
@@ -86,6 +86,10 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.DepartmentID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Xp,
+		&i.Points,
+		&i.CompletedChallenges,
+		&i.Status,
 	)
 	return i, err
 }
@@ -101,7 +105,7 @@ func (q *Queries) RevokeRefreshToken(ctx context.Context, id pgtype.UUID) error 
 }
 
 const userByEmail = `-- name: UserByEmail :one
-SELECT id, name, email, password_hash, role, department_id, created_at, updated_at FROM users WHERE email = $1
+SELECT id, name, email, password_hash, role, department_id, created_at, updated_at, xp, points, completed_challenges, status FROM users WHERE email = $1
 `
 
 func (q *Queries) UserByEmail(ctx context.Context, email string) (User, error) {
@@ -116,12 +120,16 @@ func (q *Queries) UserByEmail(ctx context.Context, email string) (User, error) {
 		&i.DepartmentID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Xp,
+		&i.Points,
+		&i.CompletedChallenges,
+		&i.Status,
 	)
 	return i, err
 }
 
 const userByID = `-- name: UserByID :one
-SELECT id, name, email, password_hash, role, department_id, created_at, updated_at FROM users WHERE id = $1
+SELECT id, name, email, password_hash, role, department_id, created_at, updated_at, xp, points, completed_challenges, status FROM users WHERE id = $1
 `
 
 func (q *Queries) UserByID(ctx context.Context, id pgtype.UUID) (User, error) {
@@ -136,6 +144,10 @@ func (q *Queries) UserByID(ctx context.Context, id pgtype.UUID) (User, error) {
 		&i.DepartmentID,
 		&i.CreatedAt,
 		&i.UpdatedAt,
+		&i.Xp,
+		&i.Points,
+		&i.CompletedChallenges,
+		&i.Status,
 	)
 	return i, err
 }

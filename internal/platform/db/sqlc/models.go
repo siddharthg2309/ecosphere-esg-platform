@@ -8,6 +8,25 @@ import (
 	"github.com/jackc/pgx/v5/pgtype"
 )
 
+type Badge struct {
+	ID          pgtype.UUID        `json:"id"`
+	Name        string             `json:"name"`
+	Description string             `json:"description"`
+	Icon        string             `json:"icon"`
+	UnlockRule  []byte             `json:"unlock_rule"`
+	CreatedAt   pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt   pgtype.Timestamptz `json:"updated_at"`
+}
+
+type Category struct {
+	ID        pgtype.UUID        `json:"id"`
+	Name      string             `json:"name"`
+	Type      string             `json:"type"`
+	Status    string             `json:"status"`
+	CreatedAt pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt pgtype.Timestamptz `json:"updated_at"`
+}
+
 type Department struct {
 	ID            pgtype.UUID        `json:"id"`
 	Name          string             `json:"name"`
@@ -20,6 +39,55 @@ type Department struct {
 	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
 }
 
+type EmissionFactor struct {
+	ID           pgtype.UUID        `json:"id"`
+	Name         string             `json:"name"`
+	CategoryID   pgtype.UUID        `json:"category_id"`
+	Unit         string             `json:"unit"`
+	Kgco2PerUnit pgtype.Numeric     `json:"kgco2_per_unit"`
+	Status       string             `json:"status"`
+	CreatedAt    pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
+}
+
+type EsgConfig struct {
+	Singleton             bool               `json:"singleton"`
+	AutoEmissionCalc      bool               `json:"auto_emission_calc"`
+	RequireCsrEvidence    bool               `json:"require_csr_evidence"`
+	AutoAwardBadges       bool               `json:"auto_award_badges"`
+	NotifyComplianceEmail bool               `json:"notify_compliance_email"`
+	WeightEnv             int32              `json:"weight_env"`
+	WeightSocial          int32              `json:"weight_social"`
+	WeightGov             int32              `json:"weight_gov"`
+	UpdatedAt             pgtype.Timestamptz `json:"updated_at"`
+}
+
+type EsgPolicy struct {
+	ID            pgtype.UUID        `json:"id"`
+	Title         string             `json:"title"`
+	Body          string             `json:"body"`
+	Version       int32              `json:"version"`
+	EffectiveDate pgtype.Date        `json:"effective_date"`
+	CreatedAt     pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt     pgtype.Timestamptz `json:"updated_at"`
+}
+
+type NotificationPreference struct {
+	EventType    string             `json:"event_type"`
+	InAppEnabled bool               `json:"in_app_enabled"`
+	EmailEnabled bool               `json:"email_enabled"`
+	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
+}
+
+type ProductEsgProfile struct {
+	ID               pgtype.UUID        `json:"id"`
+	Product          string             `json:"product"`
+	Attributes       []byte             `json:"attributes"`
+	EmissionFactorID pgtype.UUID        `json:"emission_factor_id"`
+	CreatedAt        pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt        pgtype.Timestamptz `json:"updated_at"`
+}
+
 type RefreshToken struct {
 	ID        pgtype.UUID        `json:"id"`
 	UserID    pgtype.UUID        `json:"user_id"`
@@ -29,13 +97,28 @@ type RefreshToken struct {
 	CreatedAt pgtype.Timestamptz `json:"created_at"`
 }
 
+type Reward struct {
+	ID             pgtype.UUID        `json:"id"`
+	Name           string             `json:"name"`
+	Description    string             `json:"description"`
+	PointsRequired int32              `json:"points_required"`
+	Stock          int32              `json:"stock"`
+	Status         string             `json:"status"`
+	CreatedAt      pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt      pgtype.Timestamptz `json:"updated_at"`
+}
+
 type User struct {
-	ID           pgtype.UUID        `json:"id"`
-	Name         string             `json:"name"`
-	Email        string             `json:"email"`
-	PasswordHash string             `json:"password_hash"`
-	Role         string             `json:"role"`
-	DepartmentID pgtype.UUID        `json:"department_id"`
-	CreatedAt    pgtype.Timestamptz `json:"created_at"`
-	UpdatedAt    pgtype.Timestamptz `json:"updated_at"`
+	ID                  pgtype.UUID        `json:"id"`
+	Name                string             `json:"name"`
+	Email               string             `json:"email"`
+	PasswordHash        string             `json:"password_hash"`
+	Role                string             `json:"role"`
+	DepartmentID        pgtype.UUID        `json:"department_id"`
+	CreatedAt           pgtype.Timestamptz `json:"created_at"`
+	UpdatedAt           pgtype.Timestamptz `json:"updated_at"`
+	Xp                  int32              `json:"xp"`
+	Points              int32              `json:"points"`
+	CompletedChallenges int32              `json:"completed_challenges"`
+	Status              string             `json:"status"`
 }
