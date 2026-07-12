@@ -25,10 +25,6 @@ import (
 	"time"
 )
 
-type ESGConfigChanged struct{}
-
-func (ESGConfigChanged) Name() string { return "ESGConfigChanged" }
-
 type Service struct {
 	repo  port.Repository
 	email port.EmailSender
@@ -222,7 +218,7 @@ func (s *Service) SaveConfig(ctx context.Context, v config.Config) (config.Confi
 	if err := s.repo.SaveConfig(ctx, v); err != nil {
 		return v, err
 	}
-	if err := s.bus.Publish(ctx, ESGConfigChanged{}); err != nil {
+	if err := s.bus.Publish(ctx, events.ESGConfigChanged{ChangedAt: s.now()}); err != nil {
 		return v, err
 	}
 	return v, nil
@@ -238,8 +234,8 @@ func (s *Service) SavePreferences(ctx context.Context, values []config.Notificat
 		}
 		seen[v.EventType] = true
 	}
-	if len(seen) != 4 {
-		return nil, errs.Invalid("invalid_notification_preferences", "All four notification events are required", nil)
+	if len(seen) != 5 {
+		return nil, errs.Invalid("invalid_notification_preferences", "All five notification events are required", nil)
 	}
 	if err := s.repo.SavePreferences(ctx, values); err != nil {
 		return nil, err

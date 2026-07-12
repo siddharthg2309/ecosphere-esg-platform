@@ -6,6 +6,7 @@ reminders and overdue alerts.
 **Duration:** ~5 days · **Prerequisites:** Phases 0–3 · **Parent:** [`plan.md`](../../plan.md)
 
 ## Contract freeze (agree first)
+- Shared event names and payloads come from [`docs/contracts/events.md`](../contracts/events.md); do not redefine them locally.
 - **Notification catalog** (the 4 required + overdue) + payload shapes.
 - **ComplianceIssue** invariant: owner + due date required; **overdue = due_date < today AND status = open**.
 - **Policy acknowledgement** popup trigger (unacknowledged active policy on login).
@@ -50,9 +51,9 @@ type Prefs interface { Channels(t NotifType) []Channel }   // from Notification 
 
 ### Events
 ```go
-ComplianceIssueRaised{IssueID, OwnerID, DeptID; Severity}
-PolicyPublished{PolicyID; Version}
-ComplianceOverdue{IssueID, OwnerID}            // emitted by the scheduler
+type ComplianceIssueRaised = events.ComplianceIssueRaised
+type PolicyPublished = events.PolicyPublished
+type ComplianceOverdue = events.ComplianceOverdue // emitted by the scheduler
 ```
 
 **Deliverables + tests:** `NewIssue` rejects missing owner/due; `IsOverdue` boundary (== due date not overdue,
@@ -62,7 +63,9 @@ ComplianceOverdue{IssueID, OwnerID}            // emitted by the scheduler
 
 ## P2 — Backend Adapters
 
-### Migrations (`0020`–`0024`)
+### Migrations (`0022`–`0026`)
+
+This range is exclusively reserved for Phase 4. `compliance_overdue` already exists as a persisted notification preference from migration `0012`.
 ```sql
 CREATE TABLE audits (id UUID PRIMARY KEY, title TEXT NOT NULL, department_id UUID REFERENCES departments(id),
   auditor_id UUID REFERENCES users(id), audit_date DATE NOT NULL, findings TEXT, status TEXT NOT NULL DEFAULT 'draft');

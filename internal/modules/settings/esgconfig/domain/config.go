@@ -22,14 +22,15 @@ func (c Config) Validate() error {
 type EventType string
 
 const (
-	EventComplianceRaised EventType = "compliance_raised"
-	EventApprovalDecision EventType = "approval_decision"
-	EventPolicyReminder   EventType = "policy_reminder"
-	EventBadgeUnlock      EventType = "badge_unlock"
+	EventComplianceRaised  EventType = "compliance_raised"
+	EventApprovalDecision  EventType = "approval_decision"
+	EventPolicyReminder    EventType = "policy_reminder"
+	EventBadgeUnlock       EventType = "badge_unlock"
+	EventComplianceOverdue EventType = "compliance_overdue"
 )
 
 func (e EventType) Valid() bool {
-	return e == EventComplianceRaised || e == EventApprovalDecision || e == EventPolicyReminder || e == EventBadgeUnlock
+	return e == EventComplianceRaised || e == EventApprovalDecision || e == EventPolicyReminder || e == EventBadgeUnlock || e == EventComplianceOverdue
 }
 
 type NotificationPreference struct {

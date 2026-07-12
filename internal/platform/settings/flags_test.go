@@ -3,7 +3,6 @@ package settings
 import (
 	"context"
 	config "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/esgconfig/domain"
-	masterapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/app"
 	masterport "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/port"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/events"
 	"testing"
@@ -28,7 +27,7 @@ func TestConfigEventInvalidatesCache(t *testing.T) {
 	if flags.IsEnabled(context.Background(), "auto_emission_calc") {
 		t.Fatal("cache should retain old value")
 	}
-	if err := bus.Publish(context.Background(), masterapp.ESGConfigChanged{}); err != nil {
+	if err := bus.Publish(context.Background(), events.ESGConfigChanged{}); err != nil {
 		t.Fatal(err)
 	}
 	if !flags.IsEnabled(context.Background(), "auto_emission_calc") {

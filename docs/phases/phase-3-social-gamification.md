@@ -5,6 +5,7 @@ and the full gamification loop — challenge lifecycle, XP, **badge auto-award**
 **Duration:** ~5 days · **Prerequisites:** Phases 0–2 · **Parent:** [`plan.md`](../../plan.md)
 
 ## Contract freeze (agree first)
+- Shared event names and payloads come from [`docs/contracts/events.md`](../contracts/events.md); do not redefine them locally.
 - **Two separate participation models** (CSR vs Challenge) — do not merge.
 - **Evidence gate**; **challenge state machine** transitions; **badge unlock** eval + `BadgeUnlocked`;
   **reward redemption** semantics (check stock → deduct points → decrement stock, atomic).
@@ -74,10 +75,10 @@ func (s *approveChallenge) Execute(ctx, pid, by id.ID) error {
 
 ### Events
 ```go
-ParticipationDecided{Kind:"csr"|"challenge"; EmployeeID; Approved bool; Points/XP int}
-ChallengeCompleted{EmployeeID; ChallengeID; XP int}
-BadgeUnlocked{EmployeeID; BadgeID id.ID}
-RewardRedeemed{EmployeeID; RewardID id.ID; Points int}
+type ParticipationDecided = events.ParticipationDecided
+type ChallengeCompleted = events.ChallengeCompleted
+type BadgeUnlocked = events.BadgeUnlocked
+type RewardRedeemed = events.RewardRedeemed
 ```
 
 **Deliverables + tests:** evidence gate blocks approve w/o proof; illegal transition (`draft→completed`) → invalid;
@@ -87,7 +88,9 @@ RewardRedeemed{EmployeeID; RewardID id.ID; Points int}
 
 ## P2 — Backend Adapters
 
-### Migrations (`0013`–`0019`)
+### Migrations (`0015`–`0021`)
+
+This range is exclusively reserved for Phase 3 after the two Phase 2 migrations.
 ```sql
 CREATE TABLE csr_activities (id UUID PRIMARY KEY, title TEXT NOT NULL, category_id UUID REFERENCES categories(id),
   points INT NOT NULL DEFAULT 0, evidence_required BOOL NOT NULL DEFAULT true, status TEXT NOT NULL DEFAULT 'active');

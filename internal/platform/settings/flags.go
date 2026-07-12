@@ -23,7 +23,7 @@ type Service struct {
 
 func New(repo masterport.Repository, bus events.Bus) *Service {
 	s := &Service{repo: repo, ttl: 60 * time.Second}
-	bus.Subscribe("ESGConfigChanged", func(context.Context, events.Event) error { s.Invalidate(); return nil })
+	bus.Subscribe(events.NameESGConfigChanged, func(context.Context, events.Event) error { s.Invalidate(); return nil })
 	return s
 }
 func (s *Service) load(ctx context.Context) config.Config {

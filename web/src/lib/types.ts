@@ -16,5 +16,5 @@ export interface Badge{id:string;name:string;description:string;icon:string;unlo
 export interface Reward{id:string;name:string;description:string;pointsRequired:number;stock:number;status:Status}
 export interface Employee extends User{xp:number;points:number;completedChallenges:number;status:Status;createdAt:string}
 export interface ESGConfig{autoEmissionCalc:boolean;requireCsrEvidence:boolean;autoAwardBadges:boolean;notifyComplianceEmail:boolean;weightEnv:number;weightSocial:number;weightGov:number}
-export type NotificationEvent='compliance_raised'|'approval_decision'|'policy_reminder'|'badge_unlock'
+export type NotificationEvent='compliance_raised'|'approval_decision'|'policy_reminder'|'badge_unlock'|'compliance_overdue'
 export interface NotificationPreference{eventType:NotificationEvent;inAppEnabled:boolean;emailEnabled:boolean}

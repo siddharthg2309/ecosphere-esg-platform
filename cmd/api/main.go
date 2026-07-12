@@ -29,6 +29,7 @@ import (
 	platformemail "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/email"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/events"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/httpserver"
+	platformsettings "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/settings"
 )
 
 func main() {
@@ -49,8 +50,10 @@ func main() {
 	departmentService := departmentapp.New(departmentpg.New(sqlc.New(pool)))
 	departmentHandler := departmenthttp.New(departmentService)
 	bus := events.NewInProcess()
-	masterService := masterapp.New(masterpg.New(pool), platformemail.New(cfg.SMTPAddr), bus)
+	masterRepo := masterpg.New(pool)
+	masterService := masterapp.New(masterRepo, platformemail.New(cfg.SMTPAddr), bus)
 	masterHandler := masterhttp.New(masterService)
+	_ = platformsettings.New(masterRepo, bus)
 
 	router := chi.NewRouter()
 	router.Use(httpserver.Recover, httpserver.RequestID, httpserver.Logger, httpserver.CORS(cfg.CORSOrigin), middleware.StripSlashes)

@@ -153,15 +153,15 @@ The event bus contract every phase codes against. Producers publish **after comm
 
 | Event | Producer | Consumers | Payload (key fields) |
 | --- | --- | --- | --- |
-| `EmissionRecorded` | environmental · verify txn | scoring (env) | dept, source, co2, at |
-| `ParticipationDecided` | social/gamification · approve/reject | notification | kind, employee, approved, pts/xp |
-| `ChallengeCompleted` | gamification · approve challenge | gamification (badge auto-award), scoring (social) | employee, challenge, xp |
-| `BadgeUnlocked` | gamification · auto-award | notification | employee, badge |
-| `RewardRedeemed` | gamification · redeem | audit/analytics | employee, reward, points |
-| `PolicyPublished` | governance · publish | notification (reminder scheduling) | policy, version |
-| `ComplianceIssueRaised` | governance · raise | notification, scoring (gov) | issue, owner, dept, severity |
-| `ComplianceOverdue` | scheduler (daily) | notification | issue, owner |
-| `ESGConfigChanged` | settings · update config | settings (flag-cache invalidate), scoring (weights) | orgId |
+| `environmental.emission_recorded` | environmental · verify txn | scoring (env) | departmentId, source, co2, at |
+| `engagement.participation_decided` | social/gamification · approve/reject | notification | kind, employeeId, approved, points, xp |
+| `gamification.challenge_completed` | gamification · approve challenge | gamification (badge auto-award), scoring (social) | employeeId, challengeId, xp |
+| `gamification.badge_unlocked` | gamification · auto-award | notification | employeeId, badgeId |
+| `gamification.reward_redeemed` | gamification · redeem | audit/analytics | employeeId, rewardId, points |
+| `governance.policy_published` | governance · publish | notification (reminder scheduling) | policyId, version |
+| `governance.compliance_issue_raised` | governance · raise | notification, scoring (gov) | issueId, ownerId, departmentId, severity |
+| `governance.compliance_overdue` | scheduler (daily) | notification | issueId, ownerId |
+| `settings.esg_config_changed` | settings · update config | settings (flag-cache invalidate), scoring (weights) | changedAt |
 
 ### 4.7 Request lifecycle
 

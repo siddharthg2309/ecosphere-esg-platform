@@ -6,6 +6,7 @@ environmental dashboard.
 **Duration:** ~5 days · **Prerequisites:** Phases 0–1 · **Parent:** [`plan.md`](../../plan.md)
 
 ## Contract freeze (agree first)
+- Shared event names and payloads come from [`docs/contracts/events.md`](../contracts/events.md); do not redefine them locally.
 - **Ingest flow**: `POST /carbon/ingest` (file) → `Suggestion{source,categoryId,quantity,unit,confidence}` →
   human edits → `POST /carbon/transactions` (status=`draft`) → `POST /carbon/transactions/{id}/verify`.
 - **Invariant**: `computed_co2 = quantity × emission_factor.kgco2_per_unit`; verified txns immutable.
@@ -80,8 +81,7 @@ func (s *verify) Execute(ctx, tid, by id.ID) (*CarbonTransaction, error) {
 
 ### Event
 ```go
-type EmissionRecorded struct { DeptID id.ID; Source Source; CO2 decimal.Decimal; At time.Time }
-func (EmissionRecorded) Name() string { return "environmental.emission_recorded" }
+type EmissionRecorded = events.EmissionRecorded // DepartmentID, Source, CO2, At
 ```
 
 **Deliverables + tests:** `compute()` = `qty×factor` exact (decimal); `Verify` twice → `conflict`; non-dept-head verify
@@ -91,7 +91,9 @@ func (EmissionRecorded) Name() string { return "environmental.emission_recorded"
 
 ## P2 — Backend Adapters
 
-### Migrations (`0011`, `0012`)
+### Migrations (`0013`, `0014`)
+
+These numbers are reserved for Phase 2: `0013_carbon_transactions` and `0014_environmental_goals`.
 ```sql
 CREATE TABLE carbon_transactions (
   id UUID PRIMARY KEY,

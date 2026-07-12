@@ -62,7 +62,7 @@ type ESGConfigRepo interface { Get(ctx, org id.ID) (*ESGConfig, error); Save(ctx
 
 type UpdateESGConfig interface { Execute(ctx, ESGConfig) error } // validates → save → publish ESGConfigChanged
 ```
-Emit `ESGConfigChanged{OrgID}` on save (invalidates the feature-flag cache in P4).
+Emit `events.ESGConfigChanged{ChangedAt}` using the frozen `settings.esg_config_changed` name from [`docs/contracts/events.md`](../contracts/events.md) (invalidates the feature-flag cache in P4).
 
 **Deliverables + tests:** factor rejects ≤0; unlock-rule `Satisfied` table test; weights guard rejects ≠100; policy
 version increments on publish.
@@ -71,7 +71,9 @@ version increments on publish.
 
 ## P2 — Backend Adapters
 
-### Migrations (`0003`–`0010`)
+### Migrations (`0003`–`0012`)
+
+`0011` creates notification preferences and `0012` adds the separately configurable `compliance_overdue` channel. Phase 2 begins at `0013`.
 ```sql
 CREATE TABLE categories (id UUID PRIMARY KEY, name TEXT NOT NULL,
   type TEXT NOT NULL CHECK (type IN ('csr_activity','challenge')), status TEXT NOT NULL DEFAULT 'active');

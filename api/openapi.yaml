@@ -129,5 +129,5 @@ components:
     DepartmentPage: { type: object, required: [items, total], properties: { items: { type: array, items: { $ref: '#/components/schemas/Department' } }, total: { type: integer } } }
     CategoryType: { type: string, enum: [csr_activity, challenge] }
     ESGConfig: { type: object, required: [autoEmissionCalc, requireCsrEvidence, autoAwardBadges, notifyComplianceEmail, weightEnv, weightSocial, weightGov], properties: { autoEmissionCalc: { type: boolean }, requireCsrEvidence: { type: boolean }, autoAwardBadges: { type: boolean }, notifyComplianceEmail: { type: boolean }, weightEnv: { type: integer, minimum: 0, maximum: 100 }, weightSocial: { type: integer, minimum: 0, maximum: 100 }, weightGov: { type: integer, minimum: 0, maximum: 100 } } }
-    NotificationEvent: { type: string, enum: [compliance_raised, approval_decision, policy_reminder, badge_unlock] }
+    NotificationEvent: { type: string, enum: [compliance_raised, approval_decision, policy_reminder, badge_unlock, compliance_overdue] }
     NotificationPreference: { type: object, required: [eventType, inAppEnabled, emailEnabled], properties: { eventType: { $ref: '#/components/schemas/NotificationEvent' }, inAppEnabled: { type: boolean }, emailEnabled: { type: boolean } } }
