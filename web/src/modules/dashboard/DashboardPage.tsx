@@ -20,13 +20,12 @@ export function DashboardPage() {
 function PageFrame({
   eyebrow,
   title,
-  sub,
   actions,
   children,
 }: {
   eyebrow: string
   title: string
-  sub: string
+  sub?: string
   actions?: ReactNode
   children: ReactNode
 }) {
@@ -37,7 +36,6 @@ function PageFrame({
           <div>
             <p className="eyebrow">{eyebrow}</p>
             <h1 className="page-title">{title}</h1>
-            <p className="muted sub-line">{sub}</p>
           </div>
           {actions ? <div className="rowflex">{actions}</div> : null}
         </header>
@@ -142,7 +140,6 @@ function AdminHub() {
     <PageFrame
       eyebrow="Dashboard"
       title="Executive Overview"
-      sub={`Organization-wide ESG performance · FY2026 · updated ${new Date().toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}`}
       actions={
         <>
           <RoleGuard roles={['admin']}>
@@ -361,7 +358,6 @@ function EmployeeHub() {
     <PageFrame
       eyebrow={meta.homeLabel}
       title={`Welcome back, ${user?.name?.split(' ')[0] ?? 'there'}`}
-      sub="Your challenges, badges, CSR participation and policy sign-offs"
       actions={
         <>
           <Link to="/social">
@@ -407,7 +403,6 @@ function EmployeeHub() {
               <h3>{c.title}</h3>
               <Pill status="active">Active</Pill>
             </div>
-            <p className="muted">{c.description}</p>
             <div className="rowflex" style={{ marginTop: 12 }}>
               <Progress value={40} />
               <span className="muted">{c.xp} XP</span>
@@ -437,7 +432,6 @@ function EmployeeHub() {
                 {a.evidenceRequired ? 'Evidence' : 'Open'}
               </Pill>
             </div>
-            <p className="muted">{a.description}</p>
             <div className="card-foot">
               <span className="meta">{a.points} pts</span>
               <Link to="/social">
@@ -474,7 +468,6 @@ function DepartmentHub() {
     <PageFrame
       eyebrow="Department Hub"
       title="Department operations"
-      sub="Operational data · department goals · team participation"
       actions={
         <>
           <Link to="/environmental">
@@ -603,14 +596,13 @@ function AuditorHub() {
     <PageFrame
       eyebrow="Audit Hub"
       title="Audit & Compliance Workspace"
-      sub="Audit trail · issue tracking · acknowledgements · data verification"
       actions={
         <>
-          <Link to="/governance">
-            <Button className="secondary sm">New Audit</Button>
+          <Link className="button secondary sm" to="/governance?tab=audits&action=new-audit">
+            New Audit
           </Link>
-          <Link to="/governance">
-            <Button className="primary sm">Raise Issue</Button>
+          <Link className="button primary sm" to="/governance?tab=issues&action=raise-issue">
+            Raise Issue
           </Link>
         </>
       }
@@ -648,8 +640,8 @@ function AuditorHub() {
                   <Pill status={a.status}>{a.status.replace(/_/g, ' ')}</Pill>
                 </td>
                 <td>
-                  <Link to="/governance">
-                    <Button className="sm secondary">Open</Button>
+                  <Link className="button sm secondary" to="/governance?tab=audits">
+                    Open
                   </Link>
                 </td>
               </tr>

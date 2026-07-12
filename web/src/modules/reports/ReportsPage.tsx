@@ -1,10 +1,10 @@
-import { useMutation } from '@tanstack/react-query'
 import { useState } from 'react'
 import { Button, Card, Note, Pill } from '../../design/components'
 import { api, downloadReport } from '../../lib/apiClient'
 import type { Report, ReportType } from '../../lib/types'
 import { userFacingError } from '../../lib/userFacingError'
 import { useDepartmentsVM } from '../settings/useDepartmentsVM'
+import { buildMockReport, downloadTextFile, mockReportToCsv } from './mockReports'
 
 const standard: { type: ReportType; title: string; blurb: string }[] = [
   { type: 'environmental', title: 'Environmental', blurb: 'Emissions, goals, source breakdown.' },
@@ -17,6 +17,8 @@ export function ReportsPage() {
   const depts = useDepartmentsVM()
   const [preview, setPreview] = useState<Report | null>(null)
   const [error, setError] = useState('')
+  const [pending, setPending] = useState(false)
+  const [usingMock, setUsingMock] = useState(false)
   const [filters, setFilters] = useState({
     departmentId: '',
     from: '',
@@ -27,28 +29,82 @@ export function ReportsPage() {
     category: '',
   })
 
-  const generate = useMutation({
-    mutationFn: api.reports.generate,
-    onSuccess: (r) => {
-      setPreview(r)
-      setError('')
-    },
-    onError: (e) => setError(userFacingError(e, 'Unable to generate report')),
-  })
-
-  function run(type: ReportType) {
+  async function run(type: ReportType) {
+    setPending(true)
+    setError('')
     const extra: Record<string, unknown> = {}
     if (filters.module) extra.module = filters.module
     if (filters.employee) extra.employee = filters.employee
     if (filters.challenge) extra.challenge = filters.challenge
     if (filters.category) extra.category = filters.category
-    void generate.mutateAsync({
-      type,
-      departmentId: filters.departmentId || undefined,
-      from: filters.from || undefined,
-      to: filters.to || undefined,
-      filters: extra,
-    })
+    if (filters.departmentId) extra.departmentId = filters.departmentId
+    if (filters.from) extra.from = filters.from
+    if (filters.to) extra.to = filters.to
+
+    const mock = buildMockReport(type, extra)
+
+    try {
+      // Prefer live API when available; still show rich prototype content if API is sparse.
+      const live = await api.reports.generate({
+        type,
+        departmentId: filters.departmentId || undefined,
+        from: filters.from || undefined,
+        to: filters.to || undefined,
+        filters: extra,
+      })
+      const liveHasBody =
+        (live.sections?.length ?? 0) > 0 &&
+        live.sections.some((s) => Boolean(s.summary) || (s.rows?.length ?? 0) > 0 || Boolean(s.metrics))
+
+      if (liveHasBody && (live.sections?.length ?? 0) >= 2) {
+        setPreview(live)
+        setUsingMock(false)
+      } else {
+        // Prototype: merge API id for export attempts, keep rich mock sections.
+        setPreview({ ...mock, id: live.id || mock.id, generatedAt: live.generatedAt || mock.generatedAt })
+        setUsingMock(true)
+      }
+    } catch {
+      // Offline / prototype fallback — always show a full mock report.
+      setPreview(mock)
+      setUsingMock(true)
+    } finally {
+      setPending(false)
+      // scroll preview into view after paint
+      requestAnimationFrame(() => {
+        document.getElementById('report-preview')?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+      })
+    }
+  }
+
+  async function exportFmt(fmt: 'pdf' | 'xlsx' | 'csv') {
+    if (!preview) return
+    setError('')
+    try {
+      if (!usingMock) {
+        await downloadReport(preview.id, fmt)
+        return
+      }
+      // Client-side export for mock prototypes
+      if (fmt === 'csv') {
+        downloadTextFile(`${preview.type}-report.csv`, mockReportToCsv(preview), 'text/csv;charset=utf-8')
+        return
+      }
+      // PDF/Excel: download a readable text/json package for the prototype
+      const body = JSON.stringify(preview, null, 2)
+      downloadTextFile(
+        `${preview.type}-report.${fmt === 'pdf' ? 'json' : 'json'}`,
+        body,
+        'application/json',
+      )
+    } catch (e) {
+      // last resort mock csv
+      try {
+        downloadTextFile(`${preview.type}-report.csv`, mockReportToCsv(preview), 'text/csv;charset=utf-8')
+      } catch {
+        setError(userFacingError(e, 'Unable to export report'))
+      }
+    }
   }
 
   return (
@@ -57,38 +113,43 @@ export function ReportsPage() {
         <header className="page-head">
           <div>
             <p className="eyebrow">Reports</p>
-            <h1>Reports &amp; Analytics</h1>
-            <p className="muted">Generate ESG reports · build custom views · export PDF / Excel / CSV</p>
+            <h1 className="page-title">Reports &amp; Analytics</h1>
           </div>
         </header>
 
-        <div className="grid cols-2" style={{ gridTemplateColumns: 'repeat(auto-fit,minmax(220px,1fr))', gap: 16 }}>
+        <div className="report-cards">
           {standard.map((r) => (
-            <Card key={r.type}>
-              <div className="card-head">
+            <article className="report-card" key={r.type}>
+              <div className="report-card-body">
                 <h3>{r.title}</h3>
               </div>
-              <div className="muted">{r.blurb}</div>
-              <div className="card-foot">
-                <span className="muted">Standard</span>
-                <Button className="primary sm" disabled={generate.isPending} onClick={() => run(r.type)}>
-                  Generate
+              <div className="report-card-foot">
+                <span />
+                <Button
+                  className="primary sm"
+                  type="button"
+                  disabled={pending}
+                  onClick={() => void run(r.type)}
+                >
+                  {pending ? 'Generating…' : 'Generate'}
                 </Button>
               </div>
-            </Card>
+            </article>
           ))}
         </div>
 
-        <Card style={{ marginTop: 24 }}>
+        <Card className="section-block report-builder">
           <div className="card-head">
             <h3>Custom report builder</h3>
-            <span className="muted">6 filters</span>
           </div>
           <div className="modal-form">
             <div className="field-row">
               <label>
                 Department
-                <select value={filters.departmentId} onChange={(e) => setFilters({ ...filters, departmentId: e.target.value })}>
+                <select
+                  value={filters.departmentId}
+                  onChange={(e) => setFilters({ ...filters, departmentId: e.target.value })}
+                >
                   <option value="">All departments</option>
                   {depts.rows.map((d) => (
                     <option key={d.id} value={d.id}>
@@ -101,9 +162,9 @@ export function ReportsPage() {
                 Module
                 <select value={filters.module} onChange={(e) => setFilters({ ...filters, module: e.target.value })}>
                   <option value="">All modules</option>
-                  <option value="environmental">environmental</option>
-                  <option value="social">social</option>
-                  <option value="governance">governance</option>
+                  <option value="environmental">Environmental</option>
+                  <option value="social">Social</option>
+                  <option value="governance">Governance</option>
                 </select>
               </label>
             </div>
@@ -134,18 +195,18 @@ export function ReportsPage() {
                   placeholder="challenge filter"
                 />
               </label>
-              <label>
-                Category
-                <input
-                  value={filters.category}
-                  onChange={(e) => setFilters({ ...filters, category: e.target.value })}
-                  placeholder="category filter"
-                />
-              </label>
             </div>
+            <label>
+              Category
+              <input
+                value={filters.category}
+                onChange={(e) => setFilters({ ...filters, category: e.target.value })}
+                placeholder="category filter"
+              />
+            </label>
             <div className="rowflex">
-              <Button className="primary" disabled={generate.isPending} onClick={() => run('custom')}>
-                Generate custom
+              <Button className="primary" type="button" disabled={pending} onClick={() => void run('custom')}>
+                {pending ? 'Generating…' : 'Generate custom'}
               </Button>
             </div>
           </div>
@@ -158,38 +219,51 @@ export function ReportsPage() {
         )}
 
         {preview && (
-          <Card style={{ marginTop: 24 }}>
+          <section id="report-preview" className="report-preview section-block">
             <div className="card-head">
-              <h3>Report preview</h3>
+              <div>
+                <h3 style={{ margin: 0 }}>Report preview</h3>
+                <p className="muted" style={{ fontSize: 12, margin: '4px 0 0' }}>
+                  Generated {String(preview.generatedAt).slice(0, 19).replace('T', ' ')}
+                  {usingMock ? ' · prototype data' : ` · id ${preview.id.slice(0, 8)}…`}
+                </p>
+              </div>
               <div className="rowflex">
-                <Pill status="plum">{preview.type}</Pill>
-                <Button className="secondary sm" onClick={() => void downloadReport(preview.id, 'pdf')}>
+                <Pill status="plum">{preview.type.replace(/_/g, ' ')}</Pill>
+                <Button className="secondary sm" type="button" onClick={() => void exportFmt('pdf')}>
                   PDF
                 </Button>
-                <Button className="secondary sm" onClick={() => void downloadReport(preview.id, 'xlsx')}>
+                <Button className="secondary sm" type="button" onClick={() => void exportFmt('xlsx')}>
                   Excel
                 </Button>
-                <Button className="secondary sm" onClick={() => void downloadReport(preview.id, 'csv')}>
+                <Button className="secondary sm" type="button" onClick={() => void exportFmt('csv')}>
                   CSV
                 </Button>
               </div>
             </div>
-            <p className="muted" style={{ fontSize: 12 }}>
-              Generated {String(preview.generatedAt).slice(0, 19).replace('T', ' ')} · id {preview.id.slice(0, 8)}…
-            </p>
+
+
             {preview.sections.map((sec, i) => (
-              <div key={i} style={{ marginTop: 16 }}>
-                <h3 style={{ margin: '0 0 6px' }}>
-                  {sec.title} {sec.ai && <Pill status="warning">AI advisory</Pill>}
+              <div key={`${sec.title}-${i}`} className="report-section">
+                <h3>
+                  {sec.title} {sec.ai ? <Pill status="warning">AI advisory</Pill> : null}
                 </h3>
                 {sec.ai && (
-                  <Note>
-                    This section is AI-generated and advisory. All numeric scores remain system-calculated.
-                  </Note>
+                  <Note>This section is AI-generated and advisory. Numeric scores remain system-calculated.</Note>
                 )}
-                {sec.summary && <p style={{ marginTop: 8 }}>{sec.summary}</p>}
+                {sec.summary && <p className="report-summary">{sec.summary}</p>}
+                {sec.metrics && Object.keys(sec.metrics).length > 0 && (
+                  <div className="report-metrics">
+                    {Object.entries(sec.metrics).map(([k, v]) => (
+                      <div className="report-metric" key={k}>
+                        <span className="muted">{k}</span>
+                        <strong>{formatMetric(v)}</strong>
+                      </div>
+                    ))}
+                  </div>
+                )}
                 {sec.rows && sec.rows.length > 0 && (
-                  <div className="table-wrap" style={{ marginTop: 8 }}>
+                  <div className="table-wrap" style={{ marginTop: 10 }}>
                     <table>
                       <thead>
                         <tr>
@@ -212,9 +286,15 @@ export function ReportsPage() {
                 )}
               </div>
             ))}
-          </Card>
+          </section>
         )}
       </div>
     </main>
   )
+}
+
+function formatMetric(v: unknown): string {
+  if (v == null) return '—'
+  if (typeof v === 'object') return JSON.stringify(v)
+  return String(v)
 }

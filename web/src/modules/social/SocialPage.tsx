@@ -27,7 +27,6 @@ export function SocialPage() {
           <div>
             <p className="eyebrow">Social</p>
             <h1>CSR &amp; Employee Engagement</h1>
-            <p className="muted">Community initiatives · participation · diversity &amp; training</p>
           </div>
         </header>
         <StatBar
@@ -118,7 +117,6 @@ function ActivitiesPanel() {
       <div className="section-head">
         <div>
           <h2>CSR Activities</h2>
-          <p className="muted compact">Join community initiatives and earn points after approval</p>
         </div>
         <RoleGuard roles={['admin', 'dept_head']}>
           <Button className="primary sm" onClick={() => setOpenCreate(true)}>
@@ -131,7 +129,7 @@ function ActivitiesPanel() {
       ) : (activities.data?.items ?? []).length === 0 ? (
         <EmptyState>
           <h3>No CSR activities yet</h3>
-          <p className="muted">Create the first activity to engage employees.</p>
+          
         </EmptyState>
       ) : (
         <div className="grid autofit">
@@ -141,7 +139,6 @@ function ActivitiesPanel() {
                 <h3>{a.title}</h3>
                 <Pill status="neutral">{csrCats.find((c) => c.id === a.categoryId)?.name ?? 'CSR'}</Pill>
               </div>
-              <div className="muted">{a.description || 'No description'}</div>
               <div className="rowflex" style={{ marginTop: 12 }}>
                 {a.evidenceRequired ? <Pill status="warning">Evidence Required</Pill> : <Pill status="neutral">Open</Pill>}
                 <span className="meta">{a.joinedCount ?? 0} joined</span>
