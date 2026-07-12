@@ -13,7 +13,7 @@ migrate-down:
 	docker compose run --rm migrate -path=/migrations -database "$${DATABASE_URL:-postgres://ecosphere:ecosphere@postgres:5432/ecosphere?sslmode=disable}" down 1
 
 seed:
-	docker compose run --rm api go run ./cmd/seed
+	docker compose run --rm --entrypoint /usr/local/bin/seed api
 
 test: test-go test-web
 
