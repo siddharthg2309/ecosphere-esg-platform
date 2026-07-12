@@ -1,0 +1,120 @@
+<title>EcoSphere — Auditor Portal</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="assets/theme.css">
+
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand">EcoSphere</div>
+    <div class="nav-group"><a class="nav-item active" href="auditor.html"><span class="ico ico-dashboard"></span> Audit Hub</a></div>
+    <div class="nav-group"><div class="nav-title">Audits</div>
+      <a class="nav-item" href="#"><span class="ico ico-scale"></span> Audit Queue</a>
+      <a class="nav-item" href="#"><span class="ico ico-check"></span> Completed Audits</a></div>
+    <div class="nav-group"><div class="nav-title">Compliance</div>
+      <a class="nav-item" href="governance.html"><span class="ico ico-alert"></span> Issues</a>
+      <a class="nav-item" href="#"><span class="ico ico-file"></span> Policy Acknowledgements</a></div>
+    <div class="nav-group"><div class="nav-title">Verification</div>
+      <a class="nav-item" href="environmental.html"><span class="ico ico-refresh"></span> Carbon Data</a></div>
+    <div class="nav-group"><div class="nav-title">Insights</div>
+      <a class="nav-item" href="reports.html"><span class="ico ico-chart"></span> Reports</a></div>
+    <div class="nav-group"><div class="nav-title">Portals</div>
+      <a class="nav-item" href="employee.html"><span class="ico ico-user"></span> Employee</a>
+      <a class="nav-item" href="department.html"><span class="ico ico-users"></span> Department</a>
+      <a class="nav-item" href="index.html"><span class="ico ico-chevron"></span> All Screens</a></div>
+  </aside>
+
+  <div class="main">
+    <header class="topbar">
+      <div class="crumb">Auditor Portal <small>/ Compliance &amp; Audits</small></div>
+      <div class="spacer"></div>
+      <div class="search"><span class="ico ico-search sm"></span><input placeholder="Search audits, issues…"></div>
+      <div class="iconbtn"><span class="ico ico-bell"></span><span class="bell-badge">5</span></div>
+      <div class="avatar">RI</div>
+    </header>
+
+    <div class="content">
+      <div class="page-head">
+        <div><h1 class="page-title">Audit &amp; Compliance Workspace</h1>
+          <div class="sub">Audit trail · issue tracking · acknowledgements · data verification</div></div>
+        <div class="rowflex">
+          <button class="btn secondary sm"><span class="ico ico-plus"></span> New Audit</button>
+          <button class="btn sm"><span class="ico ico-plus"></span> Raise Issue</button>
+        </div>
+      </div>
+
+      <div class="card statcard">
+        <div class="statbar">
+          <div class="stat"><div class="label">Open Issues</div><div class="num">7</div><div class="sub">2 overdue</div></div>
+          <div class="stat"><div class="label">Audits (This Quarter)</div><div class="num">12</div><div class="sub">3 under review</div></div>
+          <div class="stat"><div class="label">Pending My Review</div><div class="num">5</div><div class="sub">2 due this week</div></div>
+          <div class="stat"><div class="label">Policy Ack. Rate</div><div class="num">94<small> %</small></div><div class="sub">▲ across org</div></div>
+        </div>
+      </div>
+
+      <div class="tabs" style="margin-top:24px">
+        <div class="tab active">Audit Queue</div>
+        <div class="tab">Compliance Issues</div>
+        <div class="tab">Policy Acknowledgements</div>
+        <div class="tab">Data Verification</div>
+      </div>
+
+      <h2 class="section" style="margin-top:0">Assigned audit queue</h2>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Audit</th><th>Department</th><th>Type</th><th>Due</th><th>Findings</th><th>Status</th><th>Action</th></tr></thead>
+          <tbody>
+            <tr><td><b>Q3 Waste Audit</b><div class="muted">scheduled review</div></td><td>Manufacturing</td><td>Environmental</td><td>15 Jul 2026</td><td>—</td><td><span class="pill warning"><span class="dot warning"></span> In Progress</span></td>
+              <td><button class="btn sm"><span class="ico ico-play"></span> Continue</button></td></tr>
+            <tr><td><b>Vendor Compliance Check</b></td><td>Procurement</td><td>Governance</td><td><span style="color:var(--danger-ink);font-weight:600">10 Jul · overdue</span></td><td>1 open issue</td><td><span class="pill danger"><span class="dot danger"></span> Overdue</span></td>
+              <td><button class="btn sm"><span class="ico ico-play"></span> Start</button></td></tr>
+            <tr><td><b>Energy Governance Review</b></td><td>Facilities</td><td>Environmental</td><td>22 Jul 2026</td><td>—</td><td><span class="pill neutral"><span class="dot neutral"></span> Assigned</span></td>
+              <td><button class="btn secondary sm"><span class="ico ico-play"></span> Start</button></td></tr>
+            <tr><td><b>Data Retention Audit</b></td><td>IT</td><td>Governance</td><td>28 Jul 2026</td><td>2 minor</td><td><span class="pill warning"><span class="dot warning"></span> Under Review</span></td>
+              <td><button class="btn secondary sm"><span class="ico ico-eye"></span> Review</button></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <h2 class="section">Open compliance issues <span class="muted" style="font-size:13px;font-weight:400">· severity-tagged · owner + due date required · overdue auto-flagged</span></h2>
+      <div class="table-wrap">
+        <table class="tbl">
+          <thead><tr><th>Issue</th><th>Department</th><th>Severity</th><th>Owner</th><th>Due Date</th><th>Status</th><th></th></tr></thead>
+          <tbody>
+            <tr><td><b>Missing MSDS sheets</b><div class="muted">from Q2 Waste Audit</div></td><td>Manufacturing</td><td><span class="pill danger">High</span></td><td><span class="avatar-sm">PS</span> P. Shah</td><td><span style="color:var(--danger-ink);font-weight:600">02 Jul · overdue</span></td><td><span class="pill danger"><span class="dot danger"></span> Open</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
+            <tr><td><b>Late vendor disclosure</b></td><td>Procurement</td><td><span class="pill warning">Medium</span></td><td><span class="avatar-sm">AR</span> A. Rao</td><td>20 Jul 2026</td><td><span class="pill warning"><span class="dot warning"></span> In Progress</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
+            <tr><td><b>Data retention gap</b></td><td>IT</td><td><span class="pill warning">Medium</span></td><td><span class="avatar-sm">KS</span> K. Shah</td><td>28 Jul 2026</td><td><span class="pill warning"><span class="dot warning"></span> In Progress</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
+            <tr><td><b>Unsigned NDA (contractor)</b></td><td>Legal</td><td><span class="pill neutral">Low</span></td><td><span class="avatar-sm">MJ</span> M. Jain</td><td>05 Aug 2026</td><td><span class="pill danger"><span class="dot danger"></span> Open</span></td><td><div class="row-actions"><span class="a"><span class="ico ico-eye sm"></span></span></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="grid cols-2" style="margin-top:24px">
+        <div class="card">
+          <div class="card-head"><h3><span class="ico ico-file"></span> Policy acknowledgement tracking</h3><span class="muted">by department</span></div>
+          <div class="stack" style="gap:0">
+            <div class="list-row"><div style="width:130px">Corporate</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:100%"></span></div><b style="width:52px;text-align:right">100%</b></div>
+            <div class="list-row"><div style="width:130px">R&amp;D</div><div class="progress" style="flex:1;margin:0 16px"><span style="width:100%"></span></div><b style="width:52px;text-align:right">100%</b></div>
+            <div class="list-row"><div style="width:130px">Manufacturing</div><div class="progress" style="flex:1;margin:0 16px"><span class="warning" style="width:88%"></span></div><b style="width:52px;text-align:right">88%</b></div>
+            <div class="list-row"><div style="width:130px">Logistics</div><div class="progress" style="flex:1;margin:0 16px"><span class="warning" style="width:79%"></span></div><b style="width:52px;text-align:right">79%</b></div>
+            <div class="list-row"><div style="width:130px">Sales</div><div class="progress" style="flex:1;margin:0 16px"><span class="danger" style="width:64%"></span></div><b style="width:52px;text-align:right">64%</b></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-head"><h3><span class="ico ico-refresh"></span> Carbon data to verify</h3><span class="muted">flagged entries</span></div>
+          <div class="table-wrap" style="border:0">
+            <table class="tbl" style="min-width:auto">
+              <thead><tr><th>Entry</th><th>Dept</th><th class="num">CO₂</th><th>Flag</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>Air travel — site visit</td><td>Logistics</td><td class="num">—</td><td><span class="pill warning">Unmapped</span></td><td><button class="btn secondary sm">Verify</button></td></tr>
+                <tr><td>Diesel — genset</td><td>Facilities</td><td class="num">4.1 t</td><td><span class="pill warning">Outlier</span></td><td><button class="btn secondary sm">Verify</button></td></tr>
+                <tr><td>Scrap steel resale</td><td>Manufacturing</td><td class="num">-2.3 t</td><td><span class="pill danger">Negative</span></td><td><button class="btn sm">Review</button></td></tr>
+                <tr><td>Cloud compute</td><td>IT</td><td class="num">0.9 t</td><td><span class="pill plum">Verified</span></td><td><span class="muted">by you</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

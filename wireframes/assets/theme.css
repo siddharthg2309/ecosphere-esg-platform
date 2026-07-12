@@ -32,7 +32,7 @@
   --space-5:24px; --space-6:32px; --space-7:48px; --space-8:64px;
 
   --font:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
-  --font-display:'Caveat',cursive;
+  --font-display:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
 }
 
 * { box-sizing:border-box; margin:0; padding:0; }
@@ -83,7 +83,7 @@ a:hover { text-decoration:underline; }
 .sidebar { background:var(--brand-900); color:#CDBAC6; padding:var(--space-4) var(--space-3);
   position:sticky; top:0; height:100vh; overflow-y:auto; }
 .sidebar .brand { display:flex; align-items:center; gap:10px; font-weight:700; font-size:17px; color:#fff; padding:6px 8px 18px; }
-.sidebar .brand .logo { width:28px;height:28px;border-radius:7px;background:var(--brand); display:grid;place-items:center; }
+.sidebar .brand .logo { display:none; }
 .sidebar .brand .logo .ico { color:#fff; width:16px; height:16px; }
 .nav-group { margin-bottom:var(--space-4); }
 .nav-group > .nav-title { font-size:10.5px; letter-spacing:.09em; text-transform:uppercase; color:#7E6577; padding:8px 10px 4px; font-weight:600; }
@@ -108,12 +108,12 @@ a:hover { text-decoration:underline; }
 .bell-badge { position:absolute; top:5px; right:5px; background:var(--danger); color:#fff; font-size:10px; font-weight:700; border-radius:var(--radius-pill); padding:0 5px; line-height:15px; }
 .avatar { width:34px;height:34px;border-radius:var(--radius-pill); background:var(--brand); color:#fff; display:grid;place-items:center; font-weight:600; font-size:13px; }
 
-.content { padding:var(--space-5) var(--space-5) var(--space-8); max-width:1320px; width:100%; }
+.content { padding:var(--space-5) var(--space-5) var(--space-8); width:100%; }
 
 /* ---------- Headings ---------- */
 .page-head { display:flex; align-items:flex-end; justify-content:space-between; gap:16px; margin-bottom:var(--space-5); flex-wrap:wrap; }
 h1.page-title { font-size:25px; line-height:1.2; font-weight:700; }
-.page-head .sub { color:var(--ink-muted); font-size:13.5px; margin-top:3px; }
+.page-head .sub { display:none; }
 h2.section { font-size:17px; font-weight:700; margin:var(--space-5) 0 var(--space-3); }
 .flourish { font-family:var(--font-display); font-weight:700; color:var(--brand); }
 
