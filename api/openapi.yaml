@@ -1,22 +1,133 @@
 openapi: 3.1.0
-info:
-  title: EcoSphere API
-  version: 0.1.0
-servers:
-  - url: http://localhost:8080
+info: { title: EcoSphere API, version: 1.0.0 }
+servers: [{ url: 'http://localhost:8080' }]
+security: [{ bearerAuth: [] }]
 paths:
   /health:
     get:
+      security: []
       operationId: health
-      responses:
-        '200':
-          description: Service is healthy
+      responses: { '200': { description: Healthy } }
+  /auth/login:
+    post:
+      security: []
+      operationId: login
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/LoginRequest' } } } }
+      responses: { '200': { description: Authenticated, content: { application/json: { schema: { $ref: '#/components/schemas/AuthResponse' } } } }, '401': { $ref: '#/components/responses/Error' } }
+  /auth/refresh:
+    post:
+      security: []
+      operationId: refreshToken
+      requestBody: { required: true, content: { application/json: { schema: { type: object, required: [refreshToken], properties: { refreshToken: { type: string } } } } } }
+      responses: { '200': { description: Rotated tokens, content: { application/json: { schema: { $ref: '#/components/schemas/AuthResponse' } } } }, '401': { $ref: '#/components/responses/Error' } }
+  /me:
+    get:
+      operationId: currentUser
+      responses: { '200': { description: Current user, content: { application/json: { schema: { $ref: '#/components/schemas/User' } } } } }
+  /departments:
+    get:
+      operationId: listDepartments
+      parameters: [{ $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Offset' }]
+      responses: { '200': { description: Department page, content: { application/json: { schema: { $ref: '#/components/schemas/DepartmentPage' } } } } }
+    post:
+      operationId: createDepartment
+      requestBody: { $ref: '#/components/requestBodies/DepartmentInput' }
+      responses: { '201': { description: Created, content: { application/json: { schema: { $ref: '#/components/schemas/Department' } } } }, '409': { $ref: '#/components/responses/Error' } }
+  /departments/{id}:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    get: { operationId: getDepartment, responses: { '200': { description: Department, content: { application/json: { schema: { $ref: '#/components/schemas/Department' } } } } } }
+    put: { operationId: updateDepartment, requestBody: { $ref: '#/components/requestBodies/DepartmentInput' }, responses: { '200': { description: Updated, content: { application/json: { schema: { $ref: '#/components/schemas/Department' } } } } } }
+    delete: { operationId: deactivateDepartment, responses: { '200': { description: Deactivated, content: { application/json: { schema: { $ref: '#/components/schemas/Department' } } } } } }
+  /categories:
+    get:
+      operationId: listCategories
+      parameters: [{ $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Offset' }, { name: type, in: query, schema: { $ref: '#/components/schemas/CategoryType' } }]
+      responses: { '200': { description: Category page } }
+    post: { operationId: createCategory, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '201': { description: Created } } }
+  /categories/{id}:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    get: { operationId: getCategory, responses: { '200': { description: Category } } }
+    put: { operationId: updateCategory, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '200': { description: Updated } } }
+    delete: { operationId: deleteCategory, responses: { '204': { description: Deleted }, '409': { $ref: '#/components/responses/Error' } } }
+  /emission-factors:
+    get:
+      operationId: listEmissionFactors
+      parameters: [{ $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Offset' }, { name: category, in: query, schema: { type: string, format: uuid } }]
+      responses: { '200': { description: Emission factor page } }
+    post: { operationId: createEmissionFactor, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '201': { description: Created } } }
+  /emission-factors/{id}:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    get: { operationId: getEmissionFactor, responses: { '200': { description: Emission factor } } }
+    put: { operationId: updateEmissionFactor, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '200': { description: Updated } } }
+    delete: { operationId: deleteEmissionFactor, responses: { '204': { description: Deleted }, '409': { $ref: '#/components/responses/Error' } } }
+  /products:
+    get: { operationId: listProductProfiles, parameters: [{ $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Offset' }], responses: { '200': { description: Product profile page } } }
+    post: { operationId: createProductProfile, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '201': { description: Created } } }
+  /products/{id}:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    get: { operationId: getProductProfile, responses: { '200': { description: Product profile } } }
+    put: { operationId: updateProductProfile, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '200': { description: Updated } } }
+    delete: { operationId: deleteProductProfile, responses: { '204': { description: Deleted }, '409': { $ref: '#/components/responses/Error' } } }
+  /policies:
+    get: { operationId: listPolicies, parameters: [{ $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Offset' }], responses: { '200': { description: Policy page } } }
+    post: { operationId: createPolicy, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '201': { description: Created } } }
+  /policies/{id}:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    get: { operationId: getPolicy, responses: { '200': { description: Policy } } }
+    put: { operationId: publishPolicyRevision, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '200': { description: Updated and version incremented } } }
+    delete: { operationId: deletePolicy, responses: { '204': { description: Deleted }, '409': { $ref: '#/components/responses/Error' } } }
+  /badges:
+    get: { operationId: listBadges, parameters: [{ $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Offset' }], responses: { '200': { description: Badge page } } }
+    post: { operationId: createBadge, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '201': { description: Created } } }
+  /badges/{id}:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    get: { operationId: getBadge, responses: { '200': { description: Badge } } }
+    put: { operationId: updateBadge, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '200': { description: Updated } } }
+    delete: { operationId: deleteBadge, responses: { '204': { description: Deleted }, '409': { $ref: '#/components/responses/Error' } } }
+  /rewards:
+    get: { operationId: listRewards, parameters: [{ $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Offset' }], responses: { '200': { description: Reward page } } }
+    post: { operationId: createReward, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '201': { description: Created } } }
+  /rewards/{id}:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    get: { operationId: getReward, responses: { '200': { description: Reward } } }
+    put: { operationId: updateReward, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '200': { description: Updated } } }
+    delete: { operationId: deleteReward, responses: { '204': { description: Deleted }, '409': { $ref: '#/components/responses/Error' } } }
+  /employees:
+    get: { operationId: listEmployees, parameters: [{ $ref: '#/components/parameters/Limit' }, { $ref: '#/components/parameters/Offset' }], responses: { '200': { description: Employee page } } }
+    post: { operationId: createEmployee, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '201': { description: Created } } }
+  /employees/{id}:
+    parameters: [{ $ref: '#/components/parameters/ID' }]
+    get: { operationId: getEmployee, responses: { '200': { description: Employee } } }
+    put: { operationId: updateEmployee, requestBody: { $ref: '#/components/requestBodies/EntityBody' }, responses: { '200': { description: Updated } } }
+    delete: { operationId: deactivateEmployee, responses: { '204': { description: Deactivated } } }
+  /settings/esg-config:
+    get: { operationId: getESGConfig, responses: { '200': { description: ESG configuration, content: { application/json: { schema: { $ref: '#/components/schemas/ESGConfig' } } } } } }
+    put: { operationId: updateESGConfig, requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/ESGConfig' } } } }, responses: { '200': { description: Updated }, '400': { $ref: '#/components/responses/Error' } } }
+  /settings/notification-preferences:
+    get: { operationId: getNotificationPreferences, responses: { '200': { description: Notification preferences, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/NotificationPreference' } } } } } } }
+    put: { operationId: updateNotificationPreferences, requestBody: { required: true, content: { application/json: { schema: { type: array, items: { $ref: '#/components/schemas/NotificationPreference' } } } } }, responses: { '200': { description: Updated } } }
 components:
+  securitySchemes: { bearerAuth: { type: http, scheme: bearer, bearerFormat: JWT } }
+  parameters:
+    ID: { name: id, in: path, required: true, schema: { type: string, format: uuid } }
+    Limit: { name: limit, in: query, schema: { type: integer, minimum: 1, maximum: 100, default: 20 } }
+    Offset: { name: offset, in: query, schema: { type: integer, minimum: 0, default: 0 } }
+  responses:
+    Error: { description: Request failed, content: { application/json: { schema: { $ref: '#/components/schemas/Error' } } } }
+  requestBodies:
+    EntityBody: { required: true, content: { application/json: { schema: { type: object, additionalProperties: true } } } }
+    DepartmentInput: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/DepartmentInput' } } } }
   schemas:
-    Error:
-      type: object
-      required: [code, message]
-      properties:
-        code: { type: string }
-        message: { type: string }
-        fields: { type: object, additionalProperties: { type: string } }
+    Error: { type: object, required: [code, message], properties: { code: { type: string }, message: { type: string }, fields: { type: object, additionalProperties: { type: string } } } }
+    LoginRequest: { type: object, required: [email, password], properties: { email: { type: string, format: email }, password: { type: string, format: password } } }
+    AuthResponse: { type: object, required: [accessToken, refreshToken], properties: { accessToken: { type: string }, refreshToken: { type: string }, user: { $ref: '#/components/schemas/User' } } }
+    Role: { type: string, enum: [employee, dept_head, auditor, admin] }
+    Status: { type: string, enum: [active, inactive] }
+    User: { type: object, required: [id, name, email, role], properties: { id: { type: string, format: uuid }, name: { type: string }, email: { type: string, format: email }, role: { $ref: '#/components/schemas/Role' }, departmentId: { type: [string, 'null'], format: uuid } } }
+    DepartmentInput: { type: object, required: [name, code, employeeCount, status], properties: { name: { type: string, maxLength: 120 }, code: { type: string, pattern: '^[A-Za-z0-9]{2,12}$' }, headId: { type: [string, 'null'], format: uuid }, parentId: { type: [string, 'null'], format: uuid }, employeeCount: { type: integer, minimum: 0 }, status: { $ref: '#/components/schemas/Status' } } }
+    Department: { allOf: [{ $ref: '#/components/schemas/DepartmentInput' }, { type: object, required: [id, createdAt, updatedAt], properties: { id: { type: string, format: uuid }, createdAt: { type: string, format: date-time }, updatedAt: { type: string, format: date-time } } }] }
+    DepartmentPage: { type: object, required: [items, total], properties: { items: { type: array, items: { $ref: '#/components/schemas/Department' } }, total: { type: integer } } }
+    CategoryType: { type: string, enum: [csr_activity, challenge] }
+    ESGConfig: { type: object, required: [autoEmissionCalc, requireCsrEvidence, autoAwardBadges, notifyComplianceEmail, weightEnv, weightSocial, weightGov], properties: { autoEmissionCalc: { type: boolean }, requireCsrEvidence: { type: boolean }, autoAwardBadges: { type: boolean }, notifyComplianceEmail: { type: boolean }, weightEnv: { type: integer, minimum: 0, maximum: 100 }, weightSocial: { type: integer, minimum: 0, maximum: 100 }, weightGov: { type: integer, minimum: 0, maximum: 100 } } }
+    NotificationEvent: { type: string, enum: [compliance_raised, approval_decision, policy_reminder, badge_unlock] }
+    NotificationPreference: { type: object, required: [eventType, inAppEnabled, emailEnabled], properties: { eventType: { $ref: '#/components/schemas/NotificationEvent' }, inAppEnabled: { type: boolean }, emailEnabled: { type: boolean } } }
