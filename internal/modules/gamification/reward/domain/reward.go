@@ -30,3 +30,26 @@ func New(name, description string, points, stock int, status category.Status, no
 	return r, nil
 }
 func (r Reward) CanRedeem() bool { return r.Status == category.StatusActive && r.Stock > 0 }
+
+// Balance is the redeemable points held by an employee (users.points).
+type Balance struct {
+	UserID id.ID
+	Points int
+}
+
+// Redeem mutates reward stock and employee points in memory; persistence runs in a DB tx.
+func (r *Reward) Redeem(emp *Balance) error {
+	if emp == nil {
+		return errs.Invalid("invalid_employee", "Employee balance is required", nil)
+	}
+	if !r.CanRedeem() {
+		return errs.Conflict("out_of_stock", "reward unavailable")
+	}
+	if emp.Points < r.PointsRequired {
+		return errs.Invalid("insufficient_points", "not enough points", nil)
+	}
+	emp.Points -= r.PointsRequired
+	r.Stock--
+	return nil
+}
+
