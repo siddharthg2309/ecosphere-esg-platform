@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useMemo, useState, type FormEvent } from 'react'
 import { RoleGuard } from '../../app/RoleGuard'
-import { Button, Card, EmptyState, Modal, Note, Pill, Progress, StatBar, initials } from '../../design/components'
+import { Button, EmptyState, Modal, Note, Pill, Progress, StatBar, initials } from '../../design/components'
 import { api } from '../../lib/apiClient'
 import { queryKeys } from '../../lib/queryKeys'
 import type { Audit, ComplianceIssue, Employee, IssueSeverity } from '../../lib/types'
