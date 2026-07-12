@@ -41,12 +41,12 @@ type BadgeRepo interface {
 }
 
 type UserBalance struct {
-	ID                  id.ID
-	XP                  int
-	Points              int
-	CompletedChallenges int
-	Name                string
-	DepartmentID        *id.ID
+	ID                  id.ID  `json:"id"`
+	XP                  int    `json:"xp"`
+	Points              int    `json:"points"`
+	CompletedChallenges int    `json:"completedChallenges"`
+	Name                string `json:"name"`
+	DepartmentID        *id.ID `json:"departmentId,omitempty"`
 }
 
 type UserBalanceRepo interface {

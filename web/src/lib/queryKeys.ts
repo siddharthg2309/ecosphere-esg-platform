@@ -1,1 +1,14 @@
-export const queryKeys = { departments:['departments'] as const }
+export const queryKeys = {
+  departments: ['departments'] as const,
+  csrActivities: ['csr', 'activities'] as const,
+  csrParticipations: ['csr', 'participations'] as const,
+  diversity: ['diversity'] as const,
+  trainings: ['trainings'] as const,
+  challenges: ['challenges'] as const,
+  challengeParticipations: ['challenge-participations'] as const,
+  challengeCounts: ['challenges', 'counts'] as const,
+  leaderboard: (scope: string) => ['leaderboard', scope] as const,
+  gameRewards: ['game-rewards'] as const,
+  gameBadges: ['game-badges'] as const,
+  categories: ['master', 'categories'] as const,
+}

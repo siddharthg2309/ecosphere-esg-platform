@@ -90,10 +90,67 @@ func main() {
 			log.Fatal(err)
 		}
 	}
+	// Phase 3 — demographics for diversity dashboard
+	genders := []string{"woman", "man", "woman", "man", "non_binary"}
+	for i, u := range users {
+		gender := genders[i%len(genders)]
+		isLead := u.role == "dept_head" || u.role == "admin"
+		_, _ = tx.Exec(ctx, `UPDATE users SET gender=$2, is_leadership=$3 WHERE id=$1`, u.id, gender, isLead)
+	}
+	// CSR activities
+	csr := [][6]string{
+		{"80000000-0000-7000-8000-000000000001", "Tree Plantation", categories[0][0], "Plant 500 saplings at the Riverside reserve.", "50", "true"},
+		{"80000000-0000-7000-8000-000000000002", "Blood Donation", categories[1][0], "Quarterly donation camp with Red Cross.", "40", "true"},
+		{"80000000-0000-7000-8000-000000000003", "Beach Cleanup", categories[0][0], "Coastal cleanup drive, Sunday morning.", "60", "false"},
+		{"80000000-0000-7000-8000-000000000004", "ESG Workshop", categories[1][0], "Lunch-and-learn on sustainability basics.", "30", "false"},
+	}
+	for _, v := range csr {
+		_, err = tx.Exec(ctx, `INSERT INTO csr_activities(id,title,category_id,description,points,evidence_required,status)
+			VALUES($1,$2,$3,$4,$5::int,$6::bool,'active')
+			ON CONFLICT(id) DO UPDATE SET title=EXCLUDED.title,description=EXCLUDED.description,points=EXCLUDED.points`,
+			v[0], v[1], v[2], v[3], v[4], v[5])
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	// Challenges (Commute Green Week is the demo path)
+	challenges := []struct {
+		id, title, cat, desc, xp, diff, status string
+	}{
+		{"90000000-0000-7000-8000-000000000001", "Sustainability Sprint", categories[2][0], "Log 5 sustainable actions this week.", "200", "hard", "active"},
+		{"90000000-0000-7000-8000-000000000002", "Commute Green Week", categories[2][0], "Cycle or carpool to work for 5 days.", "120", "medium", "active"},
+		{"90000000-0000-7000-8000-000000000003", "Recycle Challenge", categories[3][0], "Sort and recycle office waste for a week.", "80", "easy", "under_review"},
+	}
+	for _, ch := range challenges {
+		_, err = tx.Exec(ctx, `INSERT INTO challenges(id,title,category_id,description,xp,difficulty,evidence_required,deadline,status)
+			VALUES($1,$2,$3,$4,$5::int,$6,true,'2026-07-25',$7)
+			ON CONFLICT(id) DO UPDATE SET title=EXCLUDED.title,status=EXCLUDED.status,xp=EXCLUDED.xp`,
+			ch.id, ch.title, ch.cat, ch.desc, ch.xp, ch.diff, ch.status)
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	// Rename Green Starter badge to Green Beginner for demo narrative if present
+	_, _ = tx.Exec(ctx, `UPDATE badges SET name='Green Beginner', description='Unlock: 100 XP' WHERE id=$1`, "60000000-0000-7000-8000-000000000001")
+	// Trainings
+	trainings := [][3]string{
+		{"a0000000-0000-7000-8000-000000000001", "ESG Fundamentals", "All employees"},
+		{"a0000000-0000-7000-8000-000000000002", "Anti-Corruption Awareness", "All employees"},
+		{"a0000000-0000-7000-8000-000000000003", "Carbon Accounting Basics", "Dept heads"},
+	}
+	for _, t := range trainings {
+		_, err = tx.Exec(ctx, `INSERT INTO trainings(id,name,assigned_to,status) VALUES($1,$2,$3,'active') ON CONFLICT(id) DO UPDATE SET name=EXCLUDED.name`, t[0], t[1], t[2])
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+	// Give demo employees some points for redeem testing
+	_, _ = tx.Exec(ctx, `UPDATE users SET points=1200, xp=50 WHERE role='employee'`)
+
 	if err = tx.Commit(ctx); err != nil {
 		log.Fatal(err)
 	}
-	log.Printf("seed complete: %d departments, %d users, %d factors", len(departments), len(users), len(factors))
+	log.Printf("seed complete: %d departments, %d users, %d factors, phase-3 CSR/challenges", len(departments), len(users), len(factors))
 }
 func env(key, fallback string) string {
 	if value := os.Getenv(key); value != "" {

@@ -18,3 +18,93 @@ export interface Employee extends User{xp:number;points:number;completedChalleng
 export interface ESGConfig{autoEmissionCalc:boolean;requireCsrEvidence:boolean;autoAwardBadges:boolean;notifyComplianceEmail:boolean;weightEnv:number;weightSocial:number;weightGov:number}
 export type NotificationEvent='compliance_raised'|'approval_decision'|'policy_reminder'|'badge_unlock'|'compliance_overdue'
 export interface NotificationPreference{eventType:NotificationEvent;inAppEnabled:boolean;emailEnabled:boolean}
+
+export type ApprovalStatus = 'pending' | 'approved' | 'rejected' | 'in_progress'
+export type ChallengeStatus = 'draft' | 'active' | 'under_review' | 'completed' | 'archived'
+
+export interface CSRActivity {
+  id: string
+  title: string
+  categoryId: string
+  description: string
+  points: number
+  evidenceRequired: boolean
+  status: Status
+  activityDate?: string
+  joinedCount?: number
+  createdAt: string
+}
+
+export interface CSRParticipation {
+  id: string
+  employeeId: string
+  activityId: string
+  proofUrl: string
+  notes?: string
+  approval: ApprovalStatus
+  pointsEarned: number
+  completionDate?: string
+  employeeName?: string
+  activityTitle?: string
+  activityPoints?: number
+  evidenceRequired?: boolean
+}
+
+export interface DiversityMetrics {
+  genderWomenPct: number
+  genderMenPct: number
+  genderNonBinaryPct: number
+  leadershipWomenPct: number
+  diverseLeadersPct: number
+  leadershipTargetPct: number
+  trainingCompletionPct: number
+  csrParticipationPct: number
+}
+
+export interface Training {
+  id: string
+  name: string
+  assignedTo: string
+  status: string
+  completed: number
+  total: number
+}
+
+export interface Challenge {
+  id: string
+  title: string
+  categoryId: string
+  description: string
+  xp: number
+  difficulty: string
+  evidenceRequired: boolean
+  deadline?: string
+  status: ChallengeStatus
+  pendingCount?: number
+}
+
+export interface ChallengeParticipation {
+  id: string
+  challengeId: string
+  employeeId: string
+  progress: number
+  proofUrl: string
+  approval: ApprovalStatus
+  xpAwarded: number
+  employeeName?: string
+  challengeTitle?: string
+  challengeXp?: number
+  evidenceRequired?: boolean
+}
+
+export interface LeaderboardEntry {
+  rank: number
+  id: string
+  name: string
+  xp: number
+  badgeCount: number
+}
+
+export interface GameBadge extends Badge {
+  earnedCount?: number
+}

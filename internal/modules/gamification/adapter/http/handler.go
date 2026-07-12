@@ -179,6 +179,20 @@ func (h *Handler) RejectParticipation(w http.ResponseWriter, r *http.Request) {
 	httpserver.JSON(w, http.StatusOK, result)
 }
 
+func (h *Handler) Balance(w http.ResponseWriter, r *http.Request) {
+	principal, ok := auth.PrincipalFrom(r.Context())
+	if !ok {
+		httpserver.Error(w, errs.Unauthorized("authentication_required", "Authentication is required"))
+		return
+	}
+	result, err := h.service.Balance(r.Context(), principal.UserID)
+	if err != nil {
+		httpserver.Error(w, err)
+		return
+	}
+	httpserver.JSON(w, http.StatusOK, result)
+}
+
 func (h *Handler) Leaderboard(w http.ResponseWriter, r *http.Request) {
 	scope := r.URL.Query().Get("scope")
 	if scope == "" {

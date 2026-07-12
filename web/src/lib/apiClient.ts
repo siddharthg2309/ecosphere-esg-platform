@@ -1,4 +1,8 @@
-import type { ApiError, AuthResponse, Department, DepartmentInput, ESGConfig, NotificationPreference, PageResult, User } from './types'
+import type {
+  ApiError, AuthResponse, CSRActivity, CSRParticipation, Challenge, ChallengeParticipation,
+  ChallengeStatus, Department, DepartmentInput, DiversityMetrics, ESGConfig, GameBadge,
+  LeaderboardEntry, NotificationPreference, PageResult, Reward, Training, User,
+} from './types'
 
 const API_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:8080'
 
@@ -31,5 +35,32 @@ export const api = {
     saveConfig:(input:ESGConfig)=>request<ESGConfig>('/settings/esg-config',{method:'PUT',body:JSON.stringify(input)}),
     preferences:()=>request<NotificationPreference[]>('/settings/notification-preferences'),
     savePreferences:(input:NotificationPreference[])=>request<NotificationPreference[]>('/settings/notification-preferences',{method:'PUT',body:JSON.stringify(input)}),
+  },
+  social:{
+    activities:()=>request<PageResult<CSRActivity>>('/csr/activities?limit=100&offset=0'),
+    createActivity:(input:Partial<CSRActivity>)=>request<CSRActivity>('/csr/activities',{method:'POST',body:JSON.stringify(input)}),
+    joinActivity:(input:{activityId:string;proofUrl?:string;notes?:string})=>request<CSRParticipation>('/csr/participations',{method:'POST',body:JSON.stringify(input)}),
+    participations:(approval='')=>request<PageResult<CSRParticipation>>(`/csr/participations?limit=100&offset=0${approval?`&approval=${approval}`:''}`),
+    approveParticipation:(id:string)=>request<CSRParticipation>(`/csr/participations/${id}/approve`,{method:'POST'}),
+    rejectParticipation:(id:string)=>request<CSRParticipation>(`/csr/participations/${id}/reject`,{method:'POST'}),
+    diversity:()=>request<DiversityMetrics>('/diversity'),
+    trainings:()=>request<PageResult<Training>>('/trainings'),
+    createTraining:(input:{name:string;assignedTo?:string})=>request<Training>('/trainings',{method:'POST',body:JSON.stringify(input)}),
+    completeTraining:(id:string)=>request<{status:string}>(`/trainings/${id}/complete`,{method:'POST'}),
+  },
+  game:{
+    challenges:()=>request<PageResult<Challenge>>('/challenges?limit=100&offset=0'),
+    createChallenge:(input:Partial<Challenge>)=>request<Challenge>('/challenges',{method:'POST',body:JSON.stringify(input)}),
+    transition:(id:string,to:ChallengeStatus)=>request<Challenge>(`/challenges/${id}/transition`,{method:'PUT',body:JSON.stringify({to})}),
+    participate:(id:string,input:{progress?:number;proofUrl?:string})=>request<ChallengeParticipation>(`/challenges/${id}/participate`,{method:'POST',body:JSON.stringify(input)}),
+    statusCounts:()=>request<Record<string,number>>('/challenges/status-counts'),
+    participations:()=>request<PageResult<ChallengeParticipation>>('/challenge-participations?limit=100&offset=0'),
+    approveParticipation:(id:string)=>request<ChallengeParticipation>(`/challenge-participations/${id}/approve`,{method:'POST'}),
+    rejectParticipation:(id:string)=>request<ChallengeParticipation>(`/challenge-participations/${id}/reject`,{method:'POST'}),
+    leaderboard:(scope:'employee'|'department'='employee')=>request<{items:LeaderboardEntry[];scope:string}>(`/leaderboard?scope=${scope}&limit=20`),
+    rewards:()=>request<PageResult<Reward>>('/game-rewards'),
+    redeem:(id:string)=>request<{reward:Reward;pointsSpent:number}>(`/game-rewards/${id}/redeem`,{method:'POST'}),
+    badges:()=>request<PageResult<GameBadge>>('/game-badges'),
+    balance:()=>request<{id:string;xp:number;points:number;completedChallenges:number;name:string}>('/me/balance'),
   },
 }

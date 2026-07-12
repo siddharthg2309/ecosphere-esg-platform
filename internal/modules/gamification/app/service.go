@@ -181,6 +181,10 @@ func (s *Service) ListBadges(ctx context.Context) ([]badge.Badge, map[id.ID]int,
 	return all, counts, nil
 }
 
+func (s *Service) Balance(ctx context.Context, userID id.ID) (*port.UserBalance, error) {
+	return s.users.Get(ctx, userID)
+}
+
 func (s *Service) Leaderboard(ctx context.Context, scope string, limit int) ([]port.LeaderboardEntry, error) {
 	if limit <= 0 {
 		limit = 20
