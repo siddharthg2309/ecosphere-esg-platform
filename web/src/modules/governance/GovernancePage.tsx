@@ -23,7 +23,7 @@ export function GovernancePage() {
   const s = stats.data
   return (
     <main className="page">
-      <div className="page-shell">
+      <div className="content">
         <header className="page-head">
           <div>
             <p className="eyebrow">Governance</p>

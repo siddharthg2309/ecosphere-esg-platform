@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, PropsWithChildren, ReactNode } from 'react'
+import type { ButtonHTMLAttributes, CSSProperties, PropsWithChildren, ReactNode } from 'react'
 
 export function Button({ className = '', ...props }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return <button className={`button ${className}`} {...props} />
@@ -38,8 +38,16 @@ export function EmptyState({ children }: PropsWithChildren) {
   return <div className="empty-state">{children}</div>
 }
 
-export function Card({ children, className = '' }: PropsWithChildren<{ className?: string }>) {
-  return <div className={`card ${className}`}>{children}</div>
+export function Card({
+  children,
+  className = '',
+  style,
+}: PropsWithChildren<{ className?: string; style?: CSSProperties }>) {
+  return (
+    <div className={`card ${className}`} style={style}>
+      {children}
+    </div>
+  )
 }
 
 export function Progress({ value, tone }: { value: number; tone?: 'warning' | 'danger' }) {

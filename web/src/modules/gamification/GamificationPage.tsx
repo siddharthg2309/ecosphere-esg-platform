@@ -24,7 +24,7 @@ export function GamificationPage() {
   const [tab, setTab] = useState<Tab>('challenges')
   return (
     <main className="page">
-      <div className="page-shell">
+      <div className="content">
         <header className="page-head">
           <div>
             <p className="eyebrow">Gamification</p>

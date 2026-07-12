@@ -1,24 +1,29 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useState } from 'react'
 import { Button, Modal, Note } from '../design/components'
 import { api } from '../lib/apiClient'
 import { queryKeys } from '../lib/queryKeys'
 import { userFacingError } from '../lib/userFacingError'
-import { useState } from 'react'
+import { useAuthStore } from './authStore'
 
-/** Blocks interaction when the user has unacknowledged active policies. */
+/** Blocks employees when they have unacknowledged active policies. */
 export function PolicyAckModal() {
+  const role = useAuthStore((s) => s.user?.role)
   const qc = useQueryClient()
   const [error, setError] = useState('')
+  const enabled = role === 'employee' || role === 'dept_head'
   const unacked = useQuery({
     queryKey: queryKeys.unacknowledged,
     queryFn: api.governance.unacknowledged,
     refetchOnWindowFocus: true,
+    enabled,
   })
   const ack = useMutation({
     mutationFn: api.governance.acknowledge,
     onSuccess: () => void qc.invalidateQueries({ queryKey: queryKeys.unacknowledged }),
   })
 
+  if (!enabled) return null
   const items = unacked.data?.items ?? []
   if (unacked.isLoading || items.length === 0) return null
   const current = items[0]

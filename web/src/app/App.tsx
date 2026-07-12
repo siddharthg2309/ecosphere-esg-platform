@@ -11,6 +11,16 @@ import { AppShell } from './AppShell'
 import { LoginPage } from './LoginPage'
 import { Providers } from './Providers'
 import { useAuthStore } from './authStore'
+import { homePathForRole } from './rbac'
+import type { Role } from '../lib/types'
+
+function RoleRoute({ roles, children }: { roles: Role[]; children: React.ReactNode }) {
+  const role = useAuthStore((s) => s.user?.role)
+  if (!role || !roles.includes(role)) {
+    return <Navigate to={role ? homePathForRole(role) : '/login'} replace />
+  }
+  return children
+}
 
 function ProtectedApp() {
   const user = useAuthStore((s) => s.user)
@@ -25,17 +35,70 @@ function ProtectedApp() {
     <Routes>
       <Route element={<AppShell />}>
         <Route index element={<DashboardPage />} />
-        <Route path="environmental" element={<EnvironmentalPage />} />
-        <Route path="social" element={<SocialPage />} />
-        <Route path="governance" element={<GovernancePage />} />
-        <Route path="gamification" element={<GamificationPage />} />
-        <Route path="reports" element={<ReportsPage />} />
-        <Route path="settings" element={<DepartmentsPage />} />
-        <Route path="*" element={<div className="content-card"><h1>Coming in the next phase</h1></div>} />
+        <Route
+          path="environmental"
+          element={
+            <RoleRoute roles={['admin', 'dept_head', 'auditor', 'employee']}>
+              <EnvironmentalPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="social"
+          element={
+            <RoleRoute roles={['admin', 'dept_head', 'employee']}>
+              <SocialPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="governance"
+          element={
+            <RoleRoute roles={['admin', 'dept_head', 'auditor', 'employee']}>
+              <GovernancePage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="gamification"
+          element={
+            <RoleRoute roles={['admin', 'dept_head', 'employee']}>
+              <GamificationPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="reports"
+          element={
+            <RoleRoute roles={['admin', 'dept_head', 'auditor']}>
+              <ReportsPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="settings"
+          element={
+            <RoleRoute roles={['admin']}>
+              <DepartmentsPage />
+            </RoleRoute>
+          }
+        />
+        <Route
+          path="*"
+          element={
+            <div className="page">
+              <div className="content">
+                <h1 className="page-title">Page not found</h1>
+                <p className="muted">This route is not available for your portal.</p>
+              </div>
+            </div>
+          }
+        />
       </Route>
     </Routes>
   )
 }
+
 export function App() {
   return (
     <Providers>

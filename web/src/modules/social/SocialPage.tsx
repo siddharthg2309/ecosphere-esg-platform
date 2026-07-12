@@ -23,7 +23,7 @@ export function SocialPage() {
   const d = diversity.data
   return (
     <main className="page">
-      <div className="page-shell">
+      <div className="content">
         <header className="page-head">
           <div>
             <p className="eyebrow">Social</p>

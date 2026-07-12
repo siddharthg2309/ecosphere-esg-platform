@@ -25,4 +25,5 @@ export const queryKeys = {
   scoresOverall: ['scores', 'overall'] as const,
   scoresDepartments: ['scores', 'departments'] as const,
   reports: ['reports'] as const,
+  balance: ['me', 'balance'] as const,
 }
