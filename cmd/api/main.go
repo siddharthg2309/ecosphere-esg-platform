@@ -17,6 +17,9 @@ import (
 	carbonapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/carbon/app"
 	carbonport "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/carbon/port"
 	goalapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/environmental/goal/app"
+	gamehttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/gamification/adapter/http"
+	gamepg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/gamification/adapter/postgres"
+	gameapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/gamification/app"
 	identityhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/http"
 	identitypg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/adapter/postgres"
 	identityapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/identity/app"
@@ -27,6 +30,9 @@ import (
 	masterhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/adapter/http"
 	masterpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/adapter/postgres"
 	masterapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/settings/masterdata/app"
+	socialhttp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/social/adapter/http"
+	socialpg "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/social/adapter/postgres"
+	socialapp "github.com/siddharthg2309/ecosphere-esg-platform/internal/modules/social/app"
 	platformai "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/ai"
 	platformauth "github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/auth"
 	"github.com/siddharthg2309/ecosphere-esg-platform/internal/platform/config"
@@ -61,6 +67,8 @@ func main() {
 	masterService := masterapp.New(masterRepo, platformemail.New(cfg.SMTPAddr), bus)
 	masterHandler := masterhttp.New(masterService)
 	flags := platformsettings.New(masterRepo, bus)
+
+	// Phase 2 — Environmental
 	environmentalRepo := environmentalpg.New(pool)
 	goalRepo := environmentalpg.NewGoals(pool)
 	carbonService := carbonapp.New(environmentalRepo, flags, bus)
@@ -77,6 +85,33 @@ func main() {
 	}
 	ingestService := carbonapp.NewIngest(objectStorage, aiGateway, flags, cfg.AIConfidence)
 	environmentalHandler := environmentalhttp.New(carbonService, goalService, ingestService)
+
+	// Phase 3 — Social
+	socialRepo := socialpg.New(pool)
+	socialService := socialapp.New(
+		socialpg.ActivityRepo{Repository: socialRepo},
+		socialpg.ParticipationRepo{Repository: socialRepo},
+		socialpg.TrainingRepo{Repository: socialRepo},
+		socialRepo,
+		flags,
+		socialRepo,
+		bus,
+	)
+	socialHandler := socialhttp.New(socialService)
+
+	// Phase 3 — Gamification
+	gameRepo := gamepg.New(pool)
+	gameService := gameapp.New(
+		gamepg.ChallengeRepo{Repository: gameRepo},
+		gamepg.ChallengeParticipationRepo{Repository: gameRepo},
+		gamepg.RewardRepo{Repository: gameRepo},
+		gamepg.BadgeRepo{Repository: gameRepo},
+		gamepg.UserBalanceRepo{Repository: gameRepo},
+		gamepg.LeaderboardRepo{Repository: gameRepo},
+		flags,
+		bus,
+	)
+	gameHandler := gamehttp.New(gameService)
 
 	router := chi.NewRouter()
 	router.Use(httpserver.Recover, httpserver.RequestID, httpserver.Logger, httpserver.CORS(cfg.CORSOrigin), middleware.StripSlashes)
@@ -136,6 +171,50 @@ func main() {
 		r.With(platformauth.RequireRole(domain.RoleDeptHead, domain.RoleAdmin)).Post("/", environmentalHandler.CreateGoal)
 		r.With(platformauth.RequireRole(domain.RoleDeptHead, domain.RoleAdmin)).Put("/{id}", environmentalHandler.UpdateGoal)
 	})
+
+	// Phase 3 — Social
+	router.Route("/csr", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/activities", socialHandler.ListActivities)
+		r.Get("/activities/{id}", socialHandler.GetActivity)
+		r.With(platformauth.RequireRole(domain.RoleAdmin, domain.RoleDeptHead)).Post("/activities", socialHandler.CreateActivity)
+		r.Post("/participations", socialHandler.JoinActivity)
+		r.Get("/participations", socialHandler.ListParticipations)
+		r.With(platformauth.RequireRole(domain.RoleAdmin, domain.RoleDeptHead)).Post("/participations/{id}/approve", socialHandler.ApproveParticipation)
+		r.With(platformauth.RequireRole(domain.RoleAdmin, domain.RoleDeptHead)).Post("/participations/{id}/reject", socialHandler.RejectParticipation)
+	})
+	router.With(platformauth.Authenticate([]byte(cfg.JWTSecret))).Get("/diversity", socialHandler.Diversity)
+	router.Route("/trainings", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/", socialHandler.ListTrainings)
+		r.With(platformauth.RequireRole(domain.RoleAdmin)).Post("/", socialHandler.CreateTraining)
+		r.Post("/{id}/complete", socialHandler.CompleteTraining)
+	})
+
+	// Phase 3 — Gamification
+	router.Route("/challenges", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/", gameHandler.ListChallenges)
+		r.Get("/status-counts", gameHandler.StatusCounts)
+		r.Get("/transitions", gameHandler.Transitions)
+		r.With(platformauth.RequireRole(domain.RoleAdmin, domain.RoleDeptHead)).Post("/", gameHandler.CreateChallenge)
+		r.With(platformauth.RequireRole(domain.RoleAdmin, domain.RoleDeptHead)).Put("/{id}/transition", gameHandler.Transition)
+		r.Post("/{id}/participate", gameHandler.Participate)
+	})
+	router.Route("/challenge-participations", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/", gameHandler.ListParticipations)
+		r.With(platformauth.RequireRole(domain.RoleAdmin, domain.RoleDeptHead)).Post("/{id}/approve", gameHandler.ApproveParticipation)
+		r.With(platformauth.RequireRole(domain.RoleAdmin, domain.RoleDeptHead)).Post("/{id}/reject", gameHandler.RejectParticipation)
+	})
+	router.With(platformauth.Authenticate([]byte(cfg.JWTSecret))).Get("/leaderboard", gameHandler.Leaderboard)
+	router.With(platformauth.Authenticate([]byte(cfg.JWTSecret))).Get("/me/balance", gameHandler.Balance)
+	router.Route("/game-rewards", func(r chi.Router) {
+		r.Use(platformauth.Authenticate([]byte(cfg.JWTSecret)))
+		r.Get("/", gameHandler.ListRewards)
+		r.Post("/{id}/redeem", gameHandler.Redeem)
+	})
+	router.With(platformauth.Authenticate([]byte(cfg.JWTSecret))).Get("/game-badges", gameHandler.ListBadges)
 
 	server := &http.Server{Addr: cfg.Addr, Handler: router, ReadHeaderTimeout: 5 * time.Second}
 	go func() {
