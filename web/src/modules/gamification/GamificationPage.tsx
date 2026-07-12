@@ -7,6 +7,7 @@ import { api } from '../../lib/apiClient'
 import { userFacingError } from '../../lib/userFacingError'
 import { queryKeys } from '../../lib/queryKeys'
 import type { Category, Challenge, ChallengeParticipation, ChallengeStatus, Reward } from '../../lib/types'
+import { EvidenceAssist } from '../ai/EvidenceAssist'
 import { allowedTransitions, canApproveParticipation } from './challengeTransitions'
 import { applyOptimisticRedeem, canRedeem, rollbackPoints } from './redeemVM'
 
@@ -363,6 +364,7 @@ function ChallengePartRow({
         ) : (
           <Pill status="neutral">No proof yet</Pill>
         )}
+        {row.approval === 'pending' && row.proofUrl ? <EvidenceAssist proofUrl={row.proofUrl} /> : null}
       </td>
       <td className="numeric">{row.approval === 'approved' ? row.xpAwarded : row.challengeXp ?? '—'}</td>
       <td>

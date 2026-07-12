@@ -6,6 +6,7 @@ import { api } from '../../lib/apiClient'
 import { userFacingError } from '../../lib/userFacingError'
 import { queryKeys } from '../../lib/queryKeys'
 import type { Category, CSRActivity, CSRParticipation } from '../../lib/types'
+import { EvidenceAssist } from '../ai/EvidenceAssist'
 import { canApproveParticipation } from '../gamification/challengeTransitions'
 
 type Tab = 'activities' | 'participation' | 'diversity' | 'training'
@@ -377,6 +378,7 @@ function ParticipationRow({
         ) : (
           <Pill status="danger">No proof</Pill>
         )}
+        {row.approval === 'pending' && row.proofUrl ? <EvidenceAssist proofUrl={row.proofUrl} /> : null}
       </td>
       <td className="numeric">{row.approval === 'approved' ? row.pointsEarned : row.activityPoints ?? '—'}</td>
       <td>
