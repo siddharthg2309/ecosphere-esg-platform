@@ -65,3 +65,47 @@ Connect employees to ESG programs after carbon activity is tracked.
 ## Workflow Rule
 
 Master configuration must be completed before daily business operations are recorded. Operations must be converted into carbon transactions before employee participation, acknowledgements, and audits are evaluated.
+
+## Core Workflow Modules
+
+The platform is organized into four interconnected ESG modules that together support the complete sustainability lifecycle of an organization.
+
+### 🌱 Environmental Management
+
+Responsible for monitoring and reducing the organization's environmental impact.
+
+- Configure emission factors
+- Record carbon transactions
+- Track department-wise emissions
+- Monitor sustainability goals
+- Generate environmental reports
+
+### 🤝 Social Management
+
+Encourages employee participation in sustainability initiatives and CSR programs.
+
+- Manage CSR activities
+- Track employee participation
+- Monitor diversity and engagement metrics
+- Record training completion
+- Reward participation through gamification
+
+### 🛡️ Governance Management
+
+Ensures organizational compliance with ESG policies and governance standards.
+
+- Manage ESG policies
+- Track policy acknowledgements
+- Conduct governance audits
+- Monitor compliance issues
+- Generate governance reports
+
+### 🏆 Gamification
+
+Promotes employee engagement by encouraging participation in ESG initiatives.
+
+- Create sustainability challenges
+- Award XP and badges
+- Redeem rewards
+- Display department and employee leaderboards
+- Increase long-term participation through incentives
